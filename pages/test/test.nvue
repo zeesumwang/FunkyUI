@@ -1,0 +1,22 @@
+<template>
+	<view style="justify-content: center;align-items: center;">
+		<text>main</text>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				
+			}
+		},
+		methods: {
+			
+		}
+	}
+</script>
+
+<style>
+
+</style>
