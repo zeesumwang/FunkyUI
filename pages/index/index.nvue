@@ -1,62 +1,89 @@
 <template>
 	<view class="app">
-
-		<view class="main" ref="main">
-
-			<swiper 
-			  ref="swiper_box" 
-			  class="swiper_box" 
-			  @change="swiperChange" 
-			  @transition="transition" 
-			  @animationfinish="animationfinish"
-			  easing-function="easeInOutCubic" 
-			  duration="300"
-			  :indicator-dots="false"
-			  :current="currentFabIndex"
-			  >
-
-				<swiper-item style="justify-content: center;align-items: center;" v-for="(item,index) in fabList" :key="index">
-					<view style="height: 450px;width: 450px;background-color: #a31a79;color: #ebebeb;">{{index}}</view>
-				</swiper-item>
-				
-				<swiper-item style="justify-content: center;align-items: center;">
-					<view style="height: 450px;width: 450px;background-color: #a31a79;color: #ebebeb;">user</view>
-				</swiper-item>
-
-			</swiper>
-
-		</view>
-
+		<!-- #ifndef H5 -->
 		<view class="status_bar" ref="status_bar"></view>
+		<!-- #endif -->
+		
+		<swiper 
+		  style="flex: 1;"
+		  :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
+		  @change="swiperChange" 
+		  @transition="transition" 
+		  @animationfinish="animationfinish"
+		  easing-function="easeInOutCubic" 
+		  duration="300"
+		  :indicator-dots="false"
+		  :current="currentFabIndex"
+		  >
 
-		<view class="fab" ref="fab" elevation="15px">
-			<view 
-				v-for="(fab,index) in fabList" 
-				class="fab_item" 
-				:id="fab.id" 
-				:key="fab.id" 
-				@click="fabClick"
+			<swiper-item 
+				style="justify-content: center;align-items: center;" 
+				:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
 			>
-				<image 
-					:src="fab.url" 
-					style="width: 20px;height: 20px;opacity: 0.2" 
-					:style="{
-								opacity:
-									virtualCurrentFabIndex==index+hideCount
-									? virtualCurrentFabIndexOpacity 
-									: targetFabIndex==index+hideCount
-									? targetFabIndexOpacity 
-									: 0.2
-								,
-								borderRadius: 
-									fab.id=='user'
-									? '50rpx' 
-									: ''
-							}"
-				>
-				</image>
-			</view>
-		</view>
+				<text style="color: #ebebeb;">0</text>
+			</swiper-item>
+			
+			<swiper-item
+				style="justify-content: center;align-items: center;" 
+				:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
+			>
+				<text style="color: #ebebeb;">1</text>
+			</swiper-item>
+			
+			<swiper-item
+				style="justify-content: center;align-items: center;" 
+				:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
+			>
+				<text style="color: #ebebeb;">2</text>
+			</swiper-item>
+			
+			<swiper-item
+				style="justify-content: center;align-items: center;" 
+				:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
+			>
+				<text style="color: #ebebeb;">3</text>
+			</swiper-item>
+			
+			<swiper-item
+				style="justify-content: center;align-items: center;" 
+				:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
+			>
+				<text style="color: #ebebeb;">4</text>
+			</swiper-item>
+
+		</swiper>
+
+		<label>
+			<uni-transition elevation="10px" :duration="250" :mode-class="modeClass" :styles="transfromClass" :show="isFabShow">
+				<view
+					v-for="(fab,index) in fabList" 
+					class="fab_item" 
+					:id="fab.id" 
+					:key="fab.id" 
+					@click="fabClick"
+				>	
+					<image
+						:src="fab.url" 
+						style="width: 20px;height: 20px;opacity: 0.2" 
+						:style="{
+									opacity:
+										virtualCurrentFabIndex==index+hideCount
+										? virtualCurrentFabIndexOpacity 
+										: targetFabIndex==index+hideCount
+										? targetFabIndexOpacity 
+										: 0.2
+									,
+									borderRadius: 
+										fab.id=='user'
+										? '50rpx' 
+										: ''
+								}"
+					>
+					</image>
+					
+				</view>
+			</uni-transition>
+		</label>
 		
 	</view>
 </template>
@@ -67,7 +94,9 @@
 	// const dom = weex.requireModule('dom');
 	// #endif
 	
-	
+	// #ifdef H5
+	import {browser} from "@/common/util.js"
+	// #endif
 
 	export default {
 		components: {
@@ -93,6 +122,9 @@
 						url: "../../static/logo.png"
 					}
 				],
+				modeClass: ['zoom-in','slide-bottom','fade'],
+				transfromClass: {},
+								
 				isFabClick: false,
 				selectedFab: 'home',
 				isFabShow: true,
@@ -121,9 +153,31 @@
 			this.screenHeightPx = system.screenHeight
 			this.screenHeight = system.screenHeight * 750 / system.screenWidth
 			this.screenWidthPx = system.screenWidth
+			// #ifdef H5
+			// 
+			if(!browser.versions.mobile || browser.versions.iPad){
+				this.screenWidthPx = 450
+				this.screenHeightPx = document.body.clientHeight
+			}
+			
+			// #endif
 			console.log('屏幕高度px,rpx', this.screenHeightPx, this.screenHeight)
 			console.log('屏幕宽度px,rpx', system.screenWidth, 750)
-			this.waterfallImgWidth = (system.screenWidth - 13) / 2
+			
+			this.transfromClass = {
+					'position': 'fixed',
+					/* #ifndef APP-NVUE */
+					'display': 'flex',
+					/* #endif */
+					'background-color': '#1e1e1e',
+					'justify-content': 'space-around',
+					'align-items': 'center',
+					'border-radius': '50px',
+					'flex-direction': 'row',
+					'width': Math.max(200, this.screenWidthPx * 0.618) + 'px',
+					'right': (this.screenWidthPx - Math.max(200, this.screenWidthPx * 0.618)) / 2  + 'px',
+					'bottom': '21px',
+				}
 		},
 		methods: {
 			slideUP: function(val) {
@@ -167,15 +221,11 @@
 				// 优化H5连续滑屏
 				if (this.targetFabIndexOpacity > 1){
 					// console.log("连续滑动触发",this.currentFabIndex,this.virtualCurrentFabIndex,this.targetFabIndex)
-					this.isContinuity += 1 
+					this.isContinuity 	+= 1 
 					if (this.isContinuity > 0){
 						console.log('连续滑屏 x',this.isContinuity + 1)
 					}
 					let real_dx = dx
-					
-					let tempOpacity = this.virtualCurrentFabIndexOpacity
-					this.virtualCurrentFabIndexOpacity = 1
-					this.targetFabIndexOpacity = 0.2
 					
 					if (real_dx > 0 && this.virtualCurrentFabIndex != 4){
 						this.targetFabIndex += 1
@@ -185,6 +235,10 @@
 						this.targetFabIndex -= 1
 						this.virtualCurrentFabIndex -= 1
 					}
+					
+					let tempOpacity = this.virtualCurrentFabIndexOpacity
+					this.virtualCurrentFabIndexOpacity = 1
+					this.targetFabIndexOpacity = 0.2
 					// console.log("改变fab的指向",this.currentFabIndex,this.virtualCurrentFabIndex,this.targetFabIndex)
 				}
 				
@@ -214,12 +268,6 @@
 				click_id = e.currentTarget.id
 				// #endif
 				
-				
-				// if(click_id == this.selectedFab) {
-				// 	// 返回顶部
-				// 	const ref = this.$refs[click_id]
-				// 	ref.toTop()
-				// }
 				this.selectedFab = click_id
 				if (this.selectedFab == "home") {
 					this.currentFabIndex = this.hideCount
@@ -248,121 +296,50 @@
 					}
 				}
 			},
-			hideFab: function() {				
-				console.log(this.$refs.fab)
+			hideFab: function() {		
 				this.isFabShow = false
-				
-				// #ifdef APP-NVUE
-				let fab = this.$refs.fab.ref
-				var result = Binding.bind({
-					eventType: 'timing',
-					exitExpression: 't>150',
-					props: [{
-							element: fab,
-							property: 'opacity',
-							expression: 'linear(t,1,-1,150)'
-						},
-						{
-							element: fab,
-							property: 'height',
-							expression: 'linear(t,50,-20,150)'
-						}
-					]
-				}, ((res) => {
-					this.isFabShow = false
-					if (res.state === 'exit') {
-						Binding.unbind({
-							token: result
-						})
-					}
-					if (res.state === 'start') {}
-				}))
-				// #endif
 			},
 			showFab: function() {
-				console.log(this.$refs.fab)
 				this.isFabShow = true
-				
-				// #ifdef APP-NVUE
-				let fab = this.$refs.fab.ref
-				var result = Binding.bind({
-					eventType: 'timing',
-					exitExpression: 't>150',
-					props: [{
-							element: fab,
-							property: 'opacity',
-							expression: 'linear(t,0,1,150)'
-						},
-						{
-							element: fab,
-							property: 'height',
-							expression: 'linear(t,30,20,150)'
-						}
-					]
-				}, ((res) => {
-					if (res.state === 'exit') {
-						this.isFabShow = true
-						Binding.unbind({
-							token: result
-						})
-					}
-					if (res.state === 'start') {}
-				}))
-				// #endif
 			},
 			
 		}
 	}
 </script>
 
-<style>
+<style scoped>
 	.app {
+		background-color: #0D0D0D;
 		flex: 1;
-		background-color: #0d0d0d;
-		/* background-image: linear-gradient(to top, #0d0d0d, #0d0d0d); */
 		flex-direction: column;
 	}
-	
-	.main {
-		position: fixed;
-	}
-
 	.status_bar {
-		height: 56rpx;
-		width: 750rpx;
-		/* background-color: #0d0d0d; */
-		position: fixed;
-		top: 0;
-		opacity: 1;
+		height: 30px;
+		width: 450px;
+		background-color: #0d0d0d;
 	}
 
 	.fab {
-		width: 450rpx;
+		width: 245px;
 		height: 50px;
-		border-radius: 45px;
+		border-radius: 100px;
+		border-width: 1px;
 		background-color: #212121;
 		position: fixed;
-		margin: 0 auto;
-		left: 0;
-		right: 0;
-		bottom: 40rpx;
+		left: 65px;
+		bottom: 21px;
 		flex: 1;
 		flex-direction: row;
 		align-items: center;
-		justify-content: center;
+		justify-content: space-around;
 	}
 
 	.fab_item {
 		height: 50px;
 		width: 50px;
-		margin: 6rpx;
+		/* background-color: #007AFF; */
 		align-items: center;
 		justify-content: center;
 	}
 
-	.swiper_box {
-		flex: 1;
-		width: 750rpx;
-		height: 1624rpx;
-	}
 </style>

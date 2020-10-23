@@ -1,6 +1,6 @@
 <template>
 	<view style="justify-content: center;align-items: center;">
-		<text>main</text>
+		<web-view src="../../static/g3d.html" style="width: calc(100vw - 450px);height: 100vh;"></web-view>
 	</view>
 </template>
 

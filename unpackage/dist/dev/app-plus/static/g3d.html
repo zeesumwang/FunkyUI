@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+	<meta content="text/html">
+	<meta charset="utf-8">
+	<title>FunkyDog | A FUNNY CLUB</title>
+	<link rel="shortcut icon" href="https://funkydog.club/static/octofez.png">
+
+</head>
+
+<body id="app" style="margin: 0px;overflow:hidden;background-color: #000000;display: flex;justify-content: center;align-items: center;flex-direction: column;">
+	
+	<div class="banner">
+	</div>	
+	
+	<div class="header" style="position: fixed;top: 0;left: 0;justify-content: center;align-items: center;display: none;">
+		<div class="headerTitle" style="justify-content: space-between;align-items: center;display: none;">
+			<div style="display: flex;flex-direction: column;justify-content: center;align-items: center;">
+				
+				<div style="	
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						margin-bottom: 50px;
+						position: absolute;
+						top: 5px;
+					"
+				>
+					<i class="icf" 
+						style="color: #333333;
+						text-shadow: 0px 0px 3px #3bff58;
+						font-size: 60px;
+						font-weight: bold;">
+						FunkyDog.club
+					</i>
+					
+					<a href="https://github.com/zishenWang" target="_blank">
+						<img style="width: 80px;height: 80px;margin: 20px;" src="https://funkydog.club/static/octofez.png">
+					</a>
+					<a href="https://funkydog.club/funkydog.apk" target="_blank">
+						<img style="width: 130px;height: 40px;margin: 20px;border-radius:170px;box-shadow: 0px 0px 5px #3bff58;opacity: 1;border-width: 2px;" src="https://static.yximgs.com/udata/pkg/fe/android_normal.png">
+					</a>
+					<!-- <a href="https://www.apple.com/app-store/" target="_blank">
+						<img style="width: 130px;height: 40px;margin: 20px;border-radius:170px;box-shadow: 0px 0px 5px #a35c32;opacity: 1;border-width: 2px;opacity: 0.5;" src="https://static.yximgs.com/udata/pkg/fe/ios_normal.png">
+					</a> -->
+					
+				</div>
+				
+				<div id="top_context" style="display: flex;flex-direction: column;align-items: center;justify-content: center;">
+					<i class="icf" style="color: white;text-shadow: 0px 0px 3px #3b7a3a;font-weight: bold;font-size: 30px; flex-wrap: wrap;">
+						Python、JS、Go...
+					</i>
+					<i class="icf" style="color: white;text-shadow: 0px 0px 3px #3b7a3a;font-weight: bold;font-size: 30px; flex-wrap: wrap;">
+						Vue、WEEX、Uni-app...
+					</i>
+					<i class="icf" style="color: white;text-shadow: 0px 0px 3px #3b7a3a;font-weight: bold;font-size: 30px; flex-wrap: wrap;">
+						分布式、端到端、可视化...
+					</i>
+					<i class="icf" style="color: white;text-shadow: 0px 0px 3px #3b7a3a;font-weight: bold;font-size: 30px; flex-wrap: wrap;">
+						深度学习、大数据、爬虫...
+					</i>
+					<i class="icf" style="color: white;text-shadow: 0px 0px 3px #3b7a3a;font-weight: bold;font-size: 30px; flex-wrap: wrap;">
+						3D、渲染引擎...
+					</i>					
+					
+					<div style="height: 20px;"></div>
+										
+					<i class="icf" style="color: white;text-shadow: 0px 0px 3px #000000;font-weight: bold;font-size: 60px; flex-wrap: wrap;">
+						专注、全面、
+					</i>
+					<i class="icf" style="color: white;text-shadow: 0px 0px 3px #000000;font-weight: bold;font-size: 60px; flex-wrap: wrap;text-align: center;">
+						跨端多屏适配、
+					</i>
+					<i class="icf" style="color: white;text-shadow: 0px 0px 3px #000000;font-weight: bold;font-size: 60px; flex-wrap: wrap;">
+						技术、艺术。
+					</i>
+					
+					<i class="icf" style="color: #333333;text-shadow: 0px 0px 2px #000000;font-weight: bold;font-size: 15px; flex-wrap: wrap;">
+						（寻找工作机会，提供开发服务）
+					</i>
+					
+					<div style="height: 20px;"></div>
+					
+				</div>
+				
+				<div id="info" style="display: flex;flex-direction: column;justify-content: center;align-items: center;position: fixed;bottom: 50px;z-index: 99;">
+					<i class="icf" style="color: white;text-shadow: 0px 0px 3px #000000;font-weight: bold;">
+						<a href="https://github.com/zishenWang" style="text-decoration: none" target="_blank">
+							Github
+						</a>					
+					</i>
+					<i class="icf" style="color: white;text-shadow: 0px 0px 3px #000000;font-weight: bold;">
+						<a href="https://www.jianshu.com/u/1ec3fbd3fc11" style="text-decoration: none" target="_blank">
+							Blog
+						</a>					
+					</i>
+					
+					<i class="icf" style="color: white;text-shadow: 0px 0px 3px #000000;font-weight: bold;">
+						微信: zishen_wang
+					</i>
+					<i class="icf" style="color: white;text-shadow: 0px 0px 3px #000000;font-weight: bold;">
+						邮箱: wangzishen@hnu.edu.cn
+					</i>
+				</div>
+				
+			</div>
+			
+		</div>
+	</div>
+	
+	<div style="position: fixed;bottom: 0px;">
+		<a href="https://beian.miit.gov.cn" target="_blank" style="font-size: 8px;color: aliceblue;">蜀ICP备18028232号-2</a>
+	</div>
+
+</body>
+
+
+<script>
+	document.querySelector('.banner').style.height = document.documentElement.clientHeight + 'px';
+	document.querySelector('.banner').style.width = document.documentElement.clientWidth  + 'px';
+	
+	document.querySelector('.header').style.display = 'flex'
+</script>
+<script src="https://funkydog.club/static/g3d.min.js"></script>
+<script src="main3d.js"></script>
+
+<style>
+@font-face {
+  font-family: 'webfont';
+  font-display: swap;
+  src: url('//at.alicdn.com/t/webfont_em3m9el7wpi.eot'); /* IE9*/
+  src: url('//at.alicdn.com/t/webfont_em3m9el7wpi.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('//at.alicdn.com/t/webfont_em3m9el7wpi.woff2') format('woff2'),
+  url('//at.alicdn.com/t/webfont_em3m9el7wpi.woff') format('woff'), /* chrome、firefox */
+  url('//at.alicdn.com/t/webfont_em3m9el7wpi.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+  url('//at.alicdn.com/t/webfont_em3m9el7wpi.svg#Alibaba-PuHuiTi-Regular') format('svg'); /* iOS 4.1- */
+}
+
+.icf {
+	font-family:"webfont" !important;
+	font-size:16px;font-style:normal;
+	-webkit-font-smoothing: antialiased;
+	-webkit-text-stroke-width: 0.2px;
+	-moz-osx-font-smoothing: grayscale;
+}
+</style>
+
+</html>

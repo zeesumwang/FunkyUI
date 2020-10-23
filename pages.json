@@ -4,25 +4,22 @@
 			"path": "pages/index/index",
 			"style": {
 				"navigationStyle":"custom",
-				"backgroundColor": "#F8F8F8"
+				"backgroundColor": "#0d0d0d"
 			}
 		}
-		
     ],
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"navigationBarTitleText": "FunkyUI",
+		"backgroundColor": "#0d0d0d"
 	},
-	"rightWindow": {
+	"leftWindow": {
 		"path": "pages/test/test",
 		"style": {
 		  "width": "calc(100vw - 450px)",
-		  "backgroundColor": "#333333"
+		  "backgroundColor": "#1e1e1e"
 		},
 		"matchMedia": {
-		  "minWidth": 300
+		  "minWidth": 768
 		}
 	}
 }

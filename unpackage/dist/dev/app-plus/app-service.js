@@ -1,7 +1,7 @@
 (this["webpackJsonp"] = this["webpackJsonp"] || []).push([["app-service"],[
 /* 0 */
 /*!********************************************************************!*\
-  !*** /Users/wangzishen/Documents/HBuilderProjects/funkyUI/main.js ***!
+  !*** /Users/wangzishen/Documents/HBuilderProjects/FunkyUI/main.js ***!
   \********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -12,7 +12,7 @@ eval("__webpack_require__(/*! uni-pages */ 1);var _vue = _interopRequireDefault(
 /***/ }),
 /* 1 */
 /*!***********************************************************************!*\
-  !*** /Users/wangzishen/Documents/HBuilderProjects/funkyUI/pages.json ***!
+  !*** /Users/wangzishen/Documents/HBuilderProjects/FunkyUI/pages.json ***!
   \***********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -47,7 +47,7 @@ module.exports = Vue;
 /***/ }),
 /* 3 */
 /*!********************************************************************!*\
-  !*** /Users/wangzishen/Documents/HBuilderProjects/funkyUI/App.vue ***!
+  !*** /Users/wangzishen/Documents/HBuilderProjects/FunkyUI/App.vue ***!
   \********************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -58,7 +58,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _App
 /***/ }),
 /* 4 */
 /*!*********************************************************************************************!*\
-  !*** /Users/wangzishen/Documents/HBuilderProjects/funkyUI/App.vue?vue&type=script&lang=js& ***!
+  !*** /Users/wangzishen/Documents/HBuilderProjects/FunkyUI/App.vue?vue&type=script&lang=js& ***!
   \*********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -69,7 +69,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _App
 /***/ }),
 /* 5 */
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--6-1!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/using-components.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!/Users/wangzishen/Documents/HBuilderProjects/funkyUI/App.vue?vue&type=script&lang=js& ***!
+  !*** ./node_modules/babel-loader/lib!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--6-1!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/using-components.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!/Users/wangzishen/Documents/HBuilderProjects/FunkyUI/App.vue?vue&type=script&lang=js& ***!
   \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
