@@ -1,111 +1,33 @@
 <template>
-	<view class="app">
-		<!-- #ifndef H5 -->
-		<view class="status_bar" ref="status_bar"></view>
-		<!-- #endif -->
+	<fk-index ref="fk-index" :fabList="fabList" :hideCount="0" :backgroundColor="'#1e1e1e'" :opacity="0.8" :bottom="21" :width="0.618">
 		
-		<swiper 
-		  style="flex: 1;"
-		  :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
-		  @change="swiperChange" 
-		  @transition="transition" 
-		  @animationfinish="animationfinish"
-		  easing-function="easeInOutCubic" 
-		  duration="300"
-		  :indicator-dots="false"
-		  :current="currentFabIndex"
-		  >
-
-			<swiper-item 
-				style="justify-content: center;align-items: center;" 
-				:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
-			>
-				<text style="color: #ebebeb;">0</text>
-			</swiper-item>
-			
-			<swiper-item
-				style="justify-content: center;align-items: center;" 
-				:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
-			>
-				<text style="color: #ebebeb;">1</text>
-			</swiper-item>
-			
-			<swiper-item
-				style="justify-content: center;align-items: center;" 
-				:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
-			>
-				<text style="color: #ebebeb;">2</text>
-			</swiper-item>
-			
-			<swiper-item
-				style="justify-content: center;align-items: center;" 
-				:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
-			>
-				<text style="color: #ebebeb;">3</text>
-			</swiper-item>
-			
-			<swiper-item
-				style="justify-content: center;align-items: center;" 
-				:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
-			>
-				<text style="color: #ebebeb;">4</text>
-			</swiper-item>
-
-		</swiper>
-
-		<label>
-			<uni-transition elevation="10px" :duration="250" :mode-class="modeClass" :styles="transfromClass" :show="isFabShow">
-				<view
-					v-for="(fab,index) in fabList" 
-					class="fab_item" 
-					:id="fab.id" 
-					:key="fab.id" 
-					@click="fabClick"
-				>	
-					<image
-						:src="fab.url" 
-						style="width: 20px;height: 20px;opacity: 0.2" 
-						:style="{
-									opacity:
-										virtualCurrentFabIndex==index+hideCount
-										? virtualCurrentFabIndexOpacity 
-										: targetFabIndex==index+hideCount
-										? targetFabIndexOpacity 
-										: 0.2
-									,
-									borderRadius: 
-										fab.id=='user'
-										? '50rpx' 
-										: ''
-								}"
-					>
-					</image>
-					
-				</view>
-			</uni-transition>
-		</label>
+		<template v-slot:hidePage-1>
+			<text style="color: #007AFF;">-1</text>
+		</template>
+		<template v-slot:home>
+			<button @click="click">显示/隐藏fab</button>
+			<text style="color: #007AFF;">1</text>
+		</template>
+		<template v-slot:search>
+			<text style="color: #007AFF;">1</text>
+		</template>
+		<template v-slot:taobao>
+			<text style="color: #007AFF;">1</text>
+		</template>
+		<template v-slot:user>
+			<text style="color: #007AFF;">1</text>
+		</template>
 		
-	</view>
+	</fk-index>
 </template>
 
 <script>
-	// #ifdef APP-NVUE
-	const Binding = uni.requireNativePlugin('bindingx');
-	// const dom = weex.requireModule('dom');
-	// #endif
-	
-	// #ifdef H5
-	import {browser} from "@/common/util.js"
-	// #endif
-
 	export default {
-		components: {
-			
-		},
 		data() {
 			return {
-				hideCount: 1,
-				fabList: [{
+				fabList:[
+					
+					{
 						id: 'home',
 						url: "../../static/logo.png"
 					},
@@ -121,225 +43,23 @@
 						id: 'user',
 						url: "../../static/logo.png"
 					}
-				],
-				modeClass: ['zoom-in','slide-bottom','fade'],
-				transfromClass: {},
-								
-				isFabClick: false,
-				selectedFab: 'home',
-				isFabShow: true,
-				isContinuity: 0,
-				currentFabIndex: 1,
-				virtualCurrentFabIndex: 1,
-				virtualCurrentFabIndexOpacity: 1,
-				targetFabIndex: '',
-				targetFabIndexOpacity: '',
-				
-				screenHeight: '',
-				screenHeightPx: {},
-				screenWidthPx: '',
-
+				]
 			}
-		},
-		onShow() {
-			console.log("主页显示")
-		},
-		onHide() {
-			console.log("主页隐藏")
-		},
-		onLoad() {
-			var system = uni.getSystemInfoSync()
-			console.log(system)
-			this.screenHeightPx = system.screenHeight
-			this.screenHeight = system.screenHeight * 750 / system.screenWidth
-			this.screenWidthPx = system.screenWidth
-			// #ifdef H5
-			// 
-			if(!browser.versions.mobile || browser.versions.iPad){
-				this.screenWidthPx = 450
-				this.screenHeightPx = document.body.clientHeight
-			}
-			
-			// #endif
-			console.log('屏幕高度px,rpx', this.screenHeightPx, this.screenHeight)
-			console.log('屏幕宽度px,rpx', system.screenWidth, 750)
-			
-			this.transfromClass = {
-					'position': 'fixed',
-					/* #ifndef APP-NVUE */
-					'display': 'flex',
-					/* #endif */
-					'background-color': '#1e1e1e',
-					'justify-content': 'space-around',
-					'align-items': 'center',
-					'border-radius': '50px',
-					'flex-direction': 'row',
-					'width': Math.max(200, this.screenWidthPx * 0.618) + 'px',
-					'right': (this.screenWidthPx - Math.max(200, this.screenWidthPx * 0.618)) / 2  + 'px',
-					'bottom': '21px',
-				}
 		},
 		methods: {
-			slideUP: function(val) {
-				if (this.isFabShow == true) {
-					this.hideFab()
+			click: function() {
+				var index = this.$refs['fk-index']
+				if(index.isFabShow){
+					index.hideFab()
 				}
-			},
-			dragDown: function(val) {
-				if (this.isFabShow == false) {
-					this.showFab()
+				else{
+					index.showFab()
 				}
-			},
-			transition: function(e) {
-				// 如果是点击fab进行切换，则不用展示过度动画。
-				if (this.isFabClick == true) {
-					return
-				}
-				
-				// 对连续的滑屏事件进行dx校准，在连续滑屏的时候只有一段连续的transition事件
-
-				if (e.detail.dx > 0){
-					var dx = e.detail.dx - this.screenWidthPx * this.isContinuity
-				}
-				else {
-					var dx = e.detail.dx + this.screenWidthPx * this.isContinuity
-				}
-				
-				
-				
-				if (dx > 0 && this.virtualCurrentFabIndex != 4) {
-					this.targetFabIndex = this.virtualCurrentFabIndex + 1
-				} 
-				else if (dx < 0 && this.virtualCurrentFabIndex != 0) {
-					this.targetFabIndex = this.virtualCurrentFabIndex - 1
-				}
-				
-				this.targetFabIndexOpacity = Math.max(1.0 * Math.abs(dx) / this.screenWidthPx, 0.2)
-				this.virtualCurrentFabIndexOpacity = Math.max(1.2 - this.targetFabIndexOpacity, 0.2)
-				
-				
-				// 优化H5连续滑屏
-				if (this.targetFabIndexOpacity > 1){
-					// console.log("连续滑动触发",this.currentFabIndex,this.virtualCurrentFabIndex,this.targetFabIndex)
-					this.isContinuity 	+= 1 
-					if (this.isContinuity > 0){
-						console.log('连续滑屏 x',this.isContinuity + 1)
-					}
-					let real_dx = dx
-					
-					if (real_dx > 0 && this.virtualCurrentFabIndex != 4){
-						this.targetFabIndex += 1
-						this.virtualCurrentFabIndex += 1
-					}
-					else if (real_dx < 0 && this.virtualCurrentFabIndex != 0) {
-						this.targetFabIndex -= 1
-						this.virtualCurrentFabIndex -= 1
-					}
-					
-					let tempOpacity = this.virtualCurrentFabIndexOpacity
-					this.virtualCurrentFabIndexOpacity = 1
-					this.targetFabIndexOpacity = 0.2
-					// console.log("改变fab的指向",this.currentFabIndex,this.virtualCurrentFabIndex,this.targetFabIndex)
-				}
-				
-				
-			},
-			animationfinish: function() {
-				this.isContinuity = 0
-				this.virtualCurrentFabIndexOpacity = 1
-				this.targetFabIndexOpacity = 0
-				this.virtualCurrentFabIndex = this.currentFabIndex
-				this.targetFabIndex = ''
-				this.isFabClick = false
-			},
-			fabClick: function(e) {
-				if (!this.isFabShow) {
-					return
-				}
-				this.isFabClick = true
-				
-				let click_id = ''
-				
-				// #ifdef APP-NVUE
-				click_id = e.target.id
-				// #endif
-				
-				// #ifndef APP-NVUE
-				click_id = e.currentTarget.id
-				// #endif
-				
-				this.selectedFab = click_id
-				if (this.selectedFab == "home") {
-					this.currentFabIndex = this.hideCount
-				} else if (this.selectedFab == "search") {
-					this.currentFabIndex = this.hideCount + 1
-				} else if (this.selectedFab == "taobao") {
-					this.currentFabIndex = this.hideCount + 2
-				} else if (this.selectedFab == "user") {
-					this.currentFabIndex = this.hideCount + 3
-				}
-				this.virtualCurrentFabIndex = this.currentFabIndex
-			},
-			swiperChange: function(e) {
-				let swiper_item_index = e.detail.current
-				this.currentFabIndex = swiper_item_index
-				if (swiper_item_index < this.hideCount) {
-					console.log("显示负一屏，隐藏fab")
-					if (this.isFabShow == true) {
-						this.hideFab()
-					}
-				} 
-				else {
-					if (this.isFabShow == false) {
-						console.log("隐藏负一屏，显示fab")
-						this.showFab()
-					}
-				}
-			},
-			hideFab: function() {		
-				this.isFabShow = false
-			},
-			showFab: function() {
-				this.isFabShow = true
-			},
-			
+			}
 		}
 	}
 </script>
 
-<style scoped>
-	.app {
-		background-color: #0D0D0D;
-		flex: 1;
-		flex-direction: column;
-	}
-	.status_bar {
-		height: 30px;
-		width: 450px;
-		background-color: #0d0d0d;
-	}
-
-	.fab {
-		width: 245px;
-		height: 50px;
-		border-radius: 100px;
-		border-width: 1px;
-		background-color: #212121;
-		position: fixed;
-		left: 65px;
-		bottom: 21px;
-		flex: 1;
-		flex-direction: row;
-		align-items: center;
-		justify-content: space-around;
-	}
-
-	.fab_item {
-		height: 50px;
-		width: 50px;
-		/* background-color: #007AFF; */
-		align-items: center;
-		justify-content: center;
-	}
+<style>
 
 </style>
