@@ -7,6 +7,16 @@
 				"backgroundColor": "#0d0d0d"
 			}
 		}
+        ,{
+            "path" : "pages/list_test/list_test",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "fk-list",
+                "backgroundColor": "#4d4f4f",
+				"navigationBarBackgroundColor":"#0d0d0d"
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTitleText": "FunkyUI",

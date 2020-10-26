@@ -1,11 +1,11 @@
 <template>
 	<view class="app">
-		<!-- #ifndef H5 -->
+		<!-- #ifdef APP-NVUE -->
 		<view class="status_bar" ref="status_bar"></view>
 		<!-- #endif -->
 		
 		<swiper 
-		  style="flex: 1;"
+		  style=""
 		  :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
 		  @change="swiperChange" 
 		  @transition="transition" 
@@ -16,22 +16,49 @@
 		  :current="currentFabIndex"
 		  >
 
-			<swiper-item
-				v-for="hidePage in Array(hideCount).keys()"
-				:key="'hidePage' + hidePage"
-				style="justify-content: center;align-items: center;" 
-				:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
-			>
-				<slot :name="'hidePage' + (hidePage - hideCount)"></slot>
+			<swiper-item v-if="hideCount>0">
+				<view
+					class="page"
+					:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
+				>
+					<slot name="hidePage"></slot>
+				</view>
 			</swiper-item>
 			
-			<swiper-item 
-				v-for="(page,index) in fabList"
-				:key="index"
-				style="justify-content: center;align-items: center;" 
-				:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
-			>
-				<slot :name="page.id"></slot>
+			<swiper-item>
+				<view
+					class="page"
+					:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
+				>
+					<slot name="mainPage0"></slot>
+				</view>
+			</swiper-item>
+			
+			<swiper-item>
+				<view
+					class="page"
+					:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
+				>
+				<slot name="mainPage1"></slot>
+				</view>
+			</swiper-item>
+			
+			<swiper-item>
+				<view
+					class="page"
+					:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
+				>
+				<slot name="mainPage2"></slot>
+				</view>
+			</swiper-item>
+			
+			<swiper-item>
+				<view
+					class="page"
+					:style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
+				>
+					<slot name="mainPage3"></slot>
+				</view>
 			</swiper-item>
 	
 		</swiper>
@@ -173,7 +200,7 @@
 			
 			// 获取客户端系统信息
 			var system = uni.getSystemInfoSync()
-			// console.log(system)
+			console.log(system)
 			this.screenHeightPx = system.screenHeight
 			this.screenHeight = system.screenHeight * 750 / system.screenWidth
 			this.screenWidthPx = system.screenWidth
@@ -281,19 +308,11 @@
 				}
 				this.isFabClick = true
 				
-				let click_id = ''
+				let clickId = e.currentTarget.id
 				
-				// #ifdef APP-NVUE
-				click_id = e.target.id
-				// #endif
-				
-				// #ifndef APP-NVUE
-				click_id = e.currentTarget.id
-				// #endif
-				
-				this.$emit('fabClick',click_id)
+				this.$emit('fabClick',{'clickId': clickId})
 				for(var i = 0; i < this.fabList.length; i++){
-					if (click_id == this.fabList[i].id) {
+					if (clickId == this.fabList[i].id) {
 						this.currentFabIndex = this.hideCount + i
 					}
 				}
@@ -303,6 +322,7 @@
 			swiperChange: function(e) {
 				let swiper_item_index = e.detail.current
 				this.currentFabIndex = swiper_item_index
+				this.$emit('indexChange', {'nowPage': this.currentFabIndex - this.hideCount})
 				if (swiper_item_index < this.hideCount) {
 					// console.log("显示负一屏，隐藏fab")
 					if (this.isFabShow == true) {
@@ -337,6 +357,20 @@
 		flex: 1;
 		flex-direction: column;
 	}
+	
+	.page {
+		/* #ifndef APP-NVUE */
+		display: flex;
+		/* #endif */
+		
+		/* #ifdef APP-NVUE */
+		flex: 1;
+		/* #endif */
+		
+		justify-content: center;
+		align-items: center;
+	}
+	
 	.status_bar {
 		height: 30px;
 		width: 450px;
