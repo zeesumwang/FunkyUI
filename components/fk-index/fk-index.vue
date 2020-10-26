@@ -104,10 +104,8 @@
 	const Binding = uni.requireNativePlugin('bindingx');
 	// const dom = weex.requireModule('dom');
 	// #endif
-	
-	// #ifdef H5
-	import {browser} from "@/common/util.js"
-	// #endif
+
+	import screenInfo from "@/common/helper.js"
 
 	export default {
 		name: "fkIndex",
@@ -139,7 +137,7 @@
 			modeClass: {
 				type: Array,
 				default() {
-					return ['zoom-in','slide-bottom','fade']
+					return ['zoom-out','slide-bottom','fade']
 				}
 			},
 			position: {
@@ -198,22 +196,10 @@
 			this.currentFabIndex = this.current + this.hideCount
 			this.virtualCurrentFabIndex = this.current + this.hideCount
 			
-			// 获取客户端系统信息
-			var system = uni.getSystemInfoSync()
-			console.log(system)
-			this.screenHeightPx = system.screenHeight
-			this.screenHeight = system.screenHeight * 750 / system.screenWidth
-			this.screenWidthPx = system.screenWidth
-			// #ifdef H5
-			// 在H5中如果是PC端或者是iPad等大屏端就进行大屏适配
-			this.screenHeightPx = document.body.clientHeight
-			if(!browser.versions.mobile || browser.versions.iPad){
-				this.screenWidthPx = 450
-			}
+			// 获取全局变量中的屏幕宽高		
+			this.screenHeightPx = screenInfo.screenHeightPx
+			this.screenWidthPx = screenInfo.screenWidthPx
 			
-			// #endif
-			console.log('屏幕高度px,rpx', this.screenHeightPx, this.screenHeight)
-			console.log('屏幕宽度px,rpx', system.screenWidth, 750)
 			
 			this.transfromClass = {
 					'position': 'fixed',

@@ -6,14 +6,14 @@
 		</template>
 		
 		<template v-slot:mainPage0>
-			<fk-list>
+			<fk-list :height="screenHeightPx" :width="screenWidthPx">
 				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #007AFF;"></view>
-					<view style="width: 300px;height: 300px;background-color: #edff55;"></view>
-					<view style="width: 300px;height: 300px;background-color: #fc4945;"></view>
-					<view style="width: 300px;height: 300px;background-color: #4bff6c;"></view>
-					<view style="width: 300px;height: 300px;background-color: #2effd7;"></view>
-					<view style="width: 300px;height: 300px;background-color: #ec66ff;"></view>
+					<view style="width: 300px;height: 300px;background-color: #007AFF;" :style="{'width':screenHeightPx + 'px'}"></view>
+					<view style="width: 300px;height: 300px;background-color: #edff55;" :style="{'width':screenHeightPx + 'px'}"></view>
+					<view style="width: 300px;height: 300px;background-color: #fc4945;" :style="{'width':screenHeightPx + 'px'}"></view>
+					<view style="width: 300px;height: 300px;background-color: #4bff6c;" :style="{'width':screenHeightPx + 'px'}"></view>
+					<view style="width: 300px;height: 300px;background-color: #2effd7;" :style="{'width':screenHeightPx + 'px'}"></view>
+					<view style="width: 300px;height: 300px;background-color: #ec66ff;" :style="{'width':screenHeightPx + 'px'}"></view>
 				</fk-cell>
 			</fk-list>
 		</template>
@@ -35,6 +35,8 @@
 </template>
 
 <script>
+	import screenInfo from "@/common/helper.js"
+	
 	export default {
 		data() {
 			return {
@@ -56,11 +58,13 @@
 						url: "../../static/logo.jpg"
 					}
 				],
-				system: {}
+				screenHeightPx: 0,
+				screenWidthPx: 0
 			}
 		},
-		beforeCreate() {
-			this.system = uni.getSystemInfo({})
+		onShow() {
+			this.screenHeightPx = screenInfo.screenHeightPx
+			this.screenWidthPx = screenInfo.screenWidthPx
 		},
 		methods: {
 			click: function() {

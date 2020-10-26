@@ -1,3 +1,15 @@
+
+
+// 获取系统信息，设置初始设置屏幕
+var system = uni.getSystemInfoSync()
+console.log(system)
+// #ifndef H5
+var screenHeightPx = system.screenHeight
+var screenWidthPx = system.screenWidth
+// #endif
+
+// #ifdef H5
+// 在H5中如果是PC端或者是iPad等大屏端就进行大屏适配
 var browser = {
 	            versions: function() {
 	                var u = navigator.userAgent, app = navigator.appVersion;
@@ -16,5 +28,19 @@ var browser = {
 	            } (),
 	            language: (navigator.browserLanguage || navigator.language).toLowerCase()
 	        }
+var screenHeightPx = document.body.clientHeight
+if(!browser.versions.mobile || browser.versions.iPad){
+	var screenWidthPx = 450
+}			
+// #endif
+console.log('屏幕宽高，单位px：', screenWidthPx, screenHeightPx)
 
-export {browser}
+export default {
+	// #ifdef H5
+	browser,
+	// #endif
+	system,
+	screenHeightPx,
+	screenWidthPx
+}
+
