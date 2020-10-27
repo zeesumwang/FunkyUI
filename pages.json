@@ -5,6 +5,11 @@
 			"style": {
 				"navigationStyle":"custom",
 				"backgroundColor": "#0d0d0d"
+				// #ifndef APP-NVUE
+				,
+				"enablePullDownRefresh": true//开启下拉刷新
+				// #endif
+				
 			}
 		}
         ,{

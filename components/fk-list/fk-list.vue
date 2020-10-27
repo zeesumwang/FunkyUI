@@ -1,17 +1,23 @@
 <template>
-	<view>
+	
 		<!-- #ifndef APP-NVUE -->
-		<scroll-view scroll-y="true" :style="{'height': height + 'px','width': width + 'px'}">
-			<slot></slot>
-		</scroll-view>
+		<view class="fk-list" :style="{'height': height + 'px','width': width + 'px'}">
 		<!-- #endif -->
 		
 		<!-- #ifdef APP-NVUE -->
 		<list :style="{'height': height + 'px','width': width + 'px'}">
+		<!-- #endif -->
+		
 			<slot></slot>
+			
+		<!-- #ifdef APP-NVUE -->
 		</list>
 		<!-- #endif -->
-	</view>
+		
+		<!-- #ifndef APP-NVUE -->
+		</view>
+		<!-- #endif -->
+	
 </template>
 
 <script>
@@ -42,5 +48,11 @@
 </script>
 
 <style>
-
+.fk-list {
+	/* #ifndef APP-NVUE */
+	display: flex;
+	/* #endif */
+	position: relative;
+	flex-direction: column;
+}
 </style>

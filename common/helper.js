@@ -31,7 +31,10 @@ var browser = {
 var screenHeightPx = document.body.clientHeight
 if(!browser.versions.mobile || browser.versions.iPad){
 	var screenWidthPx = 450
-}			
+}
+else{
+	var screenWidthPx = system.screenWidth
+}
 // #endif
 console.log('屏幕宽高，单位px：', screenWidthPx, screenHeightPx)
 

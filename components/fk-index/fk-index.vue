@@ -1,8 +1,5 @@
 <template>
 	<view class="app">
-		<!-- #ifdef APP-NVUE -->
-		<view class="status_bar" ref="status_bar"></view>
-		<!-- #endif -->
 		
 		<swiper 
 		  style=""
@@ -352,13 +349,10 @@
 		/* #ifdef APP-NVUE */
 		flex: 1;
 		/* #endif */
-		
-		justify-content: center;
-		align-items: center;
 	}
 	
 	.status_bar {
-		height: 30px;
+		height: 32px;
 		width: 450px;
 		background-color: #0d0d0d;
 	}

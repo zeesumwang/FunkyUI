@@ -1,9 +1,10 @@
 {
   "navigationStyle": "custom",
   "backgroundColor": "#0d0d0d",
+  "enablePullDownRefresh": true,
   "usingComponents": {
     "fk-index": "/components/fk-index/fk-index",
-    "fk-list": "/components/fk-list/fk-list",
-    "fk-cell": "/components/fk-cell/fk-cell"
+    "uni-list": "/components/uni-list/uni-list",
+    "uni-list-item": "/components/uni-list-item/uni-list-item"
   }
 }
