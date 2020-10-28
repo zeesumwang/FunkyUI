@@ -12,7 +12,11 @@
 			:style="{'height': height + 'px','width': width + 'px'}"
 		>
 			<fk-cell>
-				<view :class="{'pulldown':!isTouchMove}" style="justify-content: center;align-items: center;" :style="{ height: (isTop==true&&isTouchMove ? movedY : 0) + 'px'}">
+				<view 
+					:class="{'pulldown':!isTouchMove}" 
+					style="justify-content: center;align-items: center;" 
+					:style="{ height: (isTop == true && isTouchMove ? refreshHeight : 0) + 'px'}"
+				>
 					<image style="width: 30px;height: 30px;" :src="refreshIcon"></image>
 				</view>
 			</fk-cell>
@@ -68,14 +72,14 @@
 				isBottom: false,
 				isFirst: true,
 				moveStartY: 0,
-				movedY: 0,
+				moveStartX: 0,
+				refreshHeight: 0,
 				display: false
 			};
 		},
 		created() {
 		},
 		mounted() {
-			console.log(this.$refs.refresh)
 		},
 		methods: {
 			scrolltoupper: function(e) {
@@ -100,38 +104,37 @@
 			},
 			touchmove: function(e) {
 				this.isTouchMove = true
-				if(this.isTop){
+				var movedY = Math.abs(e.changedTouches[0].pageY - this.moveStartY)
+				var movedX = Math.abs(e.changedTouches[0].pageX - this.moveStartX)
+				
+				// 当拖拽角度小于45度才进行下拉更新，tan45` = 1，对边比临边。
+				if(movedY !== 0 && movedX / movedY < 1) {
 					if(this.isFirst){
 						this.moveStartY = e.changedTouches[0].pageY
+						this.moveStartX = e.changedTouches[0].pageX
 						this.isFirst = false
 					}
 					else{
-						let movedY = Math.abs(e.changedTouches[0].pageY - this.moveStartY)
-						this.movedY = Math.min(movedY,150)
+						this.refreshHeight = Math.min(movedY,150)
 					}
-					let event = {'type':'Top','moveY':this.movedY}
-					this.$emit('pullingdown',event)
-				}
-				else if(this.isBottom){
-					if(this.isFirst){
-						this.moveStartY = e.changedTouches[0].pageY
-						this.isFirst = false
+					
+					if(this.isTop){
+						let event = {'type':'Top','moveY':this.refreshHeight}
+						this.$emit('pullingdown',event)
+					}
+					else if(this.isBottom){
+						let event = {'type':'Bottom','moveY':this.refreshHeight}
+						this.$emit('draggingup',event)
 					}
 					else{
-						let movedY = Math.abs(e.changedTouches[0].pageY - this.moveStartY)
-						this.movedY = Math.min(movedY,150)
+						// console.log('touchmove异常',e)
 					}
-					let event = {'type':'Bottom','moveY':this.movedY}
-					this.$emit('draggingup',event)
-				}
-				else{
-					// console.log('touchmove异常',e)
 				}
 			},
 			touchend: function(e) {
 				this.isTouchMove = false
 				this.isFirst = true
-				this.movedY = 0
+				this.refreshHeight = 0
 			},
 			onrefresh: function(e) {
 				console.log(e)
