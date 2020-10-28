@@ -101,13 +101,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "components", function() { return components; });
 var components = {
   fkIndex: function() {
-    return __webpack_require__.e(/*! import() | components/fk-index/fk-index */ "components/fk-index/fk-index").then(__webpack_require__.bind(null, /*! @/components/fk-index/fk-index.vue */ 71))
+    return __webpack_require__.e(/*! import() | components/fk-index/fk-index */ "components/fk-index/fk-index").then(__webpack_require__.bind(null, /*! @/components/fk-index/fk-index.vue */ 28))
   },
-  uniList: function() {
-    return __webpack_require__.e(/*! import() | components/uni-list/uni-list */ "components/uni-list/uni-list").then(__webpack_require__.bind(null, /*! @/components/uni-list/uni-list.vue */ 35))
+  fkList: function() {
+    return __webpack_require__.e(/*! import() | components/fk-list/fk-list */ "components/fk-list/fk-list").then(__webpack_require__.bind(null, /*! @/components/fk-list/fk-list.vue */ 35))
   },
-  uniListItem: function() {
-    return __webpack_require__.e(/*! import() | components/uni-list-item/uni-list-item */ "components/uni-list-item/uni-list-item").then(__webpack_require__.bind(null, /*! @/components/uni-list-item/uni-list-item.vue */ 42))
+  fkCell: function() {
+    return __webpack_require__.e(/*! import() | components/fk-cell/fk-cell */ "components/fk-cell/fk-cell").then(__webpack_require__.bind(null, /*! @/components/fk-cell/fk-cell.vue */ 42))
   }
 }
 var render = function() {
@@ -221,31 +221,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js */ 17));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //

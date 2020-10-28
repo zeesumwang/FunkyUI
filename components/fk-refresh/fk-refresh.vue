@@ -1,70 +1,174 @@
 <template>
-    
-    <!-- #ifndef APP-NVUE -->
-    <view ref="uni-refresh" class="uni-refresh" v-show="isShow">
-        <slot />
-    <!-- #endif -->
-	
-	<!-- #ifdef APP-NVUE -->
-	<refresh :display="display" @refresh="onrefresh" @pullingdown="onpullingdown">
-	    <slot />
-	</refresh>
-	<!-- #endif -->
-	
-	<!-- #ifndef APP-NVUE -->
+	<view class="myp-refresher myp-flex-row myp-justify-center" :style="boxStyle">
+		<view :class="['myp-cycle-container', refreshing&&'myp-scroll-rotate']">
+			<view class="myp-u-cover myp-u-c2" :style="cover2Style">
+				<view class="myp-u-cover-cycle" :style="coverCycleStyle"></view>
+			</view>
+		</view>
+		<text class="myp-u-txt">{{ refresherText }}</text>
 	</view>
-	<!-- #endif -->
 </template>
 
 <script>
-    export default {
-        name: 'UniRefresh',
-        props: {
-            display: {
-                type: [String],
-                default: "hide"
-            }
-        },
-        data() {
-            return {
-                pulling: false
-            }
-        },
-        computed: {
-            isShow() {
-                if (this.display === "show" || this.pulling === true) {
-                    return true;
-                }
-                return false;
-            }
-        },
-        created() {},
-        methods: {
-            onchange(value) {
-                this.pulling = value;
-            },
-            onrefresh(e) {
-                this.$emit("refresh", e);
-            },
-            onpullingdown(e) {
-                // #ifdef APP-NVUE
-                this.$emit("pullingdown", e);
-                // #endif
-                // #ifndef APP-NVUE
-                var detail = {
-                    viewHeight: 90,
-                    pullingDistance: e.height
-                }
-                this.$emit("pullingdown", detail);
-                // #endif
-            }
-        }
-    }
+	const HEIGHT = uni.upx2px(140)
+	
+	export default {
+		props: {
+			/**
+			 * 下拉时提示文字
+			 */
+			mainText: {
+				type: String,
+				default: '下拉即可刷新...'
+			},
+			/**
+			 * 下拉时提示文字
+			 */
+			pullingText: {
+				type: String,
+				default: '释放即可刷新...'
+			},
+			/**
+			 * 正在刷新的提示文字
+			 */
+			refreshingText: {
+				type: String,
+				default: '正在努力加载...'
+			},
+			/**
+			 * 是否正在刷新
+			 */
+			refreshing: {
+				type: Boolean,
+				default: false
+			},
+			/**
+			 * 是否可以满足刷新
+			 */
+			couldUnLash: {
+				type: Boolean,
+				default: false
+			},
+			/**
+			 * 下拉的进度/比率
+			 */
+			rate: {
+				type: Number,
+				default: 0
+			},
+			/**
+			 * 外层样式
+			 */
+			boxStyle: {
+				type: String,
+				default: ''
+			}
+		},
+		data() {
+			return {
+			}
+		},
+		computed: {
+			refresherText() {
+				return this.refreshing ? this.refreshingText : this.pText;
+			},
+			pText() {
+				return this.couldUnLash ? this.pullingText : this.mainText;
+			},
+			cover2Style() {
+				const deg = this.rate >= 1 ? '360deg' : this.rate * 360 + 'deg'
+				return `transition-property: transform; transition-duration: 300ms; transform: rotateZ(${deg});`
+			},
+			coverCycleStyle() {
+				if (this.rate > 0.4) {
+					return 'opacity: 1;'
+				}
+				return 'opacity: 0;'
+			}
+		}
+	}
 </script>
 
-<style>
-    .uni-refresh {
-        height: 0;
-        overflow: hidden;
-    }
+<style lang="scss" scoped>
+	.myp-refresher {
+		height: 140rpx;
+		width: 750rpx;
+		padding-top: 50rpx;
+	}
+
+	.myp-cycle-container {
+		position: relative;
+		width: 60rpx;
+		height: 60rpx;
+	}
+	
+	.myp-u {
+		&-cover {
+			position: absolute;
+			width: 60rpx;
+			height: 60rpx;
+			top: 0;
+			// background-color: #ffffff;
+			overflow: hidden;
+			right: 0;
+			transform-origin: center center;
+			transform: rotateZ(0deg);
+			&-cycle {
+				position: absolute;
+				width: 60rpx;
+				height: 60rpx;
+				right: 0;
+				top: 0;
+				border-width: 2rpx;
+				border-color: #666666;
+				border-bottom-color: transparent;
+				border-style: solid;
+				border-radius: 30rpx;
+				opacity: 0;
+			}
+		}
+	}
+
+	.myp-arrow-down {
+		position: relative;
+		top: 15rpx;
+		left: -45rpx;
+		width: 30rpx;
+		height: 30rpx;
+	}
+
+	.myp-u-txt {
+		font-size: 24rpx;
+		line-height: 40rpx;
+		color: #999999;
+		margin-top: 10rpx;
+		margin-left: 10rpx;
+		height: 40rpx;
+		lines: 1;
+	}
+	
+	/* #ifndef APP-NVUE */
+	/* 旋转动画 */
+	.myp-scroll-rotate {
+		-webkit-animation: scrollRotate 0.6s linear infinite;
+		animation: scrollRotate 0.6s linear infinite;
+	}
+	
+	@-webkit-keyframes scrollRotate {
+		0% {
+			-webkit-transform: rotate(0deg);
+		}
+		100% {
+			-webkit-transform: rotate(360deg);
+		}
+	}
+	@keyframes mescrollRotate {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+	/* #endif */
 </style>

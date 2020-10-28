@@ -1,20 +1,9 @@
 <template>
-	<view style="justify-content: center;align-items: center;flex: 1;">
-		<!-- #ifndef APP-NVUE -->
-		
-		<view v-for="(i,index) in data" :key="index" style="height: 100px;background-color: #8F9CFF;margin-bottom: 50px;">
-			<text>{{i}}</text>
-		</view>
-		
-		<!-- #endif -->
-		<!-- #ifdef APP-NVUE -->
-		<list :style="{'height': height + 'px','width': width + 'px'}" style="background-color: #007AFF;">
-			<cell v-for="(i,index) in data" :key="index" style="height: 100px;background-color: #8F9CFF;margin-bottom: 50px;">
-				<text>{{i}}</text>
-			</cell>
-		</list>
-		<!-- #endif -->
-	</view>
+	<fk-list>
+		<fk-cell>
+			<view style="height: 1500rpx;width: 300px;"></view>
+		</fk-cell>
+	</fk-list>
 </template>
 
 <script>

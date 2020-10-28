@@ -1,1 +1,1 @@
-<view style="justify-content:center;align-items:center;flex:1;"><block wx:for="{{data}}" wx:for-item="i" wx:for-index="index" wx:key="index"><view style="height:100px;background-color:#8F9CFF;margin-bottom:50px;"><text>{{i}}</text></view></block></view>
+<fk-list vue-id="4ecf6118-1" bind:__l="__l" vue-slots="{{['default']}}"><fk-cell vue-id="{{('4ecf6118-2')+','+('4ecf6118-1')}}" bind:__l="__l" vue-slots="{{['default']}}"><view style="height:1500rpx;width:300px;"></view></fk-cell></fk-list>

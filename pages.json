@@ -4,10 +4,11 @@
 			"path": "pages/index/index",
 			"style": {
 				"navigationStyle":"custom",
-				"backgroundColor": "#0d0d0d"
+				"backgroundColor": "#0d0d0d",
+				"disableScroll": true
 				// #ifndef APP-NVUE
-				,
-				"enablePullDownRefresh": true//开启下拉刷新
+				// ,
+				// "enablePullDownRefresh": true//开启下拉刷新
 				// #endif
 				
 			}
