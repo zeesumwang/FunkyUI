@@ -132,7 +132,7 @@
 			modeClass: {
 				type: Array,
 				default() {
-					return ['zoom-in','slide-bottom','fade']
+					return ['zoom-out','slide-bottom','fade']
 				}
 			},
 			position: {

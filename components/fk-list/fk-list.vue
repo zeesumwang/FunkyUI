@@ -1,6 +1,18 @@
 <template>
 	<view>
 		<!-- #ifndef APP-NVUE -->
+		<view
+			v-if="hasRefresh"
+			:class="{'pulldown':!isTouchMove && !isRefresh}" 
+			style="justify-content: center;align-items: center;flex-direction: row;" 
+			:style="{ height: (isTop == true && isTouchMove ? movedDistance : isRefresh ? movedDistance: 0) + 'px'}"
+		>
+		
+			<image v-if="isRefresh" class="scroll-rotate" style="width: 30px;height: 30px;margin: 5px;" :src="refreshingIcon"></image>
+			<image v-if="!isRefresh" style="width: 30px;height: 30px;margin: 5px;" :style="{transform: 'rotate(' + rotateDegree + 'deg)'}" :src="pullingIcon"></image>
+			
+			<text style="width: 60px;" :style="refreshTextStyle">{{refreshTip}}</text>
+		</view>
 		
 		<scroll-view 
 			@scroll="scroll" 
@@ -18,18 +30,6 @@
 			:style="{'height': height + 'px','width': width + 'px'}"
 			style="scroll-behavior: auto;"
 		>
-			<view
-				v-if="hasRefresh"
-				:class="{'pulldown':!isTouchMove && !isRefresh}" 
-				style="justify-content: center;align-items: center;flex-direction: row;" 
-				:style="{ height: (isTop == true && isTouchMove ? movedDistance : isRefresh ? movedDistance: 0) + 'px'}"
-			>
-			
-				<image v-if="isRefresh" class="scroll-rotate" style="width: 30px;height: 30px;margin: 5px;" :src="refreshingIcon"></image>
-				<image v-if="!isRefresh" style="width: 30px;height: 30px;margin: 5px;" :style="{transform: 'rotate(' + rotateDegree + 'deg)'}" :src="pullingIcon"></image>
-				
-				<text style="width: 60px;" :style="refreshTextStyle">{{refreshTip}}</text>
-			</view>
 		<!-- #endif -->
 		
 		<!-- #ifdef APP-NVUE -->
@@ -39,8 +39,11 @@
 			:bounce="bounce"
 			:scrollable="true"
 		>
-			<refresh v-if="hasRefresh" ref="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="display">
+			<refresh v-if="hasRefresh" ref="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="isRefresh">
+				<image v-if="isRefresh" class="scroll-rotate" style="width: 30px;height: 30px;margin: 5px;" :src="refreshingIcon"></image>
+				<image v-if="!isRefresh" style="width: 30px;height: 30px;margin: 5px;" :style="{transform: 'rotate(' + rotateDegree + 'deg)'}" :src="pullingIcon"></image>
 				
+				<text style="width: 60px;" :style="refreshTextStyle">{{refreshTip}}</text>
 			</refresh>
 		<!-- #endif -->
 			
@@ -245,7 +248,19 @@
 				this.touchend()
 			},
 			onpullingdown: function(e) {
-				console.log(e)
+				this.movedDistance = e.pullingDistance
+				if(this.movedDistance > this.refreshDistance * 0.618){
+					this.rotateDegree = Math.min((this.movedDistance - this.refreshDistance * 0.618) / (this.refreshDistance * 0.618) * 180, 179.9)
+				}
+				else{
+					this.rotateDegree = 0
+				}
+				if(this.movedDistance >= this.refreshDistance){
+					this.refreshTip = "释放刷新"
+				}
+				else {
+					this.refreshTip = "下拉刷新"
+				}
 			}
 		}
 	}
