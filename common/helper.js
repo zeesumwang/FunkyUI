@@ -2,7 +2,7 @@
 
 // 获取系统信息，设置初始设置屏幕
 var system = uni.getSystemInfoSync()
-console.log(system)
+// console.log(system)
 // #ifndef H5
 var screenHeightPx = system.screenHeight
 var screenWidthPx = system.screenWidth

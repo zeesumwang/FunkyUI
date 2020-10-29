@@ -67,8 +67,8 @@
 					class="fab_item" 
 					:id="fab.id" 
 					:key="index" 
-					@click="fabClick"
-				>	
+					@tap="fabClick"
+				>
 					<image
 						mode="aspectFill"
 						:src="fab.url" 
@@ -86,9 +86,7 @@
 										? '20px' 
 										: ''
 								}"
-					>
-					</image>
-					
+					/>
 				</view>
 			</uni-transition>
 		</label>
@@ -134,7 +132,7 @@
 			modeClass: {
 				type: Array,
 				default() {
-					return ['zoom-out','slide-bottom','fade']
+					return ['zoom-in','slide-bottom','fade']
 				}
 			},
 			position: {
@@ -210,9 +208,14 @@
 					'border-radius': this.borderRadius + 'px',
 					'flex-direction': 'row',
 					'width': Math.max(200, this.screenWidthPx * this.width) + 'px',
-					'right': (this.screenWidthPx - Math.max(200, this.screenWidthPx * this.width)) / 2  + 'px',
 					'bottom': this.bottom + 'px',
 				}
+			if(this.position == 'left'){
+				this.transfromClass.right = (this.screenWidthPx - Math.max(200, this.screenWidthPx * this.width)) / 2  + 'px'
+			}
+			else{
+				this.transfromClass.left = (this.screenWidthPx - Math.max(200, this.screenWidthPx * this.width)) / 2  + 'px'
+			}
 		},
 		methods: {
 			slideUP: function(val) {
@@ -344,6 +347,8 @@
 	.page {
 		/* #ifndef APP-NVUE */
 		display: flex;
+		/* overflow-x: hidden;
+		overflow-y: scroll; */
 		/* #endif */
 		
 		/* #ifdef APP-NVUE */

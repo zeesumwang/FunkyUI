@@ -14,6 +14,8 @@
 	display: -webkit-box;
 	display: -webkit-flex;
 	display: flex;
+	/* overflow-x: hidden;
+	overflow-y: scroll; */
 }
 .status_bar.data-v-239b8d44 {
 	height: 32px;

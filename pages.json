@@ -28,7 +28,7 @@
 		"navigationBarTitleText": "FunkyUI",
 		"backgroundColor": "#0d0d0d"
 	},
-	"leftWindow": {
+	"rightWindow": {
 		"path": "pages/test/test",
 		"style": {
 		  "width": "calc(100vw - 450px)",
