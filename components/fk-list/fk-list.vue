@@ -1,5 +1,8 @@
 <template>
+	<!-- #ifndef APP-NVUE -->
 	<view>
+	<!-- #endif -->
+	
 		<!-- #ifndef APP-NVUE -->
 		<view
 			v-if="hasRefresh"
@@ -11,24 +14,26 @@
 			<image v-if="isRefresh" class="scroll-rotate" style="width: 30px;height: 30px;margin: 5px;" :src="refreshingIcon"></image>
 			<image v-if="!isRefresh" style="width: 30px;height: 30px;margin: 5px;" :style="{transform: 'rotate(' + rotateDegree + 'deg)'}" :src="pullingIcon"></image>
 			
-			<text style="width: 60px;" :style="refreshTextStyle">{{refreshTip}}</text>
+			<text style="width: 60px;" :style="{color: refreshTextColor, fontSize: refreshTextFontSize}">{{refreshTip}}</text>
 		</view>
 		
 		<scroll-view 
 			@scroll="scroll" 
+			@wheel="wheel"
 			@scrolltoupper="scrolltoupper" 
 			@scrolltolower="scrolltolower"	
+			@touchstart="touchstart"
 			@touchmove="touchmove"
 			@touchend="touchend"
 			@mousedown="mousedown"
 			@mousemove.native="mousemove($event)"
 			@mouseup="mouseup"
 			:scroll-y="true" 
+			:scroll-with-animation="scrollWithAnimation"
 			:scroll-top="scrollTop"
 			:show-scrollbar="showScrollbar" 
 			:bounce="bounce"
 			:style="{'height': height + 'px','width': width + 'px'}"
-			style="scroll-behavior: auto;"
 		>
 		<!-- #endif -->
 		
@@ -38,12 +43,19 @@
 			:show-scrollbar="showScrollbar" 
 			:bounce="bounce"
 			:scrollable="true"
+			@scroll="scroll"
 		>
-			<refresh v-if="hasRefresh" ref="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="isRefresh">
-				<image v-if="isRefresh" class="scroll-rotate" style="width: 30px;height: 30px;margin: 5px;" :src="refreshingIcon"></image>
-				<image v-if="!isRefresh" style="width: 30px;height: 30px;margin: 5px;" :style="{transform: 'rotate(' + rotateDegree + 'deg)'}" :src="pullingIcon"></image>
-				
-				<text style="width: 60px;" :style="refreshTextStyle">{{refreshTip}}</text>
+			<refresh v-if="hasRefresh" ref="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="isRefresh ? 'show':'hide'">
+				<view style="justify-content: center;align-items: center;flex-direction: row;flex-wrap: nowrap;" :style="{'width': width + 'px'}">
+					<loading-indicator v-if="isRefresh" :animating="true" style="color: #FFFFFF;width: 20px;height: 20px;margin: 10px;"></loading-indicator>
+					<image 
+						style="width: 30px;height: 30px;margin: 5px;" 
+						:style="{transform: 'rotate(' + rotateDegree + 'deg)',width: isRefresh? '0px': '30px',margin: isRefresh? '0px': '5px'}" 
+						:src="pullingIcon">
+					</image>
+					
+					<text style="width: 60px;" :style="{color: refreshTextColor, fontSize: refreshTextFontSize}">{{refreshTip}}</text>
+				</view>
 			</refresh>
 		<!-- #endif -->
 			
@@ -56,10 +68,16 @@
 		<!-- #ifndef APP-NVUE -->
 		</scroll-view>
 		<!-- #endif -->
+	
+	<!-- #ifndef APP-NVUE -->
 	</view>
+	<!-- #endif -->
+	
 </template>
 
 <script>
+	import screenInfo from "@/common/helper.js"
+	
 	export default {
 		name: "fkList",
 		props: {
@@ -117,13 +135,16 @@
 					return 45
 				}
 			},
-			refreshTextStyle: {
-				type: Object,
+			refreshTextColor: {
+				type: String,
 				default() {
-					return {
-						"color": "#ffffff",
-						"fontSize": "12px"
-					}
+					return "#ffffff"
+				}
+			},
+			refreshTextFontSize: {
+				type: String,
+				default() {
+					return '12px'
 				}
 			},
 			isRefresh: {
@@ -135,6 +156,7 @@
 		},
 		data() {
 			return {
+				isTouchDown: false,
 				isTouchMove: false,
 				isTop: true,
 				isBottom: false,
@@ -146,10 +168,22 @@
 				isMouseDown: false,
 				rotateDegree: 0,
 				refreshTip: "下拉刷新",
-				scrollTop: 0
+				
+				scrollWithAnimation: false,
+				scrollTop: 0,
+				
+				latestY: 0,
+				
 			};
 		},
+		beforeCreate() {
+		},
 		created() {
+			// #ifdef H5
+			if(!screenInfo.browser.versions.mobile){
+				this.scrollWithAnimation = true
+			}
+			// #endif
 		},
 		mounted() {
 		},
@@ -160,24 +194,45 @@
 			scrolltolower: function(e) {
 				this.isBottom = true
 			},
-			scroll: function(e) {
-				this.scrollTop = e.detail.scrollTop
-				if(e.detail.scrollTop <= 1){
-					this.isTop = true
+			detectScrollAction: function(e) {
+				let deltaY = 0 
+				// #ifdef APP-NVUE
+				this.isTouchDown = e.isDragging
+				// NVUE下使用的<list>组件的@scroll事件，其Y轴变化量没给出，需要自行计算
+				deltaY = e.contentOffset.y - this.latestY
+				this.latestY = e.contentOffset.y
+				// #endif
+				
+				// #ifndef APP-NVUE
+				// 非NVUE下使用的<scroll-view>组件，其Y轴变化量已给出，直接获取
+				deltaY = e.detail.deltaY
+				// #endif
+				
+				// console.log(deltaY)
+				if(this.isTouchDown == true && deltaY > 15) {
+					this.$emit('dragingDown')
+					// console.log("向下拖动")
 				}
-				else{
-					if(this.isTop){
-						this.isTop = false
-					}
-					if(this.isBottom){
-						this.isBottom = false
-					}
+				if(this.isTouchDown == true && deltaY < -15) {
+					this.$emit('dragingUp')
+					// console.log("向上拖动")
 				}
 			},
-			touchmove: function(e) {
-				if(this.isRefresh || !this.isTop){
-					return
+			detectRefresh: function() {
+				if(this.movedDistance > this.refreshDistance * 0.618){
+					this.rotateDegree = Math.min((this.movedDistance - this.refreshDistance * 0.618) / (this.refreshDistance * 0.618) * 180, 179.9)
 				}
+				else{
+					this.rotateDegree = 0
+				}
+				if(this.movedDistance >= this.refreshDistance){
+					this.refreshTip = "释放刷新"
+				}
+				else {
+					this.refreshTip = "下拉刷新"
+				}
+			},
+			checkPulling: function(e) {
 				this.movedDistance = 0
 				this.isTouchMove = true
 				if(this.isFirst){
@@ -194,22 +249,49 @@
 					// 当拖拽角度小于45度才进行下拉更新，tan45` = 1，对边比临边。
 					if(movedY !== 0 && movedX / movedY < 1 && movedX < this.maxPullingDistance) {
 						this.movedDistance = Math.min(movedY,this.maxPullingDistance)
-						if(this.movedDistance > this.refreshDistance * 0.618){
-							this.rotateDegree = Math.min((this.movedDistance - this.refreshDistance * 0.618) / (this.refreshDistance * 0.618) * 180, 179.9)
-						}
-						else{
-							this.rotateDegree = 0
-						}
-						if(this.movedDistance >= this.refreshDistance){
-							this.refreshTip = "释放刷新"
-						}
-						else {
-							this.refreshTip = "下拉刷新"
-						}
+						this.detectRefresh()
 					}
 				}
 			},
+			wheel: function(e) {
+				// #ifdef H5
+				// H5下的滚轮引起的滚动自动默认为触摸，以适配PC端，参照MDN文档：https://developer.mozilla.org/en-US/docs/Web/API/Element/wheel_event
+				this.isTouchDown = true
+				// #endif
+			},
+			scroll: function(e) {
+				this.detectScrollAction(e)
+				
+				// #ifndef APP-NVUE
+				// 同步PC端下鼠标点摁触摸的滚动和滚轮的滚动状态
+				this.scrollTop = e.detail.scrollTop
+				
+				if(e.detail.scrollTop <= 1){
+					this.isTop = true
+				}
+				else{
+					if(this.isTop){
+						this.isTop = false
+					}
+					if(this.isBottom){
+						this.isBottom = false
+					}
+				}
+				// #endif
+			},
+			touchstart: function() {
+				this.isTouchDown = true
+			},
+			touchmove: function(e) {
+				if(this.isRefresh || !this.isTop){
+					return
+				}
+				else{
+					this.checkPulling(e)
+				}
+			},
 			touchend: function() {
+				this.isTouchDown = false
 				this.isTouchMove = false
 				this.isFirst = true
 				if(this.refreshTip == "释放刷新"){
@@ -224,6 +306,7 @@
 			// MDN文档(https://developer.mozilla.org/zh-CN/docs/Web/API/Element/mousemove_event)
 			mousedown: function(e) {
 				this.isMouseDown = true
+				this.touchstart()
 			},
 			mousemove: function(e) {
 				if(this.isMouseDown) {
@@ -231,7 +314,7 @@
 					
 					if(this.isTop || this.isBottom){
 						let touchevent = {'changedTouches':[{'pageY': e.screenY, 'pageX': e.screenX}]}
-						this.touchmove(touchevent)
+						this.checkPulling(touchevent)
 					}
 					else{
 						
@@ -249,18 +332,7 @@
 			},
 			onpullingdown: function(e) {
 				this.movedDistance = e.pullingDistance
-				if(this.movedDistance > this.refreshDistance * 0.618){
-					this.rotateDegree = Math.min((this.movedDistance - this.refreshDistance * 0.618) / (this.refreshDistance * 0.618) * 180, 179.9)
-				}
-				else{
-					this.rotateDegree = 0
-				}
-				if(this.movedDistance >= this.refreshDistance){
-					this.refreshTip = "释放刷新"
-				}
-				else {
-					this.refreshTip = "下拉刷新"
-				}
+				this.detectRefresh()
 			}
 		}
 	}

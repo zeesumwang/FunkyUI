@@ -77,8 +77,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "recyclableRender", function() { return recyclableRender; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "components", function() { return components; });
 var components = {
-  uniTransition: function() {
-    return __webpack_require__.e(/*! import() | components/uni-transition/uni-transition */ "components/uni-transition/uni-transition").then(__webpack_require__.bind(null, /*! @/components/uni-transition/uni-transition.vue */ 47))
+  fkTransition: function() {
+    return __webpack_require__.e(/*! import() | components/fk-transition/fk-transition */ "components/fk-transition/fk-transition").then(__webpack_require__.bind(null, /*! @/components/fk-transition/fk-transition.vue */ 47))
   }
 }
 var render = function() {
@@ -119,6 +119,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
+
+
 
 
 
@@ -316,9 +318,14 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 //
-var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: function _default() {return [];} }, backgroundColor: { type: String, default: function _default() {return '#1e1e1e';} }, opacity: { type: Number, default: function _default() {return 1;} }, borderRadius: { type: Number, default: function _default() {return 50;} }, modeClass: { type: Array, default: function _default() {return ['zoom-in', 'slide-bottom', 'fade'];} }, position: { type: String, default: function _default() {return 'right';} }, width: { type: Number, default: function _default() {return 0.618;} }, bottom: { type: Number, default: function _default() {return 21;} }, hideCount: { type: Number, default: function _default() {return 0;} }, current: { type: Number, default: function _default() {return 0;} } }, data: function data() {return { transfromClass: {}, isFabClick: false, isFabShow: true, isContinuity: 0, currentFabIndex: 0, virtualCurrentFabIndex: 0, virtualCurrentFabIndexOpacity: 1, targetFabIndex: '', targetFabIndexOpacity: '', screenHeight: '', screenHeightPx: {}, screenWidthPx: '' };}, created: function created() {// 设置显示页加上负一屏的偏移
+//
+//
+var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: function _default() {return [];} }, isFabShow: { type: Boolean, default: function _default() {return true;} }, backgroundColor: { type: String, default: function _default() {return '#1e1e1e';} }, opacity: { type: Number, default: function _default() {return 1;} }, borderRadius: { type: Number, default: function _default() {return 50;} }, fabModeClass: { type: Array, default: function _default() {return ['slide-bottom', 'fade'];} }, position: { type: String, default: function _default() {return 'right';} }, widthScale: { type: Number, default: function _default() {return 0.618;} }, bottom: { type: Number, default: function _default() {return 21;} }, hideCount: { type: Number, default: function _default() {return 0;} }, current: { type: Number, default: function _default() {return 0;} } }, data: function data() {return { transfromClass: {}, isFabClick: false, isContinuity: 0, currentFabIndex: 0, virtualCurrentFabIndex: 0, virtualCurrentFabIndexOpacity: 1, targetFabIndex: '', targetFabIndexOpacity: '', screenHeight: '', screenHeightPx: {}, screenWidthPx: '', statusBarHeight: '' };}, created: function created() {// 设置显示页加上负一屏的偏移
     this.currentFabIndex = this.current + this.hideCount;this.virtualCurrentFabIndex = this.current + this.hideCount; // 获取全局变量中的屏幕宽高		
-    this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;this.transfromClass = { 'position': 'fixed',
+    this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;this.statusBarHeight = _helper.default.system.statusBarHeight;
+    this.transfromClass = {
+      'position': 'fixed',
+
       'display': 'flex',
 
       'background-color': this.backgroundColor,
@@ -327,27 +334,17 @@ var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: fun
       'align-items': 'center',
       'border-radius': this.borderRadius + 'px',
       'flex-direction': 'row',
-      'width': Math.max(200, this.screenWidthPx * this.width) + 'px',
+      'width': Math.max(200, this.screenWidthPx * this.widthScale) + 'px',
       'bottom': this.bottom + 'px' };
 
     if (this.position == 'left') {
-      this.transfromClass.right = (this.screenWidthPx - Math.max(200, this.screenWidthPx * this.width)) / 2 + 'px';
+      this.transfromClass.right = (this.screenWidthPx - Math.max(200, this.screenWidthPx * this.widthScale)) / 2 + 'px';
     } else
     {
-      this.transfromClass.left = (this.screenWidthPx - Math.max(200, this.screenWidthPx * this.width)) / 2 + 'px';
+      this.transfromClass.left = (this.screenWidthPx - Math.max(200, this.screenWidthPx * this.widthScale)) / 2 + 'px';
     }
   },
   methods: {
-    slideUP: function slideUP(val) {
-      if (this.isFabShow == true) {
-        this.hideFab();
-      }
-    },
-    dragDown: function dragDown(val) {
-      if (this.isFabShow == false) {
-        this.showFab();
-      }
-    },
     transition: function transition(e) {
       // 如果是点击fab进行切换，则不用展示过度动画。
       if (this.isFabClick == true) {
@@ -430,27 +427,11 @@ var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: fun
       this.currentFabIndex = swiper_item_index;
       this.$emit('indexChange', { 'nowPage': this.currentFabIndex - this.hideCount });
       if (swiper_item_index < this.hideCount) {
-        // console.log("显示负一屏，隐藏fab")
-        if (this.isFabShow == true) {
-          this.hideFab();
-        }
+        // console.log("显示负一屏")
       } else
-      {
-        if (this.isFabShow == false) {
-          // console.log("隐藏负一屏，显示fab"
-          this.showFab();
+        {
+          // console.log("隐藏负一屏"）
         }
-      }
-    },
-    hideFab: function hideFab() {
-      if (this.isFabShow == true) {
-        this.isFabShow = false;
-      }
-    },
-    showFab: function showFab() {
-      if (this.isFabShow == false) {
-        this.isFabShow = true;
-      }
     } } };exports.default = _default2;
 
 /***/ }),

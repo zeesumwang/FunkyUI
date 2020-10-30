@@ -1,8 +1,10 @@
 <template>
 	<view class="app">
+		<!-- #ifndef H5 -->
+		<view :style="{height: statusBarHeight + 'px'}"></view>
+		<!-- #endif -->
 		
 		<swiper 
-		  style=""
 		  :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
 		  @change="swiperChange" 
 		  @transition="transition" 
@@ -61,7 +63,7 @@
 		</swiper>
 
 		<label>
-			<uni-transition elevation="10px" :duration="150" :mode-class="modeClass" :styles="transfromClass" :show="isFabShow">
+			<fk-transition elevation="10px" :duration="120" :mode-class="fabModeClass" :styles="transfromClass" :show="isFabShow">
 				<view
 					v-for="(fab,index) in fabList" 
 					class="fab_item" 
@@ -88,7 +90,7 @@
 								}"
 					/>
 				</view>
-			</uni-transition>
+			</fk-transition>
 		</label>
 		
 	</view>
@@ -111,6 +113,12 @@
 					return []
 				}
 			},
+			isFabShow: {
+				type: Boolean,
+				default() {
+					return true
+				}
+			},
 			backgroundColor: {
 				type: String,
 				default() {
@@ -129,10 +137,10 @@
 					return 50
 				}
 			},
-			modeClass: {
+			fabModeClass: {
 				type: Array,
 				default() {
-					return ['zoom-out','slide-bottom','fade']
+					return ['slide-bottom','fade']
 				}
 			},
 			position: {
@@ -141,7 +149,7 @@
 					return 'right'
 				}
 			},
-			width: {
+			widthScale: {
 				type: Number,
 				default() {
 					return 0.618
@@ -171,7 +179,6 @@
 				transfromClass: {},
 
 				isFabClick: false,
-				isFabShow: true,
 				isContinuity: 0,
 				
 				currentFabIndex: 0,
@@ -183,7 +190,7 @@
 				screenHeight: '',
 				screenHeightPx: {},
 				screenWidthPx: '',
-
+				statusBarHeight: '',
 			}
 		},
 		created() {
@@ -194,7 +201,7 @@
 			// 获取全局变量中的屏幕宽高		
 			this.screenHeightPx = screenInfo.screenHeightPx
 			this.screenWidthPx = screenInfo.screenWidthPx
-			
+			this.statusBarHeight = screenInfo.system.statusBarHeight
 			
 			this.transfromClass = {
 					'position': 'fixed',
@@ -207,27 +214,17 @@
 					'align-items': 'center',
 					'border-radius': this.borderRadius + 'px',
 					'flex-direction': 'row',
-					'width': Math.max(200, this.screenWidthPx * this.width) + 'px',
+					'width': Math.max(200, this.screenWidthPx * this.widthScale) + 'px',
 					'bottom': this.bottom + 'px',
 				}
 			if(this.position == 'left'){
-				this.transfromClass.right = (this.screenWidthPx - Math.max(200, this.screenWidthPx * this.width)) / 2  + 'px'
+				this.transfromClass.right = (this.screenWidthPx - Math.max(200, this.screenWidthPx * this.widthScale)) / 2  + 'px'
 			}
 			else{
-				this.transfromClass.left = (this.screenWidthPx - Math.max(200, this.screenWidthPx * this.width)) / 2  + 'px'
+				this.transfromClass.left = (this.screenWidthPx - Math.max(200, this.screenWidthPx * this.widthScale)) / 2  + 'px'
 			}
 		},
 		methods: {
-			slideUP: function(val) {
-				if (this.isFabShow == true) {
-					this.hideFab()
-				}
-			},
-			dragDown: function(val) {
-				if (this.isFabShow == false) {
-					this.showFab()
-				}
-			},
 			transition: function(e) {
 				// 如果是点击fab进行切换，则不用展示过度动画。
 				if (this.isFabClick == true) {
@@ -310,29 +307,12 @@
 				this.currentFabIndex = swiper_item_index
 				this.$emit('indexChange', {'nowPage': this.currentFabIndex - this.hideCount})
 				if (swiper_item_index < this.hideCount) {
-					// console.log("显示负一屏，隐藏fab")
-					if (this.isFabShow == true) {
-						this.hideFab()
-					}
+					// console.log("显示负一屏")
 				} 
 				else {
-					if (this.isFabShow == false) {
-						// console.log("隐藏负一屏，显示fab"
-						this.showFab()
-					}
+					// console.log("隐藏负一屏"）
 				}
-			},
-			hideFab: function() {
-				if(this.isFabShow == true){
-					this.isFabShow = false
-				}
-			},
-			showFab: function() {
-				if(this.isFabShow == false){
-					this.isFabShow = true
-				}
-			},
-			
+			}			
 		}
 	}
 </script>

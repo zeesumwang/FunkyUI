@@ -4,8 +4,8 @@
 var system = uni.getSystemInfoSync()
 // console.log(system)
 // #ifndef H5
-var screenHeightPx = system.screenHeight
-var screenWidthPx = system.screenWidth
+var screenHeightPx = system.windowHeight - system.statusBarHeight
+var screenWidthPx = system.windowWidth
 // #endif
 
 // #ifdef H5
@@ -33,9 +33,10 @@ if(!browser.versions.mobile || browser.versions.iPad){
 	var screenWidthPx = 450
 }
 else{
-	var screenWidthPx = system.screenWidth
+	var screenWidthPx = system.windowWidth
 }
 // #endif
+console.log(system)
 console.log('屏幕宽高，单位px：', screenWidthPx, screenHeightPx)
 
 export default {

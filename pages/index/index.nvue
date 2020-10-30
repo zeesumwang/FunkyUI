@@ -1,12 +1,30 @@
 <template>
-	<fk-index ref="fk-index" @indexChange="indexChange" @fabClick="fabClick" :fabList="fabList" :hideCount="1" :backgroundColor="'#1e1e1e'" :opacity="0.98" :bottom="21" :width="0.618">
+	<fk-index ref="fk-index" 
+		@indexChange="indexChange" 
+		@fabClick="fabClick" 
+		:isFabShow="isFabShow"
+		:fabList="fabList" 
+		:hideCount="1" 
+		:backgroundColor="'#1e1e1e'" 
+		:opacity="0.98" 
+		:bottom="21" 
+		:widthScale="0.618"
+		:current="currentPage"
+	>
 		
 		<template v-slot:hidePage>
 			<text style="color: #007AFF;">-1</text>
 		</template>
 		
 		<template v-slot:mainPage0>
-			<fk-list ref="fk-list" :height="screenHeightPx" :width="screenWidthPx" @refreshing="refreshing" :isRefresh="isRefresh">
+			<fk-list ref="fk-list" 
+				:height="screenHeightPx" 
+				:width="screenWidthPx"
+				:isRefresh="isRefresh" 
+				@refreshing="refreshing" 
+				@dragingDown="showFab" 
+				@dragingUp="hideFab"
+			>
 				<fk-cell>
 					<view style="width: 300px;height: 300px;background-color: #007AFF;" :style="{'width':screenHeightPx + 'px'}"></view>
 				</fk-cell>
@@ -37,7 +55,6 @@
 		</template>
 		
 		<template v-slot:mainPage3>
-			<button @click="test">test</button>
 			<text style="color: #007AFF;">1</text>
 		</template>
 		
@@ -70,7 +87,9 @@
 				],
 				screenHeightPx: 0,
 				screenWidthPx: 0,
-				isRefresh: false
+				isRefresh: false,
+				isFabShow: true,
+				currentPage: 0
 			}
 		},
 		onShow() {
@@ -86,14 +105,11 @@
 				this.isRefresh = true
 				setTimeout(()=>{this.isRefresh = false},1000)
 			},
-			click: function() {
-				var index = this.$refs['fk-index']
-				if(index.isFabShow){
-					index.hideFab()
-				}
-				else{
-					index.showFab()
-				}
+			hideFab: function() {
+				this.isFabShow = false
+			},
+			showFab: function() {
+				this.isFabShow = true
 			},
 			test: function() {
 				uni.navigateTo({
@@ -101,7 +117,12 @@
 				})
 			},
 			indexChange: function(e) {
-				console.log(e)
+				if(e.nowPage=='-1'){
+					this.hideFab()
+				}
+				else{
+					this.showFab()
+				}
 			},
 			fabClick: function(e) {
 				console.log(e)

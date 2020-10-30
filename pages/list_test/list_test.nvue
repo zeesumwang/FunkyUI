@@ -1,9 +1,8 @@
 <template>
-	<fk-list>
+	
 		<fk-cell>
 			<view style="height: 1500rpx;width: 300px;"></view>
 		</fk-cell>
-	</fk-list>
 </template>
 
 <script>

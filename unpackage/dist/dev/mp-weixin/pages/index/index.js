@@ -221,6 +221,23 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js */ 17));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} //
 //
 //
@@ -296,7 +313,24 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 //
-var _default = { data: function data() {return { fabList: [{ id: 'home', url: "../../static/home.png" }, { id: 'search', url: "../../static/search.png" }, { id: 'taobao', url: "../../static/flash.png" }, { id: 'user', url: "../../static/logo.jpg" }], screenHeightPx: 0, screenWidthPx: 0, isRefresh: false };}, onShow: function onShow() {this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;}, onPullDownRefresh: function onPullDownRefresh() {console.log("下拉刷新");setTimeout(function () {uni.stopPullDownRefresh();}, 1000);}, methods: { refreshing: function refreshing() {var _this = this;this.isRefresh = true;setTimeout(function () {_this.isRefresh = false;}, 1000);}, click: function click() {var index = this.$refs['fk-index'];if (index.isFabShow) {index.hideFab();} else {index.showFab();}}, test: function test() {uni.navigateTo({ url: "../list_test/list_test" });}, indexChange: function indexChange(e) {console.log(e);}, fabClick: function fabClick(e) {console.log(e);} } };exports.default = _default;
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+var _default = { data: function data() {return { fabList: [{ id: 'home', url: "../../static/home.png" }, { id: 'search', url: "../../static/search.png" }, { id: 'taobao', url: "../../static/flash.png" }, { id: 'user', url: "../../static/logo.jpg" }], screenHeightPx: 0, screenWidthPx: 0, isRefresh: false, isFabShow: true, currentPage: 0 };}, onShow: function onShow() {this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;}, onPullDownRefresh: function onPullDownRefresh() {console.log("下拉刷新");setTimeout(function () {uni.stopPullDownRefresh();}, 1000);}, methods: { refreshing: function refreshing() {var _this = this;this.isRefresh = true;setTimeout(function () {_this.isRefresh = false;}, 1000);}, hideFab: function hideFab() {this.isFabShow = false;}, showFab: function showFab() {this.isFabShow = true;}, test: function test() {uni.navigateTo({ url: "../list_test/list_test" });}, indexChange: function indexChange(e) {if (e.nowPage == '-1') {this.hideFab();} else {this.showFab();}}, fabClick: function fabClick(e) {console.log(e);} } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),

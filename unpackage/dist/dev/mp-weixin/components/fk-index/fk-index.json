@@ -1,6 +1,6 @@
 {
   "usingComponents": {
-    "uni-transition": "/components/uni-transition/uni-transition"
+    "fk-transition": "/components/fk-transition/fk-transition"
   },
   "component": true
 }

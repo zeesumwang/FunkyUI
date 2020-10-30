@@ -8044,8 +8044,8 @@ function normalizeComponent (
 var system = uni.getSystemInfoSync();
 // console.log(system)
 
-var screenHeightPx = system.screenHeight;
-var screenWidthPx = system.screenWidth;
+var screenHeightPx = system.windowHeight - system.statusBarHeight;
+var screenWidthPx = system.windowWidth;
 
 
 
@@ -8076,6 +8076,7 @@ var screenWidthPx = system.screenWidth;
 
 
 
+console.log(system);
 console.log('屏幕宽高，单位px：', screenWidthPx, screenHeightPx);var _default =
 
 {

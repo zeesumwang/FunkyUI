@@ -114,140 +114,165 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-var _default2 =
-{
-  name: "fkList",
-  props: {
-    height: {
-      type: Number,
-      default: function _default() {
-        return 350;
-      } },
-
-    width: {
-      type: Number,
-      default: function _default() {
-        return 350;
-      } },
-
-    hasRefresh: {
-      type: Boolean,
-      default: function _default() {
-        return true;
-      } },
-
-    pullingIcon: {
-      type: String,
-      default: function _default() {
-        return "/static/pullingDown.png";
-      } },
-
-    refreshingIcon: {
-      type: String,
-      default: function _default() {
-        return "/static/refreshing.png";
-      } },
-
-    showScrollbar: {
-      type: Boolean,
-      default: function _default() {
-        return false;
-      } },
-
-    bounce: {
-      type: Boolean,
-      default: function _default() {
-        return true;
-      } },
-
-    maxPullingDistance: {
-      type: Number,
-      default: function _default() {
-        return 60;
-      } },
-
-    refreshDistance: {
-      type: Number,
-      default: function _default() {
-        return 45;
-      } },
-
-    refreshTextStyle: {
-      type: Object,
-      default: function _default() {
-        return {
-          "color": "#ffffff",
-          "fontSize": "12px" };
-
-      } },
-
-    isRefresh: {
-      type: Boolean,
-      default: function _default() {
-        return false;
-      } } },
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js */ 17));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+var _default2 = { name: "fkList", props: { height: { type: Number, default: function _default() {return 350;} }, width: { type: Number, default: function _default() {return 350;} }, hasRefresh: { type: Boolean, default: function _default() {return true;} }, pullingIcon: { type: String, default: function _default() {return "/static/pullingDown.png";} }, refreshingIcon: { type: String, default: function _default() {return "/static/refreshing.png";} }, showScrollbar: { type: Boolean, default: function _default() {return false;} }, bounce: { type: Boolean, default: function _default() {return true;} }, maxPullingDistance: { type: Number, default: function _default() {return 60;} }, refreshDistance: { type: Number, default: function _default() {return 45;} }, refreshTextColor: { type: String, default: function _default() {return "#ffffff";} }, refreshTextFontSize: { type: String, default: function _default() {return '12px';} }, isRefresh: { type: Boolean, default: function _default() {return false;} } },
   data: function data() {
     return {
+      isTouchDown: false,
       isTouchMove: false,
       isTop: true,
       isBottom: false,
@@ -259,10 +284,22 @@ var _default2 =
       isMouseDown: false,
       rotateDegree: 0,
       refreshTip: "下拉刷新",
-      scrollTop: 0 };
+
+      scrollWithAnimation: false,
+      scrollTop: 0,
+
+      latestY: 0 };
+
 
   },
+  beforeCreate: function beforeCreate() {
+  },
   created: function created() {
+
+
+
+
+
   },
   mounted: function mounted() {
   },
@@ -273,24 +310,45 @@ var _default2 =
     scrolltolower: function scrolltolower(e) {
       this.isBottom = true;
     },
-    scroll: function scroll(e) {
-      this.scrollTop = e.detail.scrollTop;
-      if (e.detail.scrollTop <= 1) {
-        this.isTop = true;
-      } else
-      {
-        if (this.isTop) {
-          this.isTop = false;
-        }
-        if (this.isBottom) {
-          this.isBottom = false;
-        }
+    detectScrollAction: function detectScrollAction(e) {
+      var deltaY = 0;
+
+
+
+
+
+
+
+
+      // 非NVUE下使用的<scroll-view>组件，其Y轴变化量已给出，直接获取
+      deltaY = e.detail.deltaY;
+
+
+      // console.log(deltaY)
+      if (this.isTouchDown == true && deltaY > 15) {
+        this.$emit('dragingDown');
+        // console.log("向下拖动")
+      }
+      if (this.isTouchDown == true && deltaY < -15) {
+        this.$emit('dragingUp');
+        // console.log("向上拖动")
       }
     },
-    touchmove: function touchmove(e) {
-      if (this.isRefresh || !this.isTop) {
-        return;
+    detectRefresh: function detectRefresh() {
+      if (this.movedDistance > this.refreshDistance * 0.618) {
+        this.rotateDegree = Math.min((this.movedDistance - this.refreshDistance * 0.618) / (this.refreshDistance * 0.618) * 180, 179.9);
+      } else
+      {
+        this.rotateDegree = 0;
       }
+      if (this.movedDistance >= this.refreshDistance) {
+        this.refreshTip = "释放刷新";
+      } else
+      {
+        this.refreshTip = "下拉刷新";
+      }
+    },
+    checkPulling: function checkPulling(e) {
       this.movedDistance = 0;
       this.isTouchMove = true;
       if (this.isFirst) {
@@ -307,22 +365,49 @@ var _default2 =
         // 当拖拽角度小于45度才进行下拉更新，tan45` = 1，对边比临边。
         if (movedY !== 0 && movedX / movedY < 1 && movedX < this.maxPullingDistance) {
           this.movedDistance = Math.min(movedY, this.maxPullingDistance);
-          if (this.movedDistance > this.refreshDistance * 0.618) {
-            this.rotateDegree = Math.min((this.movedDistance - this.refreshDistance * 0.618) / (this.refreshDistance * 0.618) * 180, 179.9);
-          } else
-          {
-            this.rotateDegree = 0;
-          }
-          if (this.movedDistance >= this.refreshDistance) {
-            this.refreshTip = "释放刷新";
-          } else
-          {
-            this.refreshTip = "下拉刷新";
-          }
+          this.detectRefresh();
         }
       }
     },
+    wheel: function wheel(e) {
+
+
+
+
+    },
+    scroll: function scroll(e) {
+      this.detectScrollAction(e);
+
+
+      // 同步PC端下鼠标点摁触摸的滚动和滚轮的滚动状态
+      this.scrollTop = e.detail.scrollTop;
+
+      if (e.detail.scrollTop <= 1) {
+        this.isTop = true;
+      } else
+      {
+        if (this.isTop) {
+          this.isTop = false;
+        }
+        if (this.isBottom) {
+          this.isBottom = false;
+        }
+      }
+
+    },
+    touchstart: function touchstart() {
+      this.isTouchDown = true;
+    },
+    touchmove: function touchmove(e) {
+      if (this.isRefresh || !this.isTop) {
+        return;
+      } else
+      {
+        this.checkPulling(e);
+      }
+    },
     touchend: function touchend() {
+      this.isTouchDown = false;
       this.isTouchMove = false;
       this.isFirst = true;
       if (this.refreshTip == "释放刷新") {
@@ -337,6 +422,7 @@ var _default2 =
     // MDN文档(https://developer.mozilla.org/zh-CN/docs/Web/API/Element/mousemove_event)
     mousedown: function mousedown(e) {
       this.isMouseDown = true;
+      this.touchstart();
     },
     mousemove: function mousemove(e) {
       if (this.isMouseDown) {
@@ -344,7 +430,7 @@ var _default2 =
 
         if (this.isTop || this.isBottom) {
           var touchevent = { 'changedTouches': [{ 'pageY': e.screenY, 'pageX': e.screenX }] };
-          this.touchmove(touchevent);
+          this.checkPulling(touchevent);
         } else
         {
 
@@ -361,7 +447,8 @@ var _default2 =
       this.touchend();
     },
     onpullingdown: function onpullingdown(e) {
-      console.log(e);
+      this.movedDistance = e.pullingDistance;
+      this.detectRefresh();
     } } };exports.default = _default2;
 
 /***/ }),

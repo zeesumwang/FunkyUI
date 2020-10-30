@@ -3,7 +3,6 @@
   "backgroundColor": "#4d4f4f",
   "navigationBarBackgroundColor": "#0d0d0d",
   "usingComponents": {
-    "fk-list": "/components/fk-list/fk-list",
     "fk-cell": "/components/fk-cell/fk-cell"
   }
 }
