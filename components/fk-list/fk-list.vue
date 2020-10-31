@@ -46,12 +46,16 @@
 			@scroll="scroll"
 		>
 			<refresh v-if="hasRefresh" ref="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="isRefresh ? 'show':'hide'">
-				<view style="justify-content: center;align-items: center;flex-direction: row;flex-wrap: nowrap;" :style="{'width': width + 'px'}">
+				<view 
+					style="justify-content: center;align-items: center;flex-direction: row;flex-wrap: nowrap;" 
+					:style="{'width': width + 'px', 'height': maxPullingDistance + 'px'}"
+				>
 					<loading-indicator v-if="isRefresh" :animating="true" style="color: #FFFFFF;width: 20px;height: 20px;margin: 10px;"></loading-indicator>
-					<image 
-						style="width: 30px;height: 30px;margin: 5px;" 
-						:style="{transform: 'rotate(' + rotateDegree + 'deg)',width: isRefresh? '0px': '30px',margin: isRefresh? '0px': '5px'}" 
-						:src="pullingIcon">
+					<image class="refreshIcon" 
+						:class="{'refreshIconActive': movedDistance >= refreshDistance}" 
+						:style="{width: isRefresh ? '0px' : '30px', margin: isRefresh ? '0px' : '5px'}" 
+						:src="pullingIcon"
+					>
 					</image>
 					
 					<text style="width: 60px;" :style="{color: refreshTextColor, fontSize: refreshTextFontSize}">{{refreshTip}}</text>
@@ -218,7 +222,7 @@
 				deltaY = e.detail.deltaY
 				// #endif
 				
-				// console.log(deltaY)
+				// console.log(deltaY)/* 
 				if(this.isTouchDown == true && deltaY > 15) {
 					this.$emit('dragingDown')
 					// console.log("向下拖动")
@@ -231,7 +235,7 @@
 			detectRefresh: function() {
 				// 判断下拉程度，设置图标动态旋转角度
 				if(this.movedDistance > this.refreshDistance * 0.618){
-					this.rotateDegree = Math.min((this.movedDistance - this.refreshDistance * 0.618) / (this.refreshDistance * 0.618) * 180, 179.9)
+					this.rotateDegree = Math.min((this.movedDistance - this.refreshDistance * 0.618) / (this.refreshDistance * (1 - 0.618)) * 180, 179.9)
 				}
 				else{
 					this.rotateDegree = 0
@@ -259,7 +263,13 @@
 					
 					// 当拖拽角度小于45度才进行下拉更新，tan45` = 1，对边比临边。
 					if(movedY !== 0 && movedX / movedY < 1 && movedX < this.maxPullingDistance) {
+						// #ifdef APP-NVUE
 						this.movedDistance = Math.min(movedY,this.maxPullingDistance)
+						// #endif */
+						
+						// #ifndef APP-NVUE
+						this.movedDistance = Math.min(movedY,this.maxPullingDistance)
+						// #endif						
 						this.detectRefresh()
 					}
 				}
@@ -297,6 +307,7 @@
 				}
 			},
 			touchmove: function(e) {
+				// e.stopPropagation()
 				if(this.isRefresh || !this.isTop){
 					return
 				}
@@ -346,7 +357,7 @@
 				this.touchend()
 			},
 			onpullingdown: function(e) {
-				this.movedDistance = e.pullingDistance
+				this.movedDistance = e.pullingDistance * 0.3
 				this.detectRefresh()
 			}
 		}
@@ -385,4 +396,19 @@
 		}
 	}
 	/* #endif */
+	
+	.refreshIcon {
+		width: 30px;
+		height: 30px;
+		margin: 5px; 
+		transition-duration: 0.5s;
+		transition-property: transform;
+		transform: rotate(0deg); 
+		transform-origin: 15px 15px;
+	}
+	.refreshIconActive {
+		width: 0px;
+		margin: 0px;
+		transform: rotate(180deg);
+	}
 </style>
