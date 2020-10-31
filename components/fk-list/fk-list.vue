@@ -152,6 +152,16 @@
 				default() {
 					return false
 				}
+			},
+			tips: {
+				type: Object,
+				default() {
+					return {
+						'notSatisfied': '下拉刷新',
+						'satisfied': '释放刷新',
+						'release': '正在刷新..'
+					}
+				}
 			}
 		},
 		data() {
@@ -167,7 +177,7 @@
 				display: false,
 				isMouseDown: false,
 				rotateDegree: 0,
-				refreshTip: "下拉刷新",
+				refreshTip: '',
 				
 				scrollWithAnimation: false,
 				scrollTop: 0,
@@ -219,22 +229,22 @@
 				}
 			},
 			detectRefresh: function() {
+				// 判断下拉程度，设置图标动态旋转角度
 				if(this.movedDistance > this.refreshDistance * 0.618){
 					this.rotateDegree = Math.min((this.movedDistance - this.refreshDistance * 0.618) / (this.refreshDistance * 0.618) * 180, 179.9)
 				}
 				else{
 					this.rotateDegree = 0
 				}
+				// 判断是否满足刷新条件
 				if(this.movedDistance >= this.refreshDistance){
-					this.refreshTip = "释放刷新"
+					this.refreshTip = this.tips.satisfied
 				}
 				else {
-					this.refreshTip = "下拉刷新"
+					this.refreshTip = this.tips.notSatisfied
 				}
 			},
 			checkPulling: function(e) {
-				this.movedDistance = 0
-				this.isTouchMove = true
 				if(this.isFirst){
 					this.moveStartY = e.changedTouches[0].pageY
 					this.moveStartX = e.changedTouches[0].pageX
@@ -246,6 +256,7 @@
 						return
 					}
 					var movedX = Math.abs(e.changedTouches[0].pageX - this.moveStartX)
+					
 					// 当拖拽角度小于45度才进行下拉更新，tan45` = 1，对边比临边。
 					if(movedY !== 0 && movedX / movedY < 1 && movedX < this.maxPullingDistance) {
 						this.movedDistance = Math.min(movedY,this.maxPullingDistance)
@@ -281,12 +292,16 @@
 			},
 			touchstart: function() {
 				this.isTouchDown = true
+				if(!this.isRefresh){
+					this.movedDistance = 0
+				}
 			},
 			touchmove: function(e) {
 				if(this.isRefresh || !this.isTop){
 					return
 				}
 				else{
+					this.isTouchMove = true
 					this.checkPulling(e)
 				}
 			},
@@ -294,8 +309,8 @@
 				this.isTouchDown = false
 				this.isTouchMove = false
 				this.isFirst = true
-				if(this.refreshTip == "释放刷新"){
-					this.refreshTip = "正在刷新.."
+				if(this.refreshTip == this.tips.satisfied){
+					this.refreshTip = this.tips.release
 					this.$emit("refreshing")
 				}
 				else{
