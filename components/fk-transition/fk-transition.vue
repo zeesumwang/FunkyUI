@@ -26,7 +26,7 @@
 	 * @property {Object} styles 组件样式，同 css 样式，注意带’-‘连接符的属性需要使用小驼峰写法如：`backgroundColor:red`
 	 */
 	export default {
-		name: 'uniTransition',
+		name: 'fkTransition',
 		props: {
 			show: {
 				type: Boolean,

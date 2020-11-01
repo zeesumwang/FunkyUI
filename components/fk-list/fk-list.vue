@@ -45,7 +45,7 @@
 			:scrollable="true"
 			@scroll="scroll"
 		>
-			<refresh v-if="hasRefresh" ref="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="isRefresh ? 'show':'hide'">
+			<refresh v-if="hasRefresh" ref="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="isRefresh ? 'show' : 'hide'">
 				<view 
 					style="justify-content: center;align-items: center;flex-direction: row;flex-wrap: nowrap;" 
 					:style="{'width': width + 'px', 'height': maxPullingDistance + 'px'}"
@@ -53,12 +53,12 @@
 					<loading-indicator v-if="isRefresh" :animating="true" style="color: #FFFFFF;width: 20px;height: 20px;margin: 10px;"></loading-indicator>
 					<image class="refreshIcon" 
 						:class="{'refreshIconActive': movedDistance >= refreshDistance}" 
-						:style="{width: isRefresh ? '0px' : '30px', margin: isRefresh ? '0px' : '5px'}" 
+						:style="{width: isRefresh || isTouchMove == false ? 0 : '30px', margin: isRefresh  || isTouchMove == false ? 0 : '5px'}" 
 						:src="pullingIcon"
 					>
 					</image>
 					
-					<text style="width: 60px;" :style="{color: refreshTextColor, fontSize: refreshTextFontSize}">{{refreshTip}}</text>
+					<text :style="{color: refreshTextColor, fontSize: refreshTextFontSize, width: !isRefresh && isTouchMove == false ? 0 : '60px'}">{{refreshTip}}</text>
 				</view>
 			</refresh>
 		<!-- #endif -->
@@ -187,7 +187,7 @@
 				scrollTop: 0,
 				
 				latestY: 0,
-				
+				movementY: 0
 			};
 		},
 		beforeCreate() {
@@ -195,7 +195,7 @@
 		created() {
 			// #ifdef H5
 			if(!screenInfo.browser.versions.mobile){
-				this.scrollWithAnimation = true
+				this.scrollWithAnimation = false
 			}
 			// #endif
 		},
@@ -233,13 +233,16 @@
 				}
 			},
 			detectRefresh: function() {
-				// 判断下拉程度，设置图标动态旋转角度
+				// 非APP端，判断下拉程度，设置图标动态旋转角度
+				// #ifndef APP-NVUE
 				if(this.movedDistance > this.refreshDistance * 0.618){
 					this.rotateDegree = Math.min((this.movedDistance - this.refreshDistance * 0.618) / (this.refreshDistance * (1 - 0.618)) * 180, 179.9)
 				}
 				else{
 					this.rotateDegree = 0
 				}
+				// #endif
+				
 				// 判断是否满足刷新条件
 				if(this.movedDistance >= this.refreshDistance){
 					this.refreshTip = this.tips.satisfied
@@ -263,13 +266,7 @@
 					
 					// 当拖拽角度小于45度才进行下拉更新，tan45` = 1，对边比临边。
 					if(movedY !== 0 && movedX / movedY < 1 && movedX < this.maxPullingDistance) {
-						// #ifdef APP-NVUE
 						this.movedDistance = Math.min(movedY,this.maxPullingDistance)
-						// #endif */
-						
-						// #ifndef APP-NVUE
-						this.movedDistance = Math.min(movedY,this.maxPullingDistance)
-						// #endif						
 						this.detectRefresh()
 					}
 				}
@@ -287,7 +284,7 @@
 				// 同步PC端下鼠标点摁触摸的滚动和滚轮的滚动状态
 				this.scrollTop = e.detail.scrollTop
 				
-				if(e.detail.scrollTop <= 1){
+				if(e.detail.scrollTop <= 4){
 					this.isTop = true
 				}
 				else{
@@ -307,7 +304,6 @@
 				}
 			},
 			touchmove: function(e) {
-				// e.stopPropagation()
 				if(this.isRefresh || !this.isTop){
 					return
 				}
@@ -317,9 +313,14 @@
 				}
 			},
 			touchend: function() {
+				// #ifdef APP-NVUE
+				this.movedDistance = 0
+				// #endif
+				
 				this.isTouchDown = false
 				this.isTouchMove = false
 				this.isFirst = true
+				
 				if(this.refreshTip == this.tips.satisfied){
 					this.refreshTip = this.tips.release
 					this.$emit("refreshing")
@@ -332,32 +333,34 @@
 			// MDN文档(https://developer.mozilla.org/zh-CN/docs/Web/API/Element/mousemove_event)
 			mousedown: function(e) {
 				this.isMouseDown = true
+				this.scrollWithAnimation = false
 				this.touchstart()
 			},
 			mousemove: function(e) {
 				if(this.isMouseDown) {
 					this.scrollTop -= e.movementY
-					
-					if(this.isTop || this.isBottom){
-						let touchevent = {'changedTouches':[{'pageY': e.screenY, 'pageX': e.screenX}]}
-						this.checkPulling(touchevent)
-					}
-					else{
-						
-					}
+					this.movementY += e.movementY
+					let touchevent = {'changedTouches':[{'pageY': e.screenY, 'pageX': e.screenX}]}
+					this.touchmove(touchevent)
 				}
 			},
 			mouseup: function(e) {
 				this.isMouseDown = false
-				this.touchend()
+				this.scrollWithAnimation = true
+				this.scrollTop -= this.movementY * 2
+				this.movementY = 0
+				this.touchend()				
 			},
 			
 			// nvue下释放刷新也转到touchend
 			onrefresh: function(e) {
+				console.log(e)
 				this.touchend()
 			},
 			onpullingdown: function(e) {
-				this.movedDistance = e.pullingDistance * 0.3
+				this.refreshDistance = e.viewHeight
+				this.movedDistance = e.pullingDistance
+				this.isTouchMove = true
 				this.detectRefresh()
 			}
 		}
@@ -401,14 +404,12 @@
 		width: 30px;
 		height: 30px;
 		margin: 5px; 
-		transition-duration: 0.5s;
+		transition-duration: 0.618s;
 		transition-property: transform;
 		transform: rotate(0deg); 
 		transform-origin: 15px 15px;
 	}
 	.refreshIconActive {
-		width: 0px;
-		margin: 0px;
 		transform: rotate(180deg);
 	}
 </style>

@@ -26,6 +26,15 @@
 				@dragingUp="hideFab"
 			>
 				<fk-cell>
+					<view style="width: 300px;height: 300px;background-color: #2effd7;" :style="{'width':screenHeightPx + 'px'}"></view>
+				</fk-cell>
+				<header>
+					<view style="width: 300px;height: 100px;background-color: #aa55ff;" :style="{'width':screenHeightPx + 'px'}"></view>
+				</header>
+				<header>
+					<view style="width: 300px;height: 100px;background-color: #ffff7f;" :style="{'width':screenHeightPx + 'px'}"></view>
+				</header>
+				<fk-cell>
 					<view style="width: 300px;height: 300px;background-color: #007AFF;" :style="{'width':screenHeightPx + 'px'}"></view>
 				</fk-cell>
 				<fk-cell>

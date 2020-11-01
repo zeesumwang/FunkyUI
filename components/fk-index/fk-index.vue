@@ -63,15 +63,16 @@
 		</swiper>
 
 		<label>
-			<fk-transition elevation="10px" :duration="120" :mode-class="fabModeClass" :styles="transfromClass" :show="isFabShow">
+			<fk-transition elevation="10px" :duration="250" :mode-class="fabModeClass" :styles="transfromClass" :show="isFabShow">
 				<view
 					v-for="(fab,index) in fabList" 
-					class="fab_item" 
+					class="fabItem" 
 					:id="fab.id" 
 					:key="index" 
 					@tap="fabClick"
 				>
 					<image
+						class="fabIcon"
 						mode="aspectFill"
 						:src="fab.url" 
 						style="width: 20px;height: 20px;opacity: 0.2" 
@@ -140,7 +141,7 @@
 			fabModeClass: {
 				type: Array,
 				default() {
-					return ['slide-bottom','fade']
+					return ['zoom-in','slide-bottom','fade']
 				}
 			},
 			position: {
@@ -164,7 +165,7 @@
 			hideCount: {
 				type: Number,
 				default() {
-					return 0
+					return 1
 				}
 			},
 			current: {
@@ -194,9 +195,7 @@
 			}
 		},
 		created() {
-			// 设置显示页加上负一屏的偏移
-			this.currentFabIndex = this.current + this.hideCount
-			this.virtualCurrentFabIndex = this.current + this.hideCount
+			
 			
 			// 获取全局变量中的屏幕宽高		
 			this.screenHeightPx = screenInfo.screenHeightPx
@@ -224,6 +223,11 @@
 				this.transfromClass.left = (this.screenWidthPx - Math.max(200, this.screenWidthPx * this.widthScale)) / 2  + 'px'
 			}
 		},
+		mounted() {
+			// 设置显示页加上负一屏的偏移
+			this.currentFabIndex = this.current + this.hideCount
+			this.virtualCurrentFabIndex = this.current + this.hideCount
+		},
 		methods: {
 			transition: function(e) {
 				// 如果是点击fab进行切换，则不用展示过度动画。
@@ -250,7 +254,7 @@
 				this.targetFabIndexOpacity = Math.max(1.0 * Math.abs(dx) / this.screenWidthPx, 0.2)
 				this.virtualCurrentFabIndexOpacity = Math.max(1.2 - this.targetFabIndexOpacity, 0.2)
 				
-				
+				// #ifndef APP-NVUE
 				// 优化H5连续滑屏
 				if (this.targetFabIndexOpacity > 1){
 					// console.log("连续滑动触发",this.currentFabIndex,this.virtualCurrentFabIndex,this.targetFabIndex)
@@ -274,8 +278,7 @@
 					this.targetFabIndexOpacity = 0.2
 					// console.log("改变fab的指向",this.currentFabIndex,this.virtualCurrentFabIndex,this.targetFabIndex)
 				}
-				
-				
+				// #endif				
 			},
 			animationfinish: function() {
 				this.isContinuity = 0
@@ -327,8 +330,6 @@
 	.page {
 		/* #ifndef APP-NVUE */
 		display: flex;
-		/* overflow-x: hidden;
-		overflow-y: scroll; */
 		/* #endif */
 		
 		/* #ifdef APP-NVUE */
@@ -357,12 +358,17 @@
 		justify-content: space-around;
 	}
 
-	.fab_item {
+	.fabItem {
 		height: 50px;
 		width: 50px;
 		/* background-color: #007AFF; */
 		align-items: center;
 		justify-content: center;
+	}
+	
+	.fabIcon {
+		transition-duration: 10ms;
+		transition-property: opacity;
 	}
 
 </style>
