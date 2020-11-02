@@ -5,6 +5,7 @@
   "usingComponents": {
     "fk-index": "/components/fk-index/fk-index",
     "fk-list": "/components/fk-list/fk-list",
-    "fk-cell": "/components/fk-cell/fk-cell"
+    "fk-cell": "/components/fk-cell/fk-cell",
+    "fk-header": "/components/fk-header/fk-header"
   }
 }

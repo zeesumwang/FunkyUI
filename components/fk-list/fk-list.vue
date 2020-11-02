@@ -18,6 +18,7 @@
 		</view>
 		
 		<scroll-view 
+			id="scrollView"
 			@scroll="scroll" 
 			@wheel="wheel"
 			@scrolltoupper="scrolltoupper" 
@@ -28,6 +29,7 @@
 			@mousedown="mousedown"
 			@mousemove.native="mousemove($event)"
 			@mouseup="mouseup"
+			offset-accuracy="15"
 			:scroll-y="true" 
 			:scroll-with-animation="scrollWithAnimation"
 			:scroll-top="scrollTop"
@@ -35,6 +37,7 @@
 			:bounce="bounce"
 			:style="{'height': height + 'px','width': width + 'px'}"
 		>
+		<view> <!-- scroll-view中加入一个view防止scrollview的固定高度影响position: sticky;的粘性布局，以实现吸顶效果 -->
 		<!-- #endif -->
 		
 		<!-- #ifdef APP-NVUE -->
@@ -70,6 +73,7 @@
 		<!-- #endif -->
 		
 		<!-- #ifndef APP-NVUE -->
+		</view>
 		</scroll-view>
 		<!-- #endif -->
 	
@@ -331,6 +335,7 @@
 			
 			// 在PC端监听mousedown/mousemove/mouseup事件模拟手机端触摸事件
 			// MDN文档(https://developer.mozilla.org/zh-CN/docs/Web/API/Element/mousemove_event)
+			// #ifdef H5
 			mousedown: function(e) {
 				this.isMouseDown = true
 				this.scrollWithAnimation = false
@@ -345,12 +350,22 @@
 				}
 			},
 			mouseup: function(e) {
-				this.isMouseDown = false
+				// PC端模拟移动端页面平滑滚动
 				this.scrollWithAnimation = true
-				this.scrollTop -= this.movementY * 2
+				var movementY = this.movementY
+				// var step = Math.abs(movementY)
+				// for(var i = 0; i < step;i++){
+				// 	this.scrollTop -= movementY * (1/step)
+				// }
+				this.scrollTop -= movementY
+				// 置零平滑距离
 				this.movementY = 0
+				// 同步到触摸结束事件
+				this.isMouseDown = false
 				this.touchend()				
 			},
+			// #endif
+			
 			
 			// nvue下释放刷新也转到touchend
 			onrefresh: function(e) {

@@ -26,31 +26,31 @@
 				@dragingUp="hideFab"
 			>
 				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #2effd7;" :style="{'width':screenHeightPx + 'px'}"></view>
+					<view style="width: 300px;height: 300px;background-color: #2effd7;" :style="{'width':screenWidthPx + 'px'}"></view>
 				</fk-cell>
-				<header>
-					<view style="width: 300px;height: 100px;background-color: #aa55ff;" :style="{'width':screenHeightPx + 'px'}"></view>
-				</header>
-				<header>
-					<view style="width: 300px;height: 100px;background-color: #ffff7f;" :style="{'width':screenHeightPx + 'px'}"></view>
-				</header>
+				
+				<fk-header>
+					<view style="width: 300px;height: 100px;background-color: #aa55ff;" :style="{'width':screenWidthPx + 'px'}"></view>
+				</fk-header>
+				
+				
 				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #007AFF;" :style="{'width':screenHeightPx + 'px'}"></view>
-				</fk-cell>
-				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #edff55;" :style="{'width':screenHeightPx + 'px'}"></view>
+					<view style="width: 300px;height: 300px;background-color: #007AFF;" :style="{'width':screenWidthPx + 'px'}"></view>
 				</fk-cell>
 				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #fc4945;" :style="{'width':screenHeightPx + 'px'}"></view>
+					<view style="width: 300px;height: 300px;background-color: #edff55;" :style="{'width':screenWidthPx + 'px'}"></view>
 				</fk-cell>
 				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #4bff6c;" :style="{'width':screenHeightPx + 'px'}"></view>
+					<view style="width: 300px;height: 300px;background-color: #fc4945;" :style="{'width':screenWidthPx + 'px'}"></view>
 				</fk-cell>
 				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #2effd7;" :style="{'width':screenHeightPx + 'px'}"></view>
+					<view style="width: 300px;height: 300px;background-color: #4bff6c;" :style="{'width':screenWidthPx + 'px'}"></view>
 				</fk-cell>
 				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #ec66ff;" :style="{'width':screenHeightPx + 'px'}"></view>
+					<view style="width: 300px;height: 300px;background-color: #2effd7;" :style="{'width':screenWidthPx + 'px'}"></view>
+				</fk-cell>
+				<fk-cell>
+					<view style="width: 300px;height: 300px;background-color: #ec66ff;" :style="{'width':screenWidthPx + 'px'}"></view>
 				</fk-cell>
 			</fk-list>
 		</template>
@@ -86,7 +86,7 @@
 						url: "../../static/search.png"
 					},
 					{
-						id: 'taobao',
+						id: 'message',
 						url: "../../static/flash.png"
 					},
 					{
