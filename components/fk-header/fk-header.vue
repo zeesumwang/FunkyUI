@@ -34,10 +34,12 @@
 		/* #ifndef APP-PLUS-NVUE */
 		display: flex;
 		position: -webkit-sticky;
+		top: 0px;
 		/* #endif */
 		position: sticky;
-		top: var(--window-top);
+		/* #ifndef APP-NVUE */
+		top: 0px;
+		/* #endif */
 		z-index: 99;
-		margin: 0px;
 	}
 </style>

@@ -78,7 +78,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "components", function() { return components; });
 var components = {
   fkTransition: function() {
-    return __webpack_require__.e(/*! import() | components/fk-transition/fk-transition */ "components/fk-transition/fk-transition").then(__webpack_require__.bind(null, /*! @/components/fk-transition/fk-transition.vue */ 47))
+    return __webpack_require__.e(/*! import() | components/fk-transition/fk-transition */ "components/fk-transition/fk-transition").then(__webpack_require__.bind(null, /*! @/components/fk-transition/fk-transition.vue */ 54))
   }
 }
 var render = function() {
@@ -322,7 +322,7 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 //
-var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: function _default() {return [];} }, isFabShow: { type: Boolean, default: function _default() {return true;} }, backgroundColor: { type: String, default: function _default() {return '#1e1e1e';} }, opacity: { type: Number, default: function _default() {return 1;} }, borderRadius: { type: Number, default: function _default() {return 50;} }, fabModeClass: { type: Array, default: function _default() {return ['zoom-in', 'slide-bottom', 'fade'];} }, position: { type: String, default: function _default() {return 'right';} }, widthScale: { type: Number, default: function _default() {return 0.618;} }, bottom: { type: Number, default: function _default() {return 21;} }, hideCount: { type: Number, default: function _default() {return 1;} }, current: { type: Number, default: function _default() {return 0;} } }, data: function data() {return { transfromClass: {}, isFabClick: false, isContinuity: 0, currentFabIndex: 0, virtualCurrentFabIndex: 0, virtualCurrentFabIndexOpacity: 1, targetFabIndex: '', targetFabIndexOpacity: '', screenHeight: '', screenHeightPx: {}, screenWidthPx: '', statusBarHeight: '' };}, created: function created() {// 获取全局变量中的屏幕宽高		
+var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: function _default() {return [];} }, isFabShow: { type: Boolean, default: function _default() {return true;} }, backgroundColor: { type: String, default: function _default() {return '#1e1e1e';} }, opacity: { type: Number, default: function _default() {return 1;} }, borderRadius: { type: Number, default: function _default() {return 50;} }, fabModeClass: { type: Array, default: function _default() {return ['zoom-in', 'slide-bottom', 'fade'];} }, position: { type: String, default: function _default() {return 'right';} }, widthScale: { type: Number, default: function _default() {return 0.618;} }, bottom: { type: Number, default: function _default() {return 21;} }, hideCount: { type: Number, default: function _default() {return 1;} }, current: { type: Number, default: function _default() {return 0;} } }, data: function data() {return { transfromClass: {}, isFabClick: false, isContinuity: 0, currentFabIndex: 0, virtualCurrentFabIndex: 0, virtualCurrentFabIndexOpacity: 1, targetFabIndex: '', targetFabIndexOpacity: 0.2, screenHeight: '', screenHeightPx: {}, screenWidthPx: '', statusBarHeight: '' };}, created: function created() {// 获取全局变量中的屏幕宽高		
     this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;this.statusBarHeight = _helper.default.system.statusBarHeight;this.transfromClass = { 'position': 'fixed',
 
       'display': 'flex',
@@ -398,12 +398,11 @@ var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: fun
         this.targetFabIndexOpacity = 0.2;
         // console.log("改变fab的指向",this.currentFabIndex,this.virtualCurrentFabIndex,this.targetFabIndex)
       }
-
     },
     animationfinish: function animationfinish() {
       this.isContinuity = 0;
       this.virtualCurrentFabIndexOpacity = 1;
-      this.targetFabIndexOpacity = 0;
+      this.targetFabIndexOpacity = 0.2;
       this.virtualCurrentFabIndex = this.currentFabIndex;
       this.targetFabIndex = -1;
       this.isFabClick = false;

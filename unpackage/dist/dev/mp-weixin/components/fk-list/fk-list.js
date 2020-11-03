@@ -76,7 +76,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "recyclableRender", function() { return recyclableRender; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "components", function() { return components; });
-var components
+var components = {
+  fkCell: function() {
+    return __webpack_require__.e(/*! import() | components/fk-cell/fk-cell */ "components/fk-cell/fk-cell").then(__webpack_require__.bind(null, /*! @/components/fk-cell/fk-cell.vue */ 42))
+  }
+}
 var render = function() {
   var _vm = this
   var _h = _vm.$createElement
@@ -115,6 +119,20 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -277,17 +295,17 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 //
-var _default2 = { name: "fkList", props: { height: { type: Number, default: function _default() {return 350;} }, width: { type: Number, default: function _default() {return 350;} }, hasRefresh: { type: Boolean, default: function _default() {return true;} }, pullingIcon: { type: String, default: function _default() {return "/static/pullingDown.png";} }, refreshingIcon: { type: String, default: function _default() {return "/static/refreshing.png";} }, showScrollbar: { type: Boolean, default: function _default() {return false;} }, bounce: { type: Boolean, default: function _default() {return true;} }, maxPullingDistance: { type: Number, default: function _default() {return 60;} }, refreshDistance: { type: Number, default: function _default() {return 45;} }, refreshTextColor: { type: String, default: function _default() {return "#ffffff";} }, refreshTextFontSize: { type: String, default: function _default() {return '12px';} }, isRefresh: { type: Boolean, default: function _default() {return false;} }, tips: { type: Object, default: function _default() {return { 'notSatisfied': '下拉刷新',
-          'satisfied': '释放刷新',
-          'release': '正在刷新..' };
-
-      } } },
-
-
-  data: function data() {
-    return {
-      isTouchDown: false,
-      isTouchMove: false,
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+var _default2 = { name: "fkList", props: { height: { type: Number, default: function _default() {return 350;} }, width: { type: Number, default: function _default() {return 350;} }, hasRefresh: { type: Boolean, default: function _default() {return true;} }, pullingIcon: { type: String, default: function _default() {return "/static/pullingDown.png";} }, refreshingIcon: { type: String, default: function _default() {return "/static/refreshing.png";} }, showScrollbar: { type: Boolean, default: function _default() {return false;} }, bounce: { type: Boolean, default: function _default() {return true;} }, maxPullingDistance: { type: Number, default: function _default() {return 60;} }, refreshDistance: { type: Number, default: function _default() {return 55;} }, refreshTextColor: { type: String, default: function _default() {return "#ffffff";} }, refreshTextFontSize: { type: String, default: function _default() {return '12px';} }, isRefresh: { type: Boolean, default: function _default() {return false;} }, tips: { type: Object, default: function _default() {return { 'notSatisfied': '下拉刷新', 'satisfied': '释放刷新', 'release': '正在刷新..' };} } }, data: function data() {return { isTouchDown: false, isTouchMove: false,
       isTop: true,
       isBottom: false,
       isFirst: true,
@@ -300,6 +318,7 @@ var _default2 = { name: "fkList", props: { height: { type: Number, default: func
       refreshTip: '',
 
       scrollWithAnimation: false,
+      scrollIntoView: '',
       scrollTop: 0,
 
       latestY: 0,
@@ -318,6 +337,35 @@ var _default2 = { name: "fkList", props: { height: { type: Number, default: func
   mounted: function mounted() {
   },
   methods: {
+    backToTop: function backToTop() {var _this = this;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      this.scrollWithAnimation = true;
+      this.scrollIntoView = '';
+      this.$nextTick(function () {
+        _this.scrollIntoView = 'topElement';
+        _this.scrollWithAnimation = false;
+      });
+
+
+
+      console.log('backingTop');
+    },
     scrolltoupper: function scrolltoupper(e) {
       this.isTop = true;
     },
@@ -351,8 +399,8 @@ var _default2 = { name: "fkList", props: { height: { type: Number, default: func
     detectRefresh: function detectRefresh() {
       // 非APP端，判断下拉程度，设置图标动态旋转角度
 
-      if (this.movedDistance > this.refreshDistance * 0.618) {
-        this.rotateDegree = Math.min((this.movedDistance - this.refreshDistance * 0.618) / (this.refreshDistance * (1 - 0.618)) * 180, 179.9);
+      if (this.movedDistance > this.refreshDistance * 0.718) {
+        this.rotateDegree = Math.min((this.movedDistance - this.refreshDistance * 0.718) / (this.refreshDistance * (1 - 0.718)) * 180, 179.99);
       } else
       {
         this.rotateDegree = 0;
@@ -398,7 +446,9 @@ var _default2 = { name: "fkList", props: { height: { type: Number, default: func
 
 
       // 同步PC端下鼠标点摁触摸的滚动和滚轮的滚动状态
-      this.scrollTop = e.detail.scrollTop;
+
+
+
 
       if (e.detail.scrollTop <= 4) {
         this.isTop = true;
@@ -447,26 +497,38 @@ var _default2 = { name: "fkList", props: { height: { type: Number, default: func
 
     // 在PC端监听mousedown/mousemove/mouseup事件模拟手机端触摸事件
     // MDN文档(https://developer.mozilla.org/zh-CN/docs/Web/API/Element/mousemove_event)
-    mousedown: function mousedown(e) {
-      this.isMouseDown = true;
-      this.scrollWithAnimation = false;
-      this.touchstart();
-    },
-    mousemove: function mousemove(e) {
-      if (this.isMouseDown) {
-        this.scrollTop -= e.movementY;
-        this.movementY += e.movementY;
-        var touchevent = { 'changedTouches': [{ 'pageY': e.screenY, 'pageX': e.screenX }] };
-        this.touchmove(touchevent);
-      }
-    },
-    mouseup: function mouseup(e) {
-      this.isMouseDown = false;
-      this.scrollWithAnimation = true;
-      this.scrollTop -= this.movementY * 2;
-      this.movementY = 0;
-      this.touchend();
-    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // nvue下释放刷新也转到touchend
     onrefresh: function onrefresh(e) {

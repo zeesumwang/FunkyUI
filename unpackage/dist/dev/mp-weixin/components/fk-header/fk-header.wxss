@@ -5,9 +5,12 @@
 	display: -webkit-flex;
 	display: flex;
 	position: -webkit-sticky;
+	top: 0px;
 
 	position: sticky;
+
 	top: 0px;
+
 	z-index: 99;
 }
 

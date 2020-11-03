@@ -1,4 +1,6 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "fk-cell": "/components/fk-cell/fk-cell"
+  },
   "component": true
 }

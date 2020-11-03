@@ -1,6 +1,6 @@
 {
   "navigationBarTitleText": "fk-list",
-  "backgroundColor": "#4d4f4f",
+  "backgroundColor": "#0d0d0d",
   "navigationBarBackgroundColor": "#0d0d0d",
   "usingComponents": {
     "fk-cell": "/components/fk-cell/fk-cell"

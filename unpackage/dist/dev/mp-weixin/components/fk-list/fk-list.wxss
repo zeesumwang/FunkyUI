@@ -369,6 +369,64 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* 下拉松开回弹动画 */
 .pulldown {
 	height: 0px;
@@ -414,8 +472,8 @@
 	width: 30px;
 	height: 30px;
 	margin: 5px; 
-	-webkit-transition-duration: 0.618s; 
-	        transition-duration: 0.618s;
+	-webkit-transition-duration: 200ms; 
+	        transition-duration: 200ms;
 	-webkit-transition-property: -webkit-transform;
 	transition-property: -webkit-transform;
 	transition-property: transform;

@@ -1,6 +1,6 @@
 <template>
 	<view class="app">
-		<!-- #ifndef H5 -->
+		<!-- #ifndef H5-->
 		<view :style="{height: statusBarHeight + 'px'}"></view>
 		<!-- #endif -->
 		
@@ -186,7 +186,7 @@
 				virtualCurrentFabIndex: 0,
 				virtualCurrentFabIndexOpacity: 1,
 				targetFabIndex: '',
-				targetFabIndexOpacity: '',
+				targetFabIndexOpacity: 0.2,
 				
 				screenHeight: '',
 				screenHeightPx: {},
@@ -254,7 +254,7 @@
 				this.targetFabIndexOpacity = Math.max(1.0 * Math.abs(dx) / this.screenWidthPx, 0.2)
 				this.virtualCurrentFabIndexOpacity = Math.max(1.2 - this.targetFabIndexOpacity, 0.2)
 				
-				// #ifndef APP-NVUE
+				
 				// 优化H5连续滑屏
 				if (this.targetFabIndexOpacity > 1){
 					// console.log("连续滑动触发",this.currentFabIndex,this.virtualCurrentFabIndex,this.targetFabIndex)
@@ -277,13 +277,12 @@
 					this.virtualCurrentFabIndexOpacity = 1
 					this.targetFabIndexOpacity = 0.2
 					// console.log("改变fab的指向",this.currentFabIndex,this.virtualCurrentFabIndex,this.targetFabIndex)
-				}
-				// #endif				
+				}			
 			},
 			animationfinish: function() {
 				this.isContinuity = 0
 				this.virtualCurrentFabIndexOpacity = 1
-				this.targetFabIndexOpacity = 0
+				this.targetFabIndexOpacity = 0.2
 				this.virtualCurrentFabIndex = this.currentFabIndex
 				this.targetFabIndex = -1
 				this.isFabClick = false

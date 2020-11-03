@@ -1,56 +1,14 @@
 <template>
-	<!-- #ifndef APP-NVUE -->
-	<view>
-	<!-- #endif -->
+
 	
-		<!-- #ifndef APP-NVUE -->
-		<view
-			v-if="hasRefresh"
-			:class="{'pulldown':!isTouchMove && !isRefresh}" 
-			style="justify-content: center;align-items: center;flex-direction: row;" 
-			:style="{ height: (isTop == true && isTouchMove ? movedDistance : isRefresh ? movedDistance: 0) + 'px'}"
-		>
-		
-			<image v-if="isRefresh" class="scroll-rotate" style="width: 30px;height: 30px;margin: 5px;" :src="refreshingIcon"></image>
-			<image v-if="!isRefresh" style="width: 30px;height: 30px;margin: 5px;" :style="{transform: 'rotate(' + rotateDegree + 'deg)'}" :src="pullingIcon"></image>
-			
-			<text style="width: 60px;" :style="{color: refreshTextColor, fontSize: refreshTextFontSize}">{{refreshTip}}</text>
-		</view>
-		
-		<scroll-view 
-			style="scroll-behavior: smooth;"
-			@scroll="scroll" 
-			@wheel="wheel"
-			@scrolltoupper="scrolltoupper" 
-			@scrolltolower="scrolltolower"	
-			@touchstart="touchstart"
-			@touchmove="touchmove"
-			@touchend="touchend"
-			@mousedown="mousedown"
-			@mousemove.native="mousemove($event)"
-			@mouseup="mouseup"
-			offset-accuracy="15"
-			:scroll-into-view="scrollIntoView"
-			:scroll-y="true" 
-			:scroll-with-animation="scrollWithAnimation"
-			:scroll-top="scrollTop"
-			:show-scrollbar="showScrollbar" 
-			:bounce="bounce"
-			:style="{'height': height + 'px','width': width + 'px'}"
-		>
-		
-		<view> <!-- scroll-view中加入一个view防止scrollview的固定高度影响position: sticky;的粘性布局，以实现吸顶效果 -->
-		
-		<!-- #endif -->
-		
-		<!-- #ifdef APP-NVUE -->
 		<list 
-			:style="{'height': height + 'px','width': width + 'px'}" 
+			:style="{'width': width + 'px'}" 
 			:show-scrollbar="showScrollbar" 
 			:bounce="bounce"
 			:scrollable="true"
 			@scroll="scroll"
 		>
+			<!-- #ifdef APP-NVUE -->
 			<refresh v-if="hasRefresh" ref="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="isRefresh ? 'show' : 'hide'">
 				<view 
 					style="justify-content: center;align-items: center;flex-direction: row;flex-wrap: nowrap;" 
@@ -67,25 +25,19 @@
 					<text :style="{color: refreshTextColor, fontSize: refreshTextFontSize, width: !isRefresh && isTouchMove == false ? 0 : '60px'}">{{refreshTip}}</text>
 				</view>
 			</refresh>
-		<!-- #endif -->
+			<!-- #endif -->
+			
+
 			
 			<fk-cell ref="topElement" id="topElement"></fk-cell>
 			<slot></slot>
 			
-		<!-- #ifdef APP-NVUE -->
+
 		</list>
-		<!-- #endif -->
 		
-		<!-- #ifndef APP-NVUE -->
-		
-		</view>		
-		
-		</scroll-view>
-		<!-- #endif -->
+
 	
-	<!-- #ifndef APP-NVUE -->
-	</view>
-	<!-- #endif -->
+
 	
 </template>
 
@@ -97,7 +49,7 @@
 	import screenInfo from "@/common/helper.js"
 	
 	export default {
-		name: "fkList",
+		name: "fkListweex",
 		props: {
 			height: {
 				type: Number,
@@ -198,7 +150,6 @@
 				refreshTip: '',
 				
 				scrollWithAnimation: false,
-				scrollIntoView: '',
 				scrollTop: 0,
 				
 				latestY: 0,
@@ -225,23 +176,10 @@
 					animated: true
 				})
 				// #endif
-				
 				// #ifndef APP-NVUE
-				
-				// #ifdef H5
 				this.scrollWithAnimation = true
 				this.scrollTop = 0
 				setTimeout(()=>{this.scrollWithAnimation = false},300)
-				// #endif
-				
-				// #ifdef MP
-				this.scrollWithAnimation = true
-				this.scrollIntoView = ''
-				this.$nextTick(()=> {
-				                this.scrollIntoView = 'topElement'
-								this.scrollWithAnimation = false
-				            });
-				// #endif
 				
 				// #endif
 				console.log('backingTop')
@@ -326,9 +264,7 @@
 				
 				// #ifndef APP-NVUE
 				// 同步PC端下鼠标点摁触摸的滚动和滚轮的滚动状态
-				// #ifdef H5
 				this.scrollTop = e.detail.scrollTop
-				// #endif
 				
 				if(e.detail.scrollTop <= 4){
 					this.isTop = true
@@ -426,7 +362,7 @@
 </script>
 
 <style>
-	/* #ifndef APP-NVUE */
+
 	/* 下拉松开回弹动画 */
 	.pulldown {
 		height: 0px;
@@ -456,7 +392,7 @@
 			transform: rotate(360deg);
 		}
 	}
-	/* #endif */
+
 	
 	.refreshIcon {
 		width: 30px;
