@@ -185,7 +185,7 @@ if(false) {}
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../Applications/HBuilderX.app/Contents/HBuilderX/plugins/uniapp-cli/node_modules/css-loader/dist/runtime/api.js */ 5);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/*每个页面公共css */\n\n/* 在非APP端隐藏所有页面的滚动条 */\n::-webkit-scrollbar {\n    display: none;  \n    width: 0 !important;  \n    height: 0 !important;  \n    -webkit-appearance: none;  \n    background: transparent;\n}\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/*每个页面公共css */\n\n/* 在非APP端隐藏所有页面的滚动条 */\n::-webkit-scrollbar {\n    display: none;  \n    width: 0 !important;  \n    height: 0 !important;  \n    -webkit-appearance: none;  \n    background: transparent;\n}\n/* 禁止在PC端的图片元素被鼠标拖动 */\nimg {\n  -webkit-user-drag: none;\n}\n\n", ""]);
 // Exports
 module.exports = exports;
 

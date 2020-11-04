@@ -24,5 +24,9 @@
 	    -webkit-appearance: none;  
 	    background: transparent;  
 	}
+	/* 禁止在PC端的图片元素被鼠标拖动 */
+	img {
+	  -webkit-user-drag: none;
+	}
 	/* #endif */
 </style>

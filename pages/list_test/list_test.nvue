@@ -1,10 +1,17 @@
 <template>
-	
-		<fk-cell>
-			<view style="height: 1500rpx;width: 300px;"></view>
+	<!-- <waterfall column-count="2">
+		<fk-cell v-for="i in data" :key="i">
+			<text style="color: #8F9CFF;text-align: center;">{{i}}</text>
 		</fk-cell>
-</template>
-
+	</waterfall> -->
+	<!-- <scroll-view>
+		<view></view>
+	</scroll-view> -->
+	<view id="img">
+		<fk-image url="https://geancloud.oss-cn-hangzhou.aliyuncs.com/weibo/2711147d7b5989ccebc3367e042b433b.jpg@!400" :limitWidth="200"></fk-image>
+		<fk-image url="https://geancloud.oss-cn-hangzhou.aliyuncs.com/weibo/2711147d7b5989ccebc3367e042b433b.jpg@!400" id="img1"></fk-image>
+	</view>
+</template>	
 <script>
 	export default {
 		data() {
@@ -13,9 +20,19 @@
 			}
 		},
 		created() {
-			for(var i=0;i<20;i++){
+			for(var i=0;i<200;i++){
 				this.data.push(i)
 			}
+		},
+		updated() {
+			
+		},
+		mounted() {
+			const quary = uni.createSelectorQuery().in(this);
+			quary.select('#img').boundingClientRect(data => {
+			  console.log("得到布局位置信息" + JSON.stringify(data));
+			  console.log("节点离页面顶部的距离为" + data.top);
+			}).exec();
 		},
 		methods: {
 			

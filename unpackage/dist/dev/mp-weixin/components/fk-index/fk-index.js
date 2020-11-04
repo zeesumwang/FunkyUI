@@ -322,8 +322,10 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 //
-var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: function _default() {return [];} }, isFabShow: { type: Boolean, default: function _default() {return true;} }, backgroundColor: { type: String, default: function _default() {return '#1e1e1e';} }, opacity: { type: Number, default: function _default() {return 1;} }, borderRadius: { type: Number, default: function _default() {return 50;} }, fabModeClass: { type: Array, default: function _default() {return ['zoom-in', 'slide-bottom', 'fade'];} }, position: { type: String, default: function _default() {return 'right';} }, widthScale: { type: Number, default: function _default() {return 0.618;} }, bottom: { type: Number, default: function _default() {return 21;} }, hideCount: { type: Number, default: function _default() {return 1;} }, current: { type: Number, default: function _default() {return 0;} } }, data: function data() {return { transfromClass: {}, isFabClick: false, isContinuity: 0, currentFabIndex: 0, virtualCurrentFabIndex: 0, virtualCurrentFabIndexOpacity: 1, targetFabIndex: '', targetFabIndexOpacity: 0.2, screenHeight: '', screenHeightPx: {}, screenWidthPx: '', statusBarHeight: '' };}, created: function created() {// 获取全局变量中的屏幕宽高		
-    this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;this.statusBarHeight = _helper.default.system.statusBarHeight;this.transfromClass = { 'position': 'fixed',
+var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: function _default() {return [];} }, isFabShow: { type: Boolean, default: function _default() {return true;} }, backgroundColor: { type: String, default: function _default() {return '#1e1e1e';} }, opacity: { type: Number, default: function _default() {return 1;} }, borderRadius: { type: Number, default: function _default() {return 50;} }, fabModeClass: { type: Array, default: function _default() {return ['fade', 'zoom-in', 'slide-bottom'];} }, position: { type: String, default: function _default() {return 'right';} }, widthScale: { type: Number, default: function _default() {return 0.618;} }, bottom: { type: Number, default: function _default() {return 21;} }, hideCount: { type: Number, default: function _default() {return 1;} }, current: { type: Number, default: function _default() {return 0;} } }, data: function data() {return { transfromClass: {}, isFabClick: false, isContinuity: 0, currentFabIndex: 0, virtualCurrentFabIndex: 0, virtualCurrentFabIndexOpacity: 1, targetFabIndex: '', targetFabIndexOpacity: 0.2, screenHeight: '', screenHeightPx: {}, screenWidthPx: '', statusBarHeight: '' };}, created: function created() {// 设置显示页加上负一屏的偏移
+    this.currentFabIndex = this.current + this.hideCount;this.virtualCurrentFabIndex = this.current + this.hideCount; // 获取全局变量中的屏幕宽高		
+    this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;this.statusBarHeight = _helper.default.system.statusBarHeight;this.transfromClass = {
+      'position': 'fixed',
 
       'display': 'flex',
 
@@ -344,9 +346,7 @@ var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: fun
     }
   },
   mounted: function mounted() {
-    // 设置显示页加上负一屏的偏移
-    this.currentFabIndex = this.current + this.hideCount;
-    this.virtualCurrentFabIndex = this.current + this.hideCount;
+
   },
   methods: {
     transition: function transition(e) {

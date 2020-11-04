@@ -152,8 +152,15 @@
 				}
 			},
 			fabClick: function(e) {
-				this.$refs['fk-list'].backToTop()
-				console.log(e)
+				if(e.clickId == 'home'){
+					this.$refs['fk-list'].backToTop()
+					console.log(e)
+				}
+				if(e.clickId == 'search'){
+					uni.navigateTo({
+						url: '../list_test/list_test'
+					})
+				}
 			}
 		}
 	}

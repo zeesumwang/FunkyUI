@@ -141,7 +141,7 @@
 			fabModeClass: {
 				type: Array,
 				default() {
-					return ['zoom-in','slide-bottom','fade']
+					return ['fade','zoom-in','slide-bottom']
 				}
 			},
 			position: {
@@ -195,7 +195,9 @@
 			}
 		},
 		created() {
-			
+			// 设置显示页加上负一屏的偏移
+			this.currentFabIndex = this.current + this.hideCount
+			this.virtualCurrentFabIndex = this.current + this.hideCount
 			
 			// 获取全局变量中的屏幕宽高		
 			this.screenHeightPx = screenInfo.screenHeightPx
@@ -224,9 +226,7 @@
 			}
 		},
 		mounted() {
-			// 设置显示页加上负一屏的偏移
-			this.currentFabIndex = this.current + this.hideCount
-			this.virtualCurrentFabIndex = this.current + this.hideCount
+			
 		},
 		methods: {
 			transition: function(e) {
