@@ -7,10 +7,8 @@
 	<!-- <scroll-view>
 		<view></view>
 	</scroll-view> -->
-	<view id="img">
-		<fk-image url="https://geancloud.oss-cn-hangzhou.aliyuncs.com/weibo/2711147d7b5989ccebc3367e042b433b.jpg@!400" :limitWidth="200"></fk-image>
-		<fk-image url="https://geancloud.oss-cn-hangzhou.aliyuncs.com/weibo/2711147d7b5989ccebc3367e042b433b.jpg@!400" id="img1"></fk-image>
-	</view>
+	<fk-waterfall id="img">
+	</fk-waterfall>
 </template>	
 <script>
 	export default {

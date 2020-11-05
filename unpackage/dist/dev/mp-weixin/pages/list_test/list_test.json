@@ -2,5 +2,7 @@
   "navigationBarTitleText": "fk-list",
   "backgroundColor": "#0d0d0d",
   "navigationBarBackgroundColor": "#0d0d0d",
-  "usingComponents": {}
+  "usingComponents": {
+    "fk-waterfall": "/components/fk-waterfall/fk-waterfall"
+  }
 }

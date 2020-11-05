@@ -1,0 +1,1 @@
+<label><image style="{{'width:'+(width+'px')+';'+('height:'+(height+'px')+';')}}" src="{{url}}" data-event-opts="{{[['load',[['loadSuccess',['$event']]]],['error',[['loadError',['$event']]]]]}}" bindload="__e" binderror="__e"></image></label>

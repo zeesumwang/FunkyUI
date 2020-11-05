@@ -18,7 +18,6 @@
 		</view>
 		
 		<scroll-view 
-			style="scroll-behavior: smooth;"
 			@scroll="scroll" 
 			@wheel="wheel"
 			@scrolltoupper="scrolltoupper" 

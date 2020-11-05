@@ -1,6 +1,0 @@
-{
-  "usingComponents": {
-    "fk-waterfall": "/components/fk-waterfall/fk-waterfall"
-  },
-  "component": true
-}

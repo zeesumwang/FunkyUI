@@ -92,7 +92,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "recyclableRender", function() { return recyclableRender; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "components", function() { return components; });
-var components
+var components = {
+  fkWaterfall: function() {
+    return Promise.all(/*! import() | components/fk-waterfall/fk-waterfall */[__webpack_require__.e("common/vendor"), __webpack_require__.e("components/fk-waterfall/fk-waterfall")]).then(__webpack_require__.bind(null, /*! @/components/fk-waterfall/fk-waterfall.vue */ 54))
+  }
+}
 var render = function() {
   var _vm = this
   var _h = _vm.$createElement
@@ -130,7 +134,8 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
+//
 //
 //
 //
@@ -182,7 +187,18 @@ var _default =
       this.data.push(i);
     }
   },
+  updated: function updated() {
+
+  },
+  mounted: function mounted() {
+    var quary = uni.createSelectorQuery().in(this);
+    quary.select('#img').boundingClientRect(function (data) {
+      console.log("得到布局位置信息" + JSON.stringify(data));
+      console.log("节点离页面顶部的距离为" + data.top);
+    }).exec();
+  },
   methods: {} };exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
 

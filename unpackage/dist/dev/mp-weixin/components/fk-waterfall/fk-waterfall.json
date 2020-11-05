@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "fk-image": "/components/fk-image/fk-image"
+  },
+  "component": true
+}
