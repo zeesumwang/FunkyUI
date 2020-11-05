@@ -4,9 +4,6 @@
 			<text style="color: #8F9CFF;text-align: center;">{{i}}</text>
 		</fk-cell>
 	</waterfall> -->
-	<!-- <scroll-view>
-		<view></view>
-	</scroll-view> -->
 	<fk-waterfall id="img">
 	</fk-waterfall>
 </template>	

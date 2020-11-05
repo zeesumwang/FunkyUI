@@ -1,14 +1,14 @@
 <template>
-	<label>
-		<image :style="{'width': width + 'px','height': height + 'px'}" :src="url" @load="loadSuccess" @error="loadError" />
-	</label>
+	
+	<image :style="{'width': width + 'px','height': height + 'px'}" :src="src" @load="loadSuccess" @error="loadError" referrerPolicy="no-referrer" />
+	
 </template>
 
 <script>
 	export default {
 		name: "fkImage",
 		props:{
-			url: {
+			src: {
 				type: String,
 				default: '@/static/default_img.png'
 			},
@@ -36,7 +36,7 @@
 			},
 			loadSuccess: function(e) {
 				this.scale(e)
-				this.$emit('loadSuccess',e)
+				this.$emit('loadSuccess',{'height': this.height,'url': this.src})
 			},
 			loadError: function(e) {
 				this.$emit('loadError',e)

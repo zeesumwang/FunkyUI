@@ -7882,9 +7882,9 @@ module.exports = g;
 
 /***/ }),
 /* 4 */
-/*!***********************************************************************!*\
-  !*** /Users/wangzishen/Documents/HBuilderProjects/FunkyUI/pages.json ***!
-  \***********************************************************************/
+/*!****************************************************************************!*\
+  !*** C:/Users/Administrator/Documents/HBuilderProjects/FunkyUI/pages.json ***!
+  \****************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -8031,9 +8031,9 @@ function normalizeComponent (
 /* 15 */,
 /* 16 */,
 /* 17 */
-/*!*****************************************************************************!*\
-  !*** /Users/wangzishen/Documents/HBuilderProjects/FunkyUI/common/helper.js ***!
-  \*****************************************************************************/
+/*!**********************************************************************************!*\
+  !*** C:/Users/Administrator/Documents/HBuilderProjects/FunkyUI/common/helper.js ***!
+  \**********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
