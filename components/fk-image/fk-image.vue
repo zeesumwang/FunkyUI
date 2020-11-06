@@ -1,5 +1,5 @@
 <template>
-	<image :style="{'width': width + 'px','height': height + 'px'}" :src="src" @load="loadSuccess" @error="loadError" referrerPolicy="no-referrer" mode="aspectFit">
+	<image :style="{'width': limitWidth + 'px','height': height + 'px'}" :src="src" @load="loadSuccess" @error="loadError" referrerPolicy="no-referrer" mode="aspectFit">
 	</image>
 </template>
 
@@ -18,19 +18,16 @@
 		},
 		data() {
 			return {
-				width: 0,
 				height: 0
 			};
 		},
 		methods: {
 			scale: function(e) {
-				if(this.limitWidth == 0 || this.limitWidth >= e.detail.width){
-					this.width = e.detail.width
+				if(this.limitWidth == 0){
 					this.height = e.detail.height
 				}
 				else{
 					this.height = e.detail.height * this.limitWidth / e.detail.width
-					this.width = this.limitWidth
 				}
 			},
 			loadSuccess: function(e) {

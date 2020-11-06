@@ -1,6 +1,6 @@
 <template>
 	<!-- #ifdef APP-NVUE -->
-	<waterfall :column-count="columnCount" column-width="auto">
+	<waterfall :column-count="columnCount" :column-gap="0">
 	<!-- #endif -->
 		<!-- #ifndef APP-NVUE -->
 		<fk-list 
@@ -30,9 +30,8 @@
 		<!-- #endif -->
 		
 	<!-- #ifdef APP-NVUE -->
-		<cell v-for="(url,index) in urlList" :key="index" column-gap="0">
-			<!-- <image mode="aspectFit" :style="{width: columnWidth + 'px'}" :src="url+'?x-oss-process=image/resize,h_400,w_400'"></image> -->
-			<fk-image :limitWidth="columnWidth" :src="url+'?x-oss-process=image/resize,h_400,w_400'"></fk-image>
+		<cell v-for="(url,index) in urlList" :key="index" :style="{width: columnWidth + 'px'}">
+			<fk-image :limitWidth="columnWidth" :src="url+'?x-oss-process=image/resize,h_600,w_600'" @loadSuccess="loadSuccess"></fk-image>
 		</cell>
 	</waterfall>
 	<!-- #endif -->
@@ -80,18 +79,22 @@
 			};
 		},
 		created() {
-			// 初始化瀑布流的列宽
-			this.columnWidth = this.width / this.columnCount
+			
 		},
 		mounted() {
+			// 初始化瀑布流的列宽
+			this.columnWidth = this.width / this.columnCount
+			// 统计url的总数
 			this.urlCount = this.urlList.length
-			
+			// #ifndef APP-NVUE
+			// 非APP端的额外实现
 			// 初始化瀑布流各列的图片列表为空，各列初始高度为0
 			for(var i = 0; i < this.columnCount; i++){
 				this.columnInfo.url['column'+i] = []
 				this.columnInfo.height.push(0)
 			}
 			this.setWaterfall()
+			// #endif			
 		},
 		methods: {
 			async setWaterfall () {
@@ -110,11 +113,14 @@
 				await this.loadSuccess(event)
 			},
 			async loadSuccess (e) {
+				// #ifndef APP-NVUE
 				let minHeight = Math.min.apply(null, this.columnInfo.height)
 				let minHeightColumnIndex = this.columnInfo.height.indexOf(minHeight)
 				this.columnInfo.url['column'+minHeightColumnIndex].push(e.url)
 				this.columnInfo.height[minHeightColumnIndex] += e.height
+				// #endif
 				this.loadedCount += 1
+				
 			}
 		}
 	}
