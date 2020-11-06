@@ -1,7 +1,6 @@
 <template>
-	
-	<image :style="{'width': width + 'px','height': height + 'px'}" :src="src" @load="loadSuccess" @error="loadError" referrerPolicy="no-referrer" />
-	
+	<image :style="{'width': width + 'px','height': height + 'px'}" :src="src" @load="loadSuccess" @error="loadError" referrerPolicy="no-referrer" mode="aspectFit">
+	</image>
 </template>
 
 <script>
@@ -10,11 +9,11 @@
 		props:{
 			src: {
 				type: String,
-				default: '@/static/default_img.png'
+				default: ''
 			},
 			limitWidth: {
 				type: Number,
-				default: 0
+				default: 137.5
 			}
 		},
 		data() {

@@ -4,8 +4,8 @@
 			<text style="color: #8F9CFF;text-align: center;">{{i}}</text>
 		</fk-cell>
 	</waterfall> -->
-	<fk-waterfall id="img">
-	</fk-waterfall>
+	<!-- <fk-waterfall id="img">
+	</fk-waterfall> -->
 </template>	
 <script>
 	export default {

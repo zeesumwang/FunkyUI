@@ -1,5 +1,5 @@
 
-.app.data-v-239b8d44 {
+.index.data-v-239b8d44 {
 	background-color: #0D0D0D;
 	-webkit-box-flex: 1;
 	-webkit-flex: 1;
@@ -23,7 +23,8 @@
 .fab.data-v-239b8d44 {
 	width: 245px;
 	height: 50px;
-	border-radius: 100px;
+	-webkit-border-radius: 100px;
+	        border-radius: 100px;
 	border-width: 1px;
 	background-color: #212121;
 	position: fixed;

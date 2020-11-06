@@ -1,24 +1,46 @@
 <template>
-	<view>
-		<scroll-view style="width: 0px;height: 0px;">
-			<!-- 预加载图片，不显示，通过加载完成后图片的高度选择投入哪个图片列表 -->
-			<fk-image style="width: 0px;height: 0px;" :limitWidth="columnWidth" v-for="(url,index) in urlList" :key="url+index" :src="url" @loadSuccess="loadSuccess"></fk-image>
-		</scroll-view>
-		<scroll-view :scroll-y="true" v-if="loadCount==urlCount" :style="{width: width + 'px', height: height + 'px'}" style="position: fixed;">
-			<view style="flex: 1;flex-direction: row;justify-content: space-between;">
-				<view :style="{width: columnWidth + 'px'}" v-for="columnNum in columnCount" :key="columnNum">
-					
-						<fk-image v-for="(url,index) in columnInfo.url['column'+(columnNum-1)]" :key="url+index" :limitWidth="columnWidth" :src="url"></fk-image>
-					
+	<!-- #ifdef APP-NVUE -->
+	<waterfall :column-count="columnCount" column-width="auto">
+	<!-- #endif -->
+		<!-- #ifndef APP-NVUE -->
+		<fk-list 
+			v-if="loadedCount==urlCount"
+			:height="height"
+			:width="width"
+			:isRefresh="isRefresh" 
+			@refreshing="$emit('refreshing')"
+			@dragingDown="$emit('dragingDown')" 
+			@dragingUp="$emit('dragingUp')"
+		>
+			<fk-cell>
+				<view style="flex-direction: row;justify-content: space-between;">
+					<view :style="{width: columnWidth + 'px'}" v-for="columnNum in columnCount" :key="columnNum">
+						<!-- 小程序端的起点为0 -->
+						<!-- #ifdef MP -->
+						<fk-image v-for="(url,index) in columnInfo.url['column'+(columnNum)]" :key="index" :limitWidth="columnWidth" :src="url+'?x-oss-process=image/resize,h_400,w_400'"></fk-image>
+						<!-- #endif -->
+						<!-- #ifndef MP -->
+						<fk-image v-for="(url,index) in columnInfo.url['column'+(columnNum-1)]" :key="index" :limitWidth="columnWidth" :src="url+'?x-oss-process=image/resize,h_400,w_400'"></fk-image>
+						<!-- #endif -->
+					</view>
 				</view>
-			</view>
-		</scroll-view>
-	</view>
+			</fk-cell>
+			
+		</fk-list>
+		<!-- #endif -->
+		
+	<!-- #ifdef APP-NVUE -->
+		<cell v-for="(url,index) in urlList" :key="index" column-gap="0">
+			<!-- <image mode="aspectFit" :style="{width: columnWidth + 'px'}" :src="url+'?x-oss-process=image/resize,h_400,w_400'"></image> -->
+			<fk-image :limitWidth="columnWidth" :src="url+'?x-oss-process=image/resize,h_400,w_400'"></fk-image>
+		</cell>
+	</waterfall>
+	<!-- #endif -->
 	
 </template>
 
 <script>
-	import screenInfo from "@/common/helper.js"
+	// import screenInfo from "@/common/helper.js"
 	export default {
 		name: "fkWaterfall",
 		props: {
@@ -29,21 +51,20 @@
 			'urlList': {
 				type: Array,
 				default() {
-					return [
-						'https://geancloud.oss-cn-hangzhou.aliyuncs.com/weibo/2711147d7b5989ccebc3367e042b433b.jpg',					
-						'https://geancloud.oss-cn-hangzhou.aliyuncs.com/ins/587fd446257ace0807610e265220c709.jpg@!400',
-						'https://geancloud.oss-cn-hangzhou.aliyuncs.com/weibo/2711147d7b5989ccebc3367e042b433b.jpg',
-						'https://geancloud.oss-cn-hangzhou.aliyuncs.com/weibo/2711147d7b5989ccebc3367e042b433b.jpg',
-						'https://geancloud.oss-cn-hangzhou.aliyuncs.com/ins/587fd446257ace0807610e265220c709.jpg@!400',
-						'https://geancloud.oss-cn-hangzhou.aliyuncs.com/weibo/2711147d7b5989ccebc3367e042b433b.jpg',
-						'https://geancloud.oss-cn-hangzhou.aliyuncs.com/weibo/2711147d7b5989ccebc3367e042b433b.jpg',
-						'https://geancloud.oss-cn-hangzhou.aliyuncs.com/ins/587fd446257ace0807610e265220c709.jpg@!400',
-						'https://geancloud.oss-cn-hangzhou.aliyuncs.com/weibo/2711147d7b5989ccebc3367e042b433b.jpg',
-						'https://geancloud.oss-cn-hangzhou.aliyuncs.com/weibo/2711147d7b5989ccebc3367e042b433b.jpg',
-						'https://geancloud.oss-cn-hangzhou.aliyuncs.com/ins/587fd446257ace0807610e265220c709.jpg@!400',
-						'https://geancloud.oss-cn-hangzhou.aliyuncs.com/weibo/2711147d7b5989ccebc3367e042b433b.jpg',
-					]
+					return []
 				}
+			},
+			'width': {
+				type: Number,
+				default: 0,
+			},
+			'height': {
+				type: Number,
+				default: 0
+			},
+			'isRefresh': {
+				type: Boolean,
+				default: false
 			}
 		},
 		data() {
@@ -54,31 +75,46 @@
 					'url': {},
 					'height': []
 				},
-				height: 0,
-				width: 0,
 				urlCount: 0,
-				loadCount: 0
+				loadedCount: 0
 			};
 		},
 		created() {
-			this.width = screenInfo.screenWidthPx
-			this.height = screenInfo.screenHeightPx
-			this.urlCount = this.urlList.length
 			// 初始化瀑布流的列宽
-			this.columnWidth = screenInfo.screenWidthPx / this.columnCount
+			this.columnWidth = this.width / this.columnCount
+		},
+		mounted() {
+			this.urlCount = this.urlList.length
+			
 			// 初始化瀑布流各列的图片列表为空，各列初始高度为0
 			for(var i = 0; i < this.columnCount; i++){
 				this.columnInfo.url['column'+i] = []
 				this.columnInfo.height.push(0)
 			}
+			this.setWaterfall()
 		},
 		methods: {
-			loadSuccess: function(e) {
+			async setWaterfall () {
+				for(var i = 0; i < this.urlList.length; i++){
+					await this.getImageInfo(this.urlList[i])
+				}
+				this.$emit("setWaterfallSuccess")
+			},
+			async getImageInfo (url) {
+				var [error, res] = await uni.getImageInfo({
+					src: url,
+				});
+				let imgWidth = this.columnWidth
+				let imgHeight = imgWidth * res.height / res.width
+				let event = {'height': imgHeight,'url': url}
+				await this.loadSuccess(event)
+			},
+			async loadSuccess (e) {
 				let minHeight = Math.min.apply(null, this.columnInfo.height)
 				let minHeightColumnIndex = this.columnInfo.height.indexOf(minHeight)
 				this.columnInfo.url['column'+minHeightColumnIndex].push(e.url)
 				this.columnInfo.height[minHeightColumnIndex] += e.height
-				this.loadCount += 1
+				this.loadedCount += 1
 			}
 		}
 	}

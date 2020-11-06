@@ -1,5 +1,5 @@
 <template>
-	<view class="app">
+	<view class="index">
 		<!-- #ifndef H5-->
 		<view :style="{height: statusBarHeight + 'px'}"></view>
 		<!-- #endif -->
@@ -9,8 +9,7 @@
 		  @change="swiperChange" 
 		  @transition="transition" 
 		  @animationfinish="animationfinish"
-		  easing-function="easeInOutCubic" 
-		  duration="300"
+		  duration="400"
 		  :indicator-dots="false"
 		  :current="currentFabIndex"
 		  >
@@ -320,7 +319,7 @@
 </script>
 
 <style scoped>
-	.app {
+	.index {
 		background-color: #0D0D0D;
 		flex: 1;
 		flex-direction: column;
