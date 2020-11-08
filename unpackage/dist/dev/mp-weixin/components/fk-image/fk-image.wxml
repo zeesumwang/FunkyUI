@@ -1,1 +1,1 @@
-<image style="{{'width:'+(width+'px')+';'+('height:'+(height+'px')+';')}}" src="{{src}}" referrerPolicy="no-referrer" mode="aspectFit" data-event-opts="{{[['load',[['loadSuccess',['$event']]]],['error',[['loadError',['$event']]]]]}}" bindload="__e" binderror="__e"></image>
+<view><image style="{{'width:'+(limitWidth+'px')+';'+('height:'+(height+'px')+';')}}" src="{{src}}" referrerPolicy="no-referrer" mode="aspectFit" data-event-opts="{{[['load',[['loadSuccess',['$event']]]],['error',[['loadError',['$event']]]]]}}" bindload="__e" binderror="__e"></image></view>

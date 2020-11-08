@@ -15,6 +15,7 @@
 			<fk-cell>
 				<view style="flex-direction: row;justify-content: space-between;">
 					<view :style="{width: columnWidth + 'px'}" v-for="columnNum in columnCount" :key="columnNum">
+						<text style="color: #007AFF;">{{columnNum}}</text>
 						<!-- 小程序端的起点为0 -->
 						<!-- #ifdef MP -->
 						<fk-image v-for="(url,index) in columnInfo.url['column'+(columnNum)]" :key="index" :limitWidth="columnWidth" :src="url+'?x-oss-process=image/resize,h_400,w_400'"></fk-image>
@@ -31,6 +32,7 @@
 		
 	<!-- #ifdef APP-NVUE -->
 		<cell v-for="(url,index) in urlList" :key="index" :style="{width: columnWidth + 'px'}">
+			<text style="color: #007AFF;">{{index}}</text>
 			<fk-image :limitWidth="columnWidth" :src="url+'?x-oss-process=image/resize,h_600,w_600'" @loadSuccess="loadSuccess"></fk-image>
 		</cell>
 	</waterfall>

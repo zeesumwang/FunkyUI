@@ -1,6 +1,9 @@
 <template>
-	<image :style="{'width': limitWidth + 'px','height': height + 'px'}" :src="src" @load="loadSuccess" @error="loadError" referrerPolicy="no-referrer" mode="aspectFit">
-	</image>
+	<view>
+		<image :style="{'width': limitWidth + 'px','height': height + 'px'}" :src="src" @load="loadSuccess" @error="loadError" referrerPolicy="no-referrer" mode="aspectFit">
+		</image>
+	</view>
+	
 </template>
 
 <script>
