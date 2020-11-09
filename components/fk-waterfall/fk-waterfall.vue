@@ -70,7 +70,7 @@
 		
 	<!-- #ifdef APP-NVUE -->
 		<cell ref="topElement"></cell>
-		<cell v-for="(url,index) in urlList" :key="index" :style="{width: columnWidth + 'px'}">
+		<cell v-for="(url,index) in urlList" :key="index+url" :style="{width: columnWidth + 'px'}">
 			<fk-image :limitWidth="columnWidth" :src="url+'?x-oss-process=image/resize,h_600,w_600'" @loadSuccess="loadSuccess"></fk-image>
 		</cell>
 	</waterfall>
@@ -207,11 +207,13 @@
 			// #endif	
 		},
 		watch: {
+			// #ifndef APP-NVUE
 			urlList: async function(newUrlList,oldUrlList) {
 				this.urlCount = this.urlList.length
 				var urlList = this.urlList.slice(this.loadedCount,newUrlList.length)
 				await this.setWaterfall(urlList)
 			}
+			// #endif
 		},
 		methods: {
 			async setWaterfall (urlList) {

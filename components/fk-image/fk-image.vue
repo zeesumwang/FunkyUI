@@ -26,7 +26,7 @@
 			};
 		},
 		methods: {
-			scale: function(e) {
+			scale: async function(e) {
 				if(this.limitWidth == 0){
 					this.height = e.detail.height
 				}
@@ -34,8 +34,8 @@
 					this.height = e.detail.height * this.limitWidth / e.detail.width
 				}
 			},
-			loadSuccess: function(e) {
-				this.scale(e)
+			loadSuccess: async function(e) {
+				await this.scale(e)
 				this.$emit('loadSuccess',{'height': this.height,'url': this.src})
 			},
 			loadError: function(e) {
