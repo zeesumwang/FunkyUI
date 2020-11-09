@@ -74,6 +74,7 @@
 		
 		<template v-slot:mainPage1>
 			<fk-waterfall 
+				ref="fk-waterfall"
 				:columnCount="2"
 				:urlList="urlList"
 				:height="screenHeightPx" 
@@ -82,6 +83,7 @@
 				@refreshing="refreshing" 
 				@dragingDown="showFab" 
 				@dragingUp="hideFab"
+				@loadmore="loadmore"
 			>
 			</fk-waterfall>
 		</template>
@@ -154,14 +156,30 @@
 		onShow() {
 			
 		},
-		onPullDownRefresh() {
-			console.log("下拉刷新")
-			setTimeout(()=>{uni.stopPullDownRefresh()},1000)
-		},
+		// onPullDownRefresh() {
+		// 	console.log("下拉刷新")
+		// 	setTimeout(()=>{uni.stopPullDownRefresh()},1000)
+		// },
 		methods: {
+			loadmore: function() {
+				let newUrlList = this.urlList
+				for(var i = 0; i < 17; i++){
+					newUrlList.push(this.urlList[i])
+				}
+				this.urlList = newUrlList
+			},
 			refreshing: function() {
 				this.isRefresh = true
-				setTimeout(()=>{this.isRefresh = false},1000)
+				uni.showLoading({
+					title: "正在刷新.."
+				})
+				setTimeout(()=>{
+					this.isRefresh = false
+					uni.hideLoading()
+					uni.showToast({
+						title: "刷新成功"
+					})
+				},1000)
 			},
 			hideFab: function() {
 				this.isFabShow = false
@@ -187,6 +205,9 @@
 				if(e.clickId == 'home'){
 					this.$refs['fk-list'].backToTop()
 					console.log(e)
+				}
+				if(e.clickId == 'search') {
+					this.$refs['fk-waterfall'].backToTop()
 				}
 				// if(e.clickId == 'search'){
 				// 	uni.navigateTo({

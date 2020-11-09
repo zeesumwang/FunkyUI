@@ -1936,9 +1936,9 @@ function normalizeComponent (
 /***/ }),
 
 /***/ 17:
-/*!**********************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/FunkyUI/common/helper.js ***!
-  \**********************************************************************************/
+/*!*****************************************************************************!*\
+  !*** /Users/wangzishen/Documents/HBuilderProjects/FunkyUI/common/helper.js ***!
+  \*****************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -8074,9 +8074,9 @@ module.exports = g;
 /***/ }),
 
 /***/ 4:
-/*!****************************************************************************!*\
-  !*** C:/Users/Administrator/Documents/HBuilderProjects/FunkyUI/pages.json ***!
-  \****************************************************************************/
+/*!***********************************************************************!*\
+  !*** /Users/wangzishen/Documents/HBuilderProjects/FunkyUI/pages.json ***!
+  \***********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 

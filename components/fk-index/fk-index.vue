@@ -365,8 +365,10 @@
 	}
 	
 	.fabIcon {
+		/* #ifndef APP-NVUE */
 		transition-duration: 10ms;
 		transition-property: opacity;
+		/* #endif */
 	}
 
 </style>

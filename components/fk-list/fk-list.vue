@@ -29,6 +29,7 @@
 			@mousemove.native="mousemove($event)"
 			@mouseup="mouseup"
 			offset-accuracy="15"
+			:enable-flex="true"
 			:scroll-into-view="scrollIntoView"
 			:scroll-y="true" 
 			:scroll-with-animation="scrollWithAnimation"
@@ -48,7 +49,10 @@
 			:show-scrollbar="showScrollbar" 
 			:bounce="bounce"
 			:scrollable="true"
+			:loadmoreoffset="50"
+			:offset-accuracy="15"
 			@scroll="scroll"
+			@loadmore="loadmore"
 		>
 			<refresh v-if="hasRefresh" ref="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="isRefresh ? 'show' : 'hide'">
 				<view 
@@ -199,6 +203,7 @@
 				scrollWithAnimation: false,
 				scrollIntoView: '',
 				scrollTop: 0,
+				maxScrollTop: 0,
 				
 				latestY: 0,
 				movementY: 0,
@@ -216,6 +221,31 @@
 		mounted() {
 		},
 		methods: {
+			// #ifdef H5
+			// 节流
+			ThrottlePro: function (fn, interval) {
+			  // last为上一次触发回调的时间
+			  let last = 0
+			  
+			  // 将throttle处理结果当作函数返回
+			  return function () {
+				  // 保留调用时的this上下文
+				  let context = this
+				  // 保留调用时传入的参数
+				  let args = arguments
+				  // 记录本次触发回调的时间
+				  let now = +new Date()
+				  
+				  // 判断上次触发的时间和本次触发的时间差是否小于时间间隔的阈值
+				  if (now - last >= interval) {
+				  // 如果时间间隔大于我们设定的时间间隔阈值，则执行回调
+					console.log("执行")
+					last = now;
+					fn.apply(context, args);
+				  }
+				}
+			},
+			// #endif
 			backToTop: function() {
 				// #ifdef APP-NVUE
 				let topElement = this.$refs['topElement']
@@ -230,7 +260,9 @@
 				// #ifdef H5
 				this.scrollWithAnimation = true
 				this.scrollTop = 0
-				setTimeout(()=>{this.scrollWithAnimation = false},300)
+				this.$nextTick(()=>{
+					this.scrollWithAnimation = false
+				})
 				// #endif
 				
 				// #ifdef MP
@@ -250,6 +282,7 @@
 			},
 			scrolltolower: function(e) {
 				this.isBottom = true
+				this.loadmore()
 			},
 			detectScrollAction: function(e) {
 				let deltaY = 0 
@@ -266,11 +299,11 @@
 				// #endif
 				
 				// console.log(deltaY)/* 
-				if(this.isTouchDown == true && deltaY > 15) {
+				if(this.isTouchDown == true && deltaY > 8) {
 					this.$emit('dragingDown')
 					// console.log("向下拖动")
 				}
-				if(this.isTouchDown == true && deltaY < -15) {
+				if(this.isTouchDown == true && deltaY < -8) {
 					this.$emit('dragingUp')
 					// console.log("向上拖动")
 				}
@@ -327,6 +360,7 @@
 				// 同步PC端下鼠标点摁触摸的滚动和滚轮的滚动状态
 				// #ifdef H5
 				this.scrollTop = e.detail.scrollTop
+				this.maxScrollTop = e.detail.scrollHeight
 				// #endif
 				
 				if(e.detail.scrollTop <= 4){
@@ -378,13 +412,24 @@
 			// MDN文档(https://developer.mozilla.org/zh-CN/docs/Web/API/Element/mousemove_event)
 			// #ifdef H5
 			mousedown: function(e) {
+				if(this.isMouseDown){
+					this.isMouseDown = false
+					return
+				}
 				this.isMouseDown = true
-				// this.scrollWithAnimation = false
+				this.scrollWithAnimation = false
 				this.touchstart()
 			},
 			mousemove: function(e) {
+				this.fakeTouchMove(e)
+			},
+			fakeTouchMove: function(e) {
 				if(this.isMouseDown) {
-					this.scrollTop -= e.movementY
+					if(Math.abs(e.movementY) < 3){
+						return
+					}
+					let newScrollTop = Math.max(0, this.scrollTop - e.movementY)
+					this.scrollTop = Math.min(newScrollTop,this.maxScrollTop)
 					this.movementY += e.movementY
 					let touchevent = {'changedTouches':[{'pageY': e.screenY, 'pageX': e.screenX}]}
 					this.touchmove(touchevent)
@@ -392,16 +437,19 @@
 			},
 			mouseup: function(e) {
 				// PC端模拟移动端页面平滑滚动
-				// this.scrollWithAnimation = true
-				// var movementY = this.movementY
-				// var step = Math.abs(movementY)
-				// for(var i = 0; i < step;i++){
-				// 	let event = {"movementY": movementY * (1/step)}
-				// 	this.scrollTop -= event.movementY
-				// }
-				// this.scrollTop -= movementY
+				this.scrollWithAnimation = true
+				var movementY = this.movementY * 2
+				var step = Math.abs(movementY)
+				for(var i = 0; i < step;i++){
+					if(!this.isMouseDown){
+						return
+					}
+					let event = {"movementY": movementY * (1/step)}
+					this.scrollTop -= event.movementY
+				}
+				this.scrollTop -= movementY
 				// 置零平滑距离
-				// this.movementY = 0
+				this.movementY = 0
 				// 同步到触摸结束事件
 				this.isMouseDown = false
 				this.touchend()				
@@ -419,6 +467,10 @@
 				this.movedDistance = e.pullingDistance
 				this.isTouchMove = true
 				this.detectRefresh()
+			},
+			
+			loadmore: function() {
+				this.$emit('loadmore')
 			}
 		}
 	}

@@ -55,6 +55,7 @@
 	        justify-content: center;
 }
 .fabIcon.data-v-239b8d44 {
+
 	-webkit-transition-duration: 10ms;
 	        transition-duration: 10ms;
 	-webkit-transition-property: opacity;
