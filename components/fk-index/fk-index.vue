@@ -62,7 +62,7 @@
 		</swiper>
 
 		<label>
-			<fk-transition elevation="10px" :duration="250" :mode-class="fabModeClass" :styles="transfromClass" :show="isFabShow">
+			<fk-transition elevation="10px" :duration="200" :mode-class="fabModeClass" :styles="transfromClass" :show="isFabShow">
 				<view
 					v-for="(fab,index) in fabList" 
 					class="fabItem" 

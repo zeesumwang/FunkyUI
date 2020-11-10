@@ -207,6 +207,8 @@
 				
 				latestY: 0,
 				movementY: 0,
+				dragingDown: false,
+				dragingUp: false
 			};
 		},
 		beforeCreate() {
@@ -289,8 +291,10 @@
 				// #ifdef APP-NVUE
 				this.isTouchDown = e.isDragging
 				// NVUE下使用的<list>组件的@scroll事件，其Y轴变化量没给出，需要自行计算
-				deltaY = e.contentOffset.y - this.latestY
-				this.latestY = e.contentOffset.y
+				if(this.isTouchDown == true) {
+					deltaY = e.contentOffset.y - this.latestY
+					this.latestY = e.contentOffset.y
+				}
 				// #endif
 				
 				// #ifndef APP-NVUE
@@ -299,13 +303,21 @@
 				// #endif
 				
 				// console.log(deltaY)/* 
-				if(this.isTouchDown == true && deltaY > 8) {
-					this.$emit('dragingDown')
-					// console.log("向下拖动")
+				if(this.isTouchDown == true && deltaY > 10) {
+					if(this.dragingDown !== true) {
+						this.$emit('dragingDown')
+						this.dragingDown = true
+						this.dragingUp = false
+						console.log("向下拖动")
+					}
 				}
-				if(this.isTouchDown == true && deltaY < -8) {
-					this.$emit('dragingUp')
-					// console.log("向上拖动")
+				if(this.isTouchDown == true && deltaY < -30) {
+					if(this.dragingUp !== true) {
+						this.$emit('dragingUp')
+						this.dragingUp = true
+						this.dragingDown = false
+						console.log("向上拖动")
+					}
 				}
 			},
 			detectRefresh: function() {
@@ -335,13 +347,13 @@
 				}
 				else{
 					var movedY = e.changedTouches[0].pageY - this.moveStartY
-					if(movedY < 0){
+					if(movedY <= 0){
 						return
 					}
 					var movedX = Math.abs(e.changedTouches[0].pageX - this.moveStartX)
 					
 					// 当拖拽角度小于45度才进行下拉更新，tan45` = 1，对边比临边。
-					if(movedY !== 0 && movedX / movedY < 1 && movedX < this.maxPullingDistance) {
+					if(movedX / movedY < 1 && movedX < this.maxPullingDistance || movedY < 5) {
 						this.movedDistance = Math.min(movedY,this.maxPullingDistance)
 						this.detectRefresh()
 					}
@@ -425,14 +437,17 @@
 			},
 			fakeTouchMove: function(e) {
 				if(this.isMouseDown) {
-					if(Math.abs(e.movementY) < 3){
-						return
-					}
+					// if(Math.abs(e.movementY)<3 && !this.isTop){
+					// 	return
+					// }
 					let newScrollTop = Math.max(0, this.scrollTop - e.movementY)
 					this.scrollTop = Math.min(newScrollTop,this.maxScrollTop)
 					this.movementY += e.movementY
 					let touchevent = {'changedTouches':[{'pageY': e.screenY, 'pageX': e.screenX}]}
 					this.touchmove(touchevent)
+				}
+				else{
+					return
 				}
 			},
 			mouseup: function(e) {

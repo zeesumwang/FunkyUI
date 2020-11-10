@@ -326,7 +326,9 @@ var _default2 = { name: "fkList", props: { height: { type: Number, default: func
       maxScrollTop: 0,
 
       latestY: 0,
-      movementY: 0 };
+      movementY: 0,
+      dragingDown: false,
+      dragingUp: false };
 
   },
   beforeCreate: function beforeCreate() {
@@ -414,18 +416,28 @@ var _default2 = { name: "fkList", props: { height: { type: Number, default: func
 
 
 
+
+
       // 非NVUE下使用的<scroll-view>组件，其Y轴变化量已给出，直接获取
       deltaY = e.detail.deltaY;
 
 
       // console.log(deltaY)/* 
-      if (this.isTouchDown == true && deltaY > 8) {
-        this.$emit('dragingDown');
-        // console.log("向下拖动")
+      if (this.isTouchDown == true && deltaY > 10) {
+        if (this.dragingDown !== true) {
+          this.$emit('dragingDown');
+          this.dragingDown = true;
+          this.dragingUp = false;
+          console.log("向下拖动");
+        }
       }
-      if (this.isTouchDown == true && deltaY < -8) {
-        this.$emit('dragingUp');
-        // console.log("向上拖动")
+      if (this.isTouchDown == true && deltaY < -30) {
+        if (this.dragingUp !== true) {
+          this.$emit('dragingUp');
+          this.dragingUp = true;
+          this.dragingDown = false;
+          console.log("向上拖动");
+        }
       }
     },
     detectRefresh: function detectRefresh() {
@@ -455,13 +467,13 @@ var _default2 = { name: "fkList", props: { height: { type: Number, default: func
       } else
       {
         var movedY = e.changedTouches[0].pageY - this.moveStartY;
-        if (movedY < 0) {
+        if (movedY <= 0) {
           return;
         }
         var movedX = Math.abs(e.changedTouches[0].pageX - this.moveStartX);
 
         // 当拖拽角度小于45度才进行下拉更新，tan45` = 1，对边比临边。
-        if (movedY !== 0 && movedX / movedY < 1 && movedX < this.maxPullingDistance) {
+        if (movedX / movedY < 1 && movedX < this.maxPullingDistance || movedY < 5) {
           this.movedDistance = Math.min(movedY, this.maxPullingDistance);
           this.detectRefresh();
         }
@@ -530,6 +542,9 @@ var _default2 = { name: "fkList", props: { height: { type: Number, default: func
 
     // 在PC端监听mousedown/mousemove/mouseup事件模拟手机端触摸事件
     // MDN文档(https://developer.mozilla.org/zh-CN/docs/Web/API/Element/mousemove_event)
+
+
+
 
 
 

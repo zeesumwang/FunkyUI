@@ -17,12 +17,12 @@
 			},
 			limitWidth: {
 				type: Number,
-				default: 137.5
+				default: 168
 			}
 		},
 		data() {
 			return {
-				height: 0
+				height: 168
 			};
 		},
 		methods: {
