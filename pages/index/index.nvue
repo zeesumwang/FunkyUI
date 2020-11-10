@@ -30,7 +30,7 @@
 				</fk-cell>
 				
 				<fk-header>
-					<text style="color: #EBEBEB;font-size: 20px;text-align: center;background-color: #8F9CFF;">HEADER</text>
+					<text style="color: #EBEBEB;font-size: 20px;text-align: center;background-color: #8F9CFF;">STICK HEADER</text>
 				</fk-header>
 				
 				<fk-cell>
