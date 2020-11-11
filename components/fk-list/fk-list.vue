@@ -6,15 +6,31 @@
 		<!-- #ifndef APP-NVUE -->
 		<view
 			v-if="hasRefresh"
-			:class="{'pulldown':!isTouchMove && !isRefresh}" 
+			:class="{'pulldown':(!isTouchMove) && (!isRefresh)}" 
 			style="justify-content: center;align-items: center;flex-direction: row;" 
-			:style="{ height: (isTop == true && isTouchMove ? movedDistance : isRefresh ? movedDistance: 0) + 'px'}"
+			:style="{ height: (isTop == true && isTouchMove ? movedDistance : isRefresh || isTouchMove ? movedDistance: 0) + 'px'}"
 		>
-		
-			<image v-if="isRefresh" class="scroll-rotate" style="width: 30px;height: 30px;margin: 5px;" :src="refreshingIcon"></image>
-			<image v-if="!isRefresh" style="width: 30px;height: 30px;margin: 5px;" :style="{transform: 'rotate(' + rotateDegree + 'deg)'}" :src="pullingIcon"></image>
-			
-			<text style="width: 60px;" :style="{color: refreshTextColor, fontSize: refreshTextFontSize}">{{refreshTip}}</text>
+			<image 
+				v-if="isRefresh" 
+				class="scroll-rotate" 
+				style="width: 26px;height: 26px;margin: 7px;" 
+				:src="refreshingIcon">
+			</image>
+			<image 
+				v-if="!isRefresh && iconRealTimeRotate" 
+				style="width: 26px;height: 26px;margin: 7px;" 
+				:style="{transform: 'rotate(' + rotateDegree + 'deg)'}" 
+				:src="pullingIcon">
+			</image>
+			<image 
+				v-if="!isRefresh && (!iconRealTimeRotate)" 
+				class="refreshIcon"
+				:class="{'refreshIconActive': movedDistance >= refreshDistance}" 
+				:style="{width: isRefresh || isTouchMove == false ? 0 : '26px', margin: isRefresh  || isTouchMove == false ? 0 : '7px'}" 
+				:src="pullingIcon"
+			>
+			</image>
+			<text v-if="isTouchMove || isRefresh" style="width: 60px;" :style="{color: refreshTextColor, fontSize: refreshTextFontSize}">{{refreshTip}}</text>
 		</view>
 		
 		<scroll-view 
@@ -60,10 +76,11 @@
 					style="justify-content: center;align-items: center;flex-direction: row;flex-wrap: nowrap;" 
 					:style="{'width': width + 'px', 'height': maxPullingDistance + 'px'}"
 				>
-					<loading-indicator v-if="isRefresh" :animating="true" style="color: #FFFFFF;width: 20px;height: 20px;margin: 10px;"></loading-indicator>
-					<image class="refreshIcon" 
+					<loading-indicator v-if="isRefresh" :animating="true" style="width: 20px;height: 20px;margin: 10px;" :style="{color: refreshTextColor}"></loading-indicator>
+					<image 
+						class="refreshIcon" 
 						:class="{'refreshIconActive': movedDistance >= refreshDistance}" 
-						:style="{width: isRefresh || isTouchMove == false ? 0 : '30px', margin: isRefresh  || isTouchMove == false ? 0 : '5px'}" 
+						:style="{width: isRefresh || isTouchMove == false ? 0 : '26px', margin: isRefresh  || isTouchMove == false ? 0 : '7px'}" 
 						:src="pullingIcon"
 					>
 					</image>
@@ -119,6 +136,12 @@
 				type: Boolean,
 				default() {
 					return true
+				}
+			},
+			iconRealTimeRotate: {
+				type: Boolean,
+				default() {
+					return false
 				}
 			},
 			pullingIcon: {
@@ -278,7 +301,6 @@
 				// #endif
 				
 				// #endif
-				console.log('backingTop')
 			},
 			scrolltoupper: function(e) {
 				this.isTop = true
@@ -309,7 +331,7 @@
 						this.$emit('dragingDown')
 						this.dragingDown = true
 						this.dragingUp = false
-						console.log("向下拖动")
+						// console.log("向下拖动")
 					}
 				}
 				if(this.isTouchDown == true && deltaY < -30) {
@@ -317,7 +339,7 @@
 						this.$emit('dragingUp')
 						this.dragingUp = true
 						this.dragingDown = false
-						console.log("向上拖动")
+						// console.log("向上拖动")
 					}
 				}
 			},
@@ -347,14 +369,18 @@
 					this.isFirst = false
 				}
 				else{
+					// 计算当前Y轴偏移量
 					var movedY = e.changedTouches[0].pageY - this.moveStartY
-					if(movedY <= 0){
-						return
-					}
+					// 过滤/节流，只有1px的变化才会更新(已废弃，在手机端是采样触摸位置的原因，导致所有的偏移量都不是整数)
+					// if(movedY % 1 !== 0){
+					// 	console.log(movedY)
+					// 	return
+					// }
+					// 计算当前X轴偏移量
 					var movedX = Math.abs(e.changedTouches[0].pageX - this.moveStartX)
 					
 					// 当拖拽角度小于45度才进行下拉更新，tan45` = 1，对边比临边。
-					if(movedX / movedY < 1 && movedX < this.maxPullingDistance || movedY < 5) {
+					if(movedX / movedY < 1 && movedX < this.maxPullingDistance || this.movedDistance > 0) {
 						this.movedDistance = Math.min(movedY,this.maxPullingDistance)
 						this.detectRefresh()
 					}
@@ -497,14 +523,15 @@
 	/* 下拉松开回弹动画 */
 	.pulldown {
 		height: 0px;
-		transition-property: height;
+		opacity: 0;
+		transition-property: height opacity;
 		transition-duration: 300ms;
 	}
 	
 	/* 旋转动画 */
 	.scroll-rotate {
-		-webkit-animation: scrollRotate 0.6s linear infinite;
-		animation: scrollRotate 0.6s linear infinite;
+		-webkit-animation: scrollRotate 0.618s linear infinite;
+		animation: scrollRotate 0.618s linear infinite;
 	}
 	
 	@-webkit-keyframes scrollRotate {
@@ -526,13 +553,13 @@
 	/* #endif */
 	
 	.refreshIcon {
-		width: 30px;
-		height: 30px;
-		margin: 5px; 
+		width: 26px;
+		height: 26px;
+		margin: 7px; 
 		transition-duration: 200ms;
 		transition-property: transform;
 		transform: rotate(0deg); 
-		transform-origin: 15px 15px;
+		transform-origin: 13px 13px;
 	}
 	.refreshIconActive {
 		transform: rotate(180deg);

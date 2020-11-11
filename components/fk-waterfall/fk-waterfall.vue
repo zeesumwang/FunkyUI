@@ -17,10 +17,10 @@
 				style="justify-content: center;align-items: center;flex-direction: row;flex-wrap: nowrap;" 
 				:style="{'width': width + 'px', 'height': maxPullingDistance + 'px'}"
 			>
-				<loading-indicator v-if="isRefresh" :animating="true" style="color: #FFFFFF;width: 20px;height: 20px;margin: 10px;"></loading-indicator>
+				<loading-indicator v-if="isRefresh" :animating="true" style="width: 20px;height: 20px;margin: 10px;" :style="{color: refreshTextColor}"></loading-indicator>
 				<image class="refreshIcon" 
 					:class="{'refreshIconActive': movedDistance >= refreshDistance}" 
-					:style="{width: isRefresh || isTouchMove == false ? 0 : '30px', margin: isRefresh  || isTouchMove == false ? 0 : '5px'}" 
+					:style="{width: isRefresh || isTouchMove == false ? 0 : '26px', margin: isRefresh  || isTouchMove == false ? 0 : '7px'}" 
 					:src="pullingIcon"
 				>
 				</image>
@@ -365,18 +365,16 @@
 </script>
 
 <style scoped>
-	/* #ifdef APP-NVUE */
 	.refreshIcon {
-		width: 30px;
-		height: 30px;
-		margin: 5px; 
+		width: 26px;
+		height: 26px;
+		margin: 7px; 
 		transition-duration: 200ms;
 		transition-property: transform;
 		transform: rotate(0deg); 
-		transform-origin: 15px 15px;
+		transform-origin: 13px 13px;
 	}
 	.refreshIconActive {
 		transform: rotate(180deg);
 	}
-	/* #endif */
 </style>

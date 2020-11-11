@@ -9,7 +9,7 @@
 		  @change="swiperChange" 
 		  @transition="transition" 
 		  @animationfinish="animationfinish"
-		  duration="400"
+		  :duration="duration"
 		  :indicator-dots="false"
 		  :current="currentFabIndex"
 		  >
@@ -112,6 +112,10 @@
 				default() {
 					return []
 				}
+			},
+			duration: {
+				type: Number,
+				default: 300
 			},
 			isFabShow: {
 				type: Boolean,
