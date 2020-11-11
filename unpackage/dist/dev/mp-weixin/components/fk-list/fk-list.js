@@ -217,6 +217,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
 
 
+
 var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js */ 17));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} //
 //
 //
@@ -311,8 +312,8 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 //
-var _default2 = { name: "fkList", props: { height: { type: Number, default: function _default() {return 350;} }, width: { type: Number, default: function _default() {return 350;} }, hasRefresh: { type: Boolean, default: function _default() {return true;} }, pullingIcon: { type: String, default: function _default() {return "/static/pullingDown.png";} }, refreshingIcon: { type: String, default: function _default() {return "/static/refreshing.png";} }, showScrollbar: { type: Boolean, default: function _default() {return false;} }, bounce: { type: Boolean, default: function _default() {return true;} }, maxPullingDistance: { type: Number, default: function _default() {return 60;} }, refreshDistance: { type: Number, default: function _default() {return 55;} }, refreshTextColor: { type: String, default: function _default() {return "#ffffff";} }, refreshTextFontSize: { type: String, default: function _default() {return '12px';} }, isRefresh: { type: Boolean, default: function _default() {return false;} }, tips: { type: Object, default: function _default() {return { 'notSatisfied': '下拉刷新', 'satisfied': '释放刷新', 'release': '正在刷新..' };} } }, data: function data() {return { isTouchDown: false, isTouchMove: false, isTop: true, isBottom: false, isFirst: true,
-      moveStartY: 0,
+//
+var _default2 = { name: "fkList", props: { height: { type: Number, default: function _default() {return 350;} }, width: { type: Number, default: function _default() {return 350;} }, hasRefresh: { type: Boolean, default: function _default() {return true;} }, pullingIcon: { type: String, default: function _default() {return "/static/pullingDown.png";} }, refreshingIcon: { type: String, default: function _default() {return "/static/refreshing.png";} }, showScrollbar: { type: Boolean, default: function _default() {return false;} }, bounce: { type: Boolean, default: function _default() {return true;} }, maxPullingDistance: { type: Number, default: function _default() {return 60;} }, refreshDistance: { type: Number, default: function _default() {return 55;} }, refreshTextColor: { type: String, default: function _default() {return "#ffffff";} }, refreshTextFontSize: { type: String, default: function _default() {return '12px';} }, isRefresh: { type: Boolean, default: function _default() {return false;} }, tips: { type: Object, default: function _default() {return { 'notSatisfied': '下拉刷新', 'satisfied': '释放刷新', 'release': '正在刷新..' };} } }, data: function data() {return { isTouchDown: false, isTouchMove: false, isTop: true, isBottom: false, isFirst: true, moveStartY: 0,
       moveStartX: 0,
       movedDistance: 0,
       display: false,

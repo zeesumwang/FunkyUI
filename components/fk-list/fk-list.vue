@@ -28,6 +28,7 @@
 			@mousedown="mousedown"
 			@mousemove.native="mousemove($event)"
 			@mouseup="mouseup"
+			@mouseleave="mouseup"
 			offset-accuracy="15"
 			:enable-flex="true"
 			:scroll-into-view="scrollIntoView"
@@ -450,7 +451,7 @@
 					return
 				}
 			},
-			mouseup: function(e) {
+			mouseup: function() {
 				// PC端模拟移动端页面平滑滚动
 				this.scrollWithAnimation = true
 				var movementY = this.movementY * 2
