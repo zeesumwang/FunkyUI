@@ -14,13 +14,15 @@
 				v-if="isRefresh" 
 				class="scroll-rotate" 
 				style="width: 26px;height: 26px;margin: 7px;" 
-				:src="refreshingIcon">
+				:src="refreshingIcon"
+			>
 			</image>
 			<image 
 				v-if="!isRefresh && iconRealTimeRotate" 
 				style="width: 26px;height: 26px;margin: 7px;" 
 				:style="{transform: 'rotate(' + rotateDegree + 'deg)'}" 
-				:src="pullingIcon">
+				:src="pullingIcon"
+			>
 			</image>
 			<image 
 				v-if="!isRefresh && (!iconRealTimeRotate)" 
@@ -371,6 +373,10 @@
 				else{
 					// 计算当前Y轴偏移量
 					var movedY = e.changedTouches[0].pageY - this.moveStartY
+					// 如果movedY小于零，则为上拉，上拉不进行操作
+					if(movedY < 0) {
+						return
+					}
 					// 过滤/节流，只有1px的变化才会更新(已废弃，在手机端是采样触摸位置的原因，导致所有的偏移量都不是整数)
 					// if(movedY % 1 !== 0){
 					// 	console.log(movedY)

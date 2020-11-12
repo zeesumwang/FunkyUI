@@ -170,16 +170,12 @@
 			},
 			refreshing: function() {
 				this.isRefresh = true
-				// uni.showLoading({
-				// 	title: "正在刷新.."
-				// })
 				setTimeout(()=>{
 					this.isRefresh = false
-					uni.hideLoading()
 					uni.showToast({
 						title: "刷新成功"
 					})
-				},1000)
+				},1200)
 			},
 			hideFab: function() {
 				this.isFabShow = false

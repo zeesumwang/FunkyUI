@@ -1,7 +1,6 @@
 <template>
-	<view style="justify-content: center;align-items: center;">
-		<text v-if="height==0" style="color: #C0C0C0;position: absolute;">加载中..</text>
-		<image :style="{'width': limitWidth + 'px','height': height + 'px'}" :src="src" @load="loadSuccess" @error="loadError" referrerPolicy="no-referrer" mode="aspectFit">
+	<view>
+		<image :style="{'width': limitWidth + 'px','height': height + 'px'}" :src="src" @load="loadSuccess" @error="loadError" referrerPolicy="no-referrer" :mode="mode">
 		</image>
 	</view>
 	
@@ -18,7 +17,11 @@
 			limitWidth: {
 				type: Number,
 				default: 168
-			}
+			},
+			mode: {
+				type: String,
+				default: 'scaleToFill'
+			}			
 		},
 		data() {
 			return {
