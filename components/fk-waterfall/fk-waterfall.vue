@@ -369,7 +369,7 @@
 		width: 26px;
 		height: 26px;
 		margin: 7px; 
-		transition-duration: 200ms;
+		transition-duration: 150ms;
 		transition-property: transform;
 		transform: rotate(0deg); 
 		transform-origin: 13px 13px;

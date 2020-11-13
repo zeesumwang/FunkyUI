@@ -572,8 +572,8 @@
 	width: 26px;
 	height: 26px;
 	margin: 7px; 
-	-webkit-transition-duration: 200ms; 
-	        transition-duration: 200ms;
+	-webkit-transition-duration: 150ms; 
+	        transition-duration: 150ms;
 	-webkit-transition-property: -webkit-transform;
 	transition-property: -webkit-transform;
 	transition-property: transform;

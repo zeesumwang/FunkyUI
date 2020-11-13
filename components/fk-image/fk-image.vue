@@ -20,8 +20,14 @@
 			},
 			mode: {
 				type: String,
+				// #ifdef APP-NVUE
+				default: 'aspectFit',
+				// #endif
+				// #ifndef APP-NVUE
 				default: 'scaleToFill'
-			}			
+				// #endif
+			},
+			
 		},
 		data() {
 			return {
