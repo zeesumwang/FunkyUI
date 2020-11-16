@@ -78,7 +78,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "components", function() { return components; });
 var components = {
   fkTransition: function() {
-    return __webpack_require__.e(/*! import() | components/fk-transition/fk-transition */ "components/fk-transition/fk-transition").then(__webpack_require__.bind(null, /*! @/components/fk-transition/fk-transition.vue */ 59))
+    return __webpack_require__.e(/*! import() | components/fk-transition/fk-transition */ "components/fk-transition/fk-transition").then(__webpack_require__.bind(null, /*! @/components/fk-transition/fk-transition.vue */ 64))
   }
 }
 var render = function() {
@@ -320,11 +320,9 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 //
-var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: function _default() {return [];} }, duration: { type: Number, default: 300 }, isFabShow: { type: Boolean, default: function _default() {return true;} }, backgroundColor: { type: String, default: function _default() {return '#1e1e1e';} }, opacity: { type: Number, default: function _default() {return 1;} }, borderRadius: { type: Number, default: function _default() {return 50;} }, fabModeClass: { type: Array, default: function _default() {return ['fade', 'zoom-in', 'slide-bottom'];} }, position: { type: String, default: function _default() {return 'right';} }, widthScale: { type: Number, default: function _default() {return 0.618;} }, bottom: { type: Number, default: function _default() {return 21;} }, hideCount: { type: Number, default: function _default() {return 1;} }, current: { type: Number, default: function _default() {return 0;} } }, data: function data() {return { transfromClass: {}, isFabClick: false, isContinuity: 0, currentFabIndex: 0, virtualCurrentFabIndex: 0, virtualCurrentFabIndexOpacity: 1, targetFabIndex: '', targetFabIndexOpacity: 0.2, screenHeight: '', screenHeightPx: {}, screenWidthPx: '', statusBarHeight: '' };}, created: function created() {// 设置显示页加上负一屏的偏移
-    this.currentFabIndex = this.current + this.hideCount;this.virtualCurrentFabIndex = this.current + this.hideCount;
-    // 获取全局变量中的屏幕宽高		
-    this.screenHeightPx = _helper.default.screenHeightPx;
-    this.screenWidthPx = _helper.default.screenWidthPx;
+var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: function _default() {return [];} }, duration: { type: Number, default: 300 }, isFabShow: { type: Boolean, default: function _default() {return true;} }, backgroundColor: { type: String, default: function _default() {return "30,30,30,0.618";} }, opacity: { type: Number, default: 0.8 }, borderRadius: { type: Number, default: function _default() {return 50;} }, fabModeClass: { type: Array, default: function _default() {return ['fade', 'zoom-in', 'slide-bottom'];} }, position: { type: String, default: function _default() {return 'right';} }, widthScale: { type: Number, default: function _default() {return 0.618;} }, bottom: { type: Number, default: function _default() {return 21;} }, hideCount: { type: Number, default: function _default() {return 1;} }, current: { type: Number, default: function _default() {return 0;} } }, data: function data() {return { transfromClass: {}, isFabClick: false, isContinuity: 0, currentFabIndex: 0, virtualCurrentFabIndex: 0, virtualCurrentFabIndexOpacity: 1, targetFabIndex: '', targetFabIndexOpacity: 0.2, screenHeight: '', screenHeightPx: {}, screenWidthPx: '', statusBarHeight: '' };}, created: function created() {// 设置显示页加上负一屏的偏移
+    this.currentFabIndex = this.current + this.hideCount;this.virtualCurrentFabIndex = this.current + this.hideCount; // 获取全局变量中的屏幕宽高		
+    this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;
     this.statusBarHeight = _helper.default.system.statusBarHeight;
 
     this.transfromClass = {
@@ -332,12 +330,10 @@ var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: fun
 
       'display': 'flex',
 
-      'background-color': this.backgroundColor,
-      'opacity': this.opacity,
-      'justify-content': 'space-around',
-      'align-items': 'center',
-      'border-radius': this.borderRadius + 'px',
-      'flex-direction': 'row',
+      'justifyContent': 'space-around',
+      'alignItems': 'center',
+      'borderRadius': this.borderRadius + 'px',
+      'flexDirection': 'row',
       'width': Math.max(200, this.screenWidthPx * this.widthScale) + 'px',
       'bottom': this.bottom + 'px' };
 

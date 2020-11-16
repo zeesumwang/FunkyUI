@@ -62,7 +62,7 @@
 		</swiper>
 
 		<label>
-			<fk-transition elevation="10px" :duration="200" :mode-class="fabModeClass" :styles="transfromClass" :show="isFabShow">
+			<fk-transition :elevation="10" :blurEffect="'dark'" :backgroundColor="backgroundColor" :opacity="opacity" :duration="200" :mode-class="fabModeClass" :styles="transfromClass" :show="isFabShow">
 				<view
 					v-for="(fab,index) in fabList" 
 					class="fabItem" 
@@ -126,14 +126,12 @@
 			backgroundColor: {
 				type: String,
 				default() {
-					return '#1e1e1e'
+					return "30,30,30,0.618"
 				}
 			},
 			opacity: {
 				type: Number,
-				default() {
-					return 1
-				}
+				default: 0.8
 			},
 			borderRadius: {
 				type: Number,
@@ -212,12 +210,10 @@
 					/* #ifndef APP-NVUE */
 					'display': 'flex',
 					/* #endif */
-					'background-color': this.backgroundColor,
-					'opacity': this.opacity,
-					'justify-content': 'space-around',
-					'align-items': 'center',
-					'border-radius': this.borderRadius + 'px',
-					'flex-direction': 'row',
+					'justifyContent': 'space-around',
+					'alignItems': 'center',
+					'borderRadius': this.borderRadius + 'px',
+					'flexDirection': 'row',
 					'width': Math.max(200, this.screenWidthPx * this.widthScale) + 'px',
 					'bottom': this.bottom + 'px',
 				}

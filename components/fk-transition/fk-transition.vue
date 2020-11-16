@@ -1,11 +1,20 @@
 <template>
-	<view v-if="isShow" ref="ani" class="uni-transition" :class="[ani.in]" :style="'transform:' +transform+';'+stylesObject"
-	 @click="change">
+	<view 
+		v-if="isShow" 
+		ref="ani" 
+		class="uni-transition" 
+		:class="[ani.in]" 
+		:blurEffect="blurEffect" 
+		:elevation="elevation" 
+		:style="'transform:' +transform+';'+stylesObject+'background-color:'+rgbaObject.rgba+';'"
+		@click="change"
+	>
 		 <slot></slot>
 	</view>
 </template>
 
 <script>
+	import screenInfo from "@/common/helper.js"
 	// #ifdef APP-NVUE
 	const animation = uni.requireNativePlugin('animation');
 	// #endif
@@ -47,6 +56,24 @@
 				default () {
 					return {}
 				}
+			},
+			backgroundColor: {
+				type: String,
+				default: ''
+			},
+			opacity: {
+				type: Number,
+				default() {
+					return 0.8
+				}
+			},
+			blurEffect: {
+				type: String,
+				default: 'none'
+			},
+			elevation: {
+				type: String,
+				default: "10"
 			}
 		},
 		data() {
@@ -82,6 +109,23 @@
 					transfrom += line + ':' + styles[i] + ';'
 				}
 				return transfrom
+			},
+			rgbaObject() {
+				let hex = this.backgroundColor
+				let opacity = 1
+				if(this.blurEffect == 'dark' && screenInfo.system.brand == "Apple"){
+					opacity = 0.8
+				}
+				else{
+					opacity = this.opacity
+				}
+			    var RGBA = "rgba(" + parseInt("0x" + hex.slice(1, 3)) + "," + parseInt("0x" + hex.slice(3, 5)) + "," + parseInt( "0x" + hex.slice(5, 7)) + "," + opacity + ")";
+			    return {
+			        red: parseInt("0x" + hex.slice(1, 3)),
+			        green: parseInt("0x" + hex.slice(3, 5)),
+			        blue: parseInt("0x" + hex.slice(5, 7)),
+			        rgba: RGBA
+			    }
 			}
 		},
 		created() {
@@ -91,6 +135,9 @@
 			// 	this.timer = setTimeout(resolve, time)
 			// 	return this.timer
 			// });
+		},
+		mounted() {
+			
 		},
 		methods: {
 			change() {

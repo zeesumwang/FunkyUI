@@ -18,11 +18,11 @@
 	/* #ifndef APP-NVUE */
 	/* 在非APP端隐藏所有页面的滚动条 */
 	::-webkit-scrollbar {
-	    display: none;  
-	    width: 0 !important;  
-	    height: 0 !important;  
+	    display: none; 
+	    width: 0px !important;  
+	    height: 0px !important;  
 	    -webkit-appearance: none;  
-	    background: transparent;  
+	    background-color: #007AFF;  
 	}
 	/* 禁止在PC端的图片元素被鼠标拖动 */
 	img {
