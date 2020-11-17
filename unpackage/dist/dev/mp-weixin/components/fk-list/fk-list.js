@@ -352,6 +352,7 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 var _default2 = { name: "fkList", props: { height: { type: Number, default: function _default() {return 350;} }, width: { type: Number, default: function _default() {return 350;} }, hasRefresh: { type: Boolean, default: function _default() {return true;} }, iconRealTimeRotate: { type: Boolean, default: function _default() {return false;} }, pullingIcon: { type: String, default: function _default() {return "/static/pullingDown.png";} }, refreshingIcon: { type: String, default: function _default() {return "/static/refreshing.png";} }, showScrollbar: { type: Boolean, default: function _default() {return false;} }, bounce: { type: Boolean, default: function _default() {return true;} }, maxPullingDistance: { type: Number, default: function _default() {return 60;} }, refreshDistance: { type: Number, default: function _default() {return 55;} }, refreshTextColor: { type: String, default: function _default() {return "#ffffff";} }, refreshTextFontSize: { type: String, default: function _default() {return '12px';} }, isRefresh: { type: Boolean, default: function _default() {return false;} }, tips: { type: Object, default: function _default() {return { 'notSatisfied': '下拉刷新', 'satisfied': '释放刷新', 'release': '正在刷新..' };} } }, data: function data() {return { isTouchDown: false, isTouchMove: false, isTop: true, isBottom: false, isFirst: true, moveStartY: 0, moveStartX: 0, movedDistance: 0, display: false, isMouseDown: false, rotateDegree: 0, refreshTip: '', scrollWithAnimation: false, scrollIntoView: '', scrollTop: 0, maxScrollTop: 0, latestY: 0,
+      lastHeight: 0,
       movementY: 0,
       dragingDown: false,
       dragingUp: false };
@@ -443,25 +444,37 @@ var _default2 = { name: "fkList", props: { height: { type: Number, default: func
 
 
 
+
+
+
       // 非NVUE下使用的<scroll-view>组件，其Y轴变化量已给出，直接获取
       deltaY = e.detail.deltaY;
 
 
       // console.log(deltaY)/* 
-      if (this.isTouchDown == true && deltaY > 10) {
+      if (this.isTouchDown == true && deltaY > 10 && deltaY < 80) {
         if (this.dragingDown !== true) {
-          this.$emit('dragingDown');
-          this.dragingDown = true;
-          this.dragingUp = false;
-          // console.log("向下拖动")
+          // 过滤在bounce回弹效果下，上拉加载更多时触发的Y轴变化
+          var isLoadMoreBounce = e.contentSize.height !== this.lastHeight;
+          this.lastHeight = e.contentSize.height;
+          if (isLoadMoreBounce) {
+            // console.log("过滤在bounce回弹效果下，上拉加载更多时触发的Y轴变化")
+            return;
+          } else
+          {
+            this.$emit('dragingDown');
+            this.dragingDown = true;
+            this.dragingUp = false;
+            console.log("向下拖动", deltaY);
+          }
         }
       }
-      if (this.isTouchDown == true && deltaY < -30) {
+      if (this.isTouchDown == true && deltaY < -30 && deltaY > -80) {
         if (this.dragingUp !== true) {
           this.$emit('dragingUp');
           this.dragingUp = true;
           this.dragingDown = false;
-          // console.log("向上拖动")
+          // console.log("向上提拉",deltaY,this.isTouchDown)
         }
       }
     },

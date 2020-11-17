@@ -232,6 +232,7 @@
 				maxScrollTop: 0,
 				
 				latestY: 0,
+				lastHeight: 0,
 				movementY: 0,
 				dragingDown: false,
 				dragingUp: false
@@ -313,13 +314,16 @@
 			},
 			detectScrollAction: function(e) {
 				let deltaY = 0 
+				
 				// #ifdef APP-NVUE
+				// NVUE下不监听touchstart事件，是否有手指触摸屏幕由scroll事件中的isDragging属性确定
 				this.isTouchDown = e.isDragging
 				// NVUE下使用的<list>组件的@scroll事件，其Y轴变化量没给出，需要自行计算
 				if(this.isTouchDown == true) {
 					deltaY = e.contentOffset.y - this.latestY
 					this.latestY = e.contentOffset.y
 				}
+				// console.log(e.contentSize.height,e.contentOffset.y)
 				// #endif
 				
 				// #ifndef APP-NVUE
@@ -328,20 +332,29 @@
 				// #endif
 				
 				// console.log(deltaY)/* 
-				if(this.isTouchDown == true && deltaY > 10) {
+				if(this.isTouchDown == true && deltaY > 10 && deltaY < 80) {
 					if(this.dragingDown !== true) {
-						this.$emit('dragingDown')
-						this.dragingDown = true
-						this.dragingUp = false
-						// console.log("向下拖动")
+						// 过滤在bounce回弹效果下，上拉加载更多时触发的Y轴变化
+						let isLoadMoreBounce = (e.contentSize.height!==this.lastHeight)
+						this.lastHeight = e.contentSize.height
+						if(isLoadMoreBounce){
+							// console.log("过滤在bounce回弹效果下，上拉加载更多时触发的Y轴变化")
+							return
+						}
+						else{
+							this.$emit('dragingDown')
+							this.dragingDown = true
+							this.dragingUp = false
+							console.log("向下拖动",deltaY)
+						}
 					}
 				}
-				if(this.isTouchDown == true && deltaY < -30) {
+				if(this.isTouchDown == true && deltaY < -30 && deltaY > -80) {
 					if(this.dragingUp !== true) {
 						this.$emit('dragingUp')
 						this.dragingUp = true
 						this.dragingDown = false
-						// console.log("向上拖动")
+						// console.log("向上提拉",deltaY,this.isTouchDown)
 					}
 				}
 			},
