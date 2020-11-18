@@ -5,7 +5,7 @@
 		class="uni-transition" 
 		:class="[ani.in]" 
 		:blurEffect="blurEffect" 
-		:elevation="elevation" 
+		:elevation="elevation + 'px'" 
 		:style="'transform:' +transform+';'+stylesObject+'background-color:'+rgbaObject.rgba+';'"
 		@click="change"
 	>
@@ -72,8 +72,8 @@
 				default: 'none'
 			},
 			elevation: {
-				type: String,
-				default: "10"
+				type: Number,
+				default: 10
 			}
 		},
 		data() {

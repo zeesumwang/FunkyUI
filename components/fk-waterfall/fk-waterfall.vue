@@ -260,9 +260,14 @@
 				this.$refs['fk-list'].backToTop()
 				// #endif
 			},
+			
+			// 以下函数只在APP-NVUE中编译
+			// #ifdef APP-NVUE
 			detectScrollAction: function(e) {
 				let deltaY = 0 
+				
 				// #ifdef APP-NVUE
+				// NVUE下不监听touchstart事件，是否有手指触摸屏幕由scroll事件中的isDragging属性确定
 				this.isTouchDown = e.isDragging
 				// NVUE下使用的<list>组件的@scroll事件，其Y轴变化量没给出，需要自行计算
 				if(this.isTouchDown == true) {
@@ -280,19 +285,19 @@
 				// console.log(deltaY)/* 
 				if(this.isTouchDown == true && deltaY > 10 && deltaY < 80) {
 					if(this.dragingDown !== true) {
-						// 过滤在bounce回弹效果下，上拉加载更多时触发的Y轴变化
+						// #ifdef APP-NVUE
+						// 过滤在APP安卓端bounce回弹效果下，上拉加载更多时触发的Y轴变化
 						let isLoadMoreBounce = (e.contentSize.height!==this.lastHeight)
 						this.lastHeight = e.contentSize.height
 						if(isLoadMoreBounce){
 							// console.log("过滤在bounce回弹效果下，上拉加载更多时触发的Y轴变化")
 							return
 						}
-						else{
-							this.$emit('dragingDown')
-							this.dragingDown = true
-							this.dragingUp = false
-							console.log("向下拖动",deltaY)
-						}
+						// #endif
+						this.$emit('dragingDown')
+						this.dragingDown = true
+						this.dragingUp = false
+						// console.log("向下拖动",deltaY)						
 					}
 				}
 				if(this.isTouchDown == true && deltaY < -30 && deltaY > -80) {
@@ -371,7 +376,8 @@
 				this.movedDistance = e.pullingDistance
 				this.isTouchMove = true
 				this.detectRefresh()
-			}
+			},
+			// #endif
 		}
 	}
 </script>

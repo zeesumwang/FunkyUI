@@ -334,19 +334,19 @@
 				// console.log(deltaY)/* 
 				if(this.isTouchDown == true && deltaY > 10 && deltaY < 80) {
 					if(this.dragingDown !== true) {
-						// 过滤在bounce回弹效果下，上拉加载更多时触发的Y轴变化
+						// #ifdef APP-NVUE
+						// 过滤在APP安卓端bounce回弹效果下，上拉加载更多时触发的Y轴变化
 						let isLoadMoreBounce = (e.contentSize.height!==this.lastHeight)
 						this.lastHeight = e.contentSize.height
 						if(isLoadMoreBounce){
 							// console.log("过滤在bounce回弹效果下，上拉加载更多时触发的Y轴变化")
 							return
 						}
-						else{
-							this.$emit('dragingDown')
-							this.dragingDown = true
-							this.dragingUp = false
-							console.log("向下拖动",deltaY)
-						}
+						// #endif
+						this.$emit('dragingDown')
+						this.dragingDown = true
+						this.dragingUp = false
+						// console.log("向下拖动",deltaY)						
 					}
 				}
 				if(this.isTouchDown == true && deltaY < -30 && deltaY > -80) {

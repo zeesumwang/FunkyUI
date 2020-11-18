@@ -188,8 +188,8 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
       default: 'none' },
 
     elevation: {
-      type: String,
-      default: "10" } },
+      type: Number,
+      default: 10 } },
 
 
   data: function data() {
