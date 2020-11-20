@@ -1,4 +1,3 @@
-import webview
 
 import webview
 
@@ -29,7 +28,7 @@ if __name__ == '__main__':
                           'http://192.168.2.22:8081/#/',
                            width=1033,
                            height=800,
-                           on_top=True,
+                           on_top=False,
                            fullscreen=False,
                            text_select=True,
                            resizable=True,
