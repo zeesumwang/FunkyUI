@@ -109,7 +109,7 @@
 /******/ 		if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 		else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 			promises.push(installedCssChunks[chunkId] = new Promise(function(resolve, reject) {
-/******/ 				var href = "" + ({"components/fk-waterfall/fk-waterfall":"components/fk-waterfall/fk-waterfall","components/fk-cell/fk-cell":"components/fk-cell/fk-cell","components/fk-header/fk-header":"components/fk-header/fk-header","components/fk-index/fk-index":"components/fk-index/fk-index","components/fk-list/fk-list":"components/fk-list/fk-list","components/fk-image/fk-image":"components/fk-image/fk-image","components/fk-transition/fk-transition":"components/fk-transition/fk-transition"}[chunkId]||chunkId) + ".wxss";
+/******/ 				var href = "" + ({"components/fk-waterfall/fk-waterfall":"components/fk-waterfall/fk-waterfall","components/fk-cell/fk-cell":"components/fk-cell/fk-cell","components/fk-header/fk-header":"components/fk-header/fk-header","components/fk-index/fk-index":"components/fk-index/fk-index","components/fk-list/fk-list":"components/fk-list/fk-list","components/fk-notied/fk-notied":"components/fk-notied/fk-notied","components/fk-image/fk-image":"components/fk-image/fk-image","components/fk-transition/fk-transition":"components/fk-transition/fk-transition"}[chunkId]||chunkId) + ".wxss";
 /******/ 				var fullhref = __webpack_require__.p + href;
 /******/ 				var existingLinkTags = document.getElementsByTagName("link");
 /******/ 				for(var i = 0; i < existingLinkTags.length; i++) {

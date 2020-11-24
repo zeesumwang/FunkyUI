@@ -1,5 +1,6 @@
 <template>
-	<fk-transition :elevation="10" :blurEffect="'dark'" :backgroundColor="backgroundColor" :opacity="opacity" :duration="200" :mode-class="['fade','slide-top']" :styles="transfromClass" :show="isNotied">
+	<fk-transition :blurEffect="'none'" :backgroundColor="backgroundColor" :opacity="opacity" :duration="200"
+	 :mode-class="['fade','slide-top','zoom-in']" :styles="transfromClass" :show="isNotied">
 		<text>{{msg}}</text>
 	</fk-transition>
 </template>
@@ -13,7 +14,7 @@
 			},
 			msg: {
 				type: String,
-				default: ""
+				default: "展示通知"
 			},
 			backgroundColor: {
 				type: String,
@@ -21,12 +22,24 @@
 			},
 			opacity: {
 				type: Number,
-				default: 0.98
+				default: 0
 			}
-		}
+		},
 		data() {
 			return {
-				transfromClass: {}
+				transfromClass: {
+					'position': 'fixed',
+					/* #ifndef APP-NVUE */
+					'display': 'flex',
+					/* #endif */
+					'justifyContent': 'center',
+					'alignItems': 'center',
+					'borderRadius': '50px',
+					'top': '0px',
+					'height': '150px',
+					'marginLeft': 'auto',
+					'marginRight': 'auto'
+				}
 			};
 		}
 	}

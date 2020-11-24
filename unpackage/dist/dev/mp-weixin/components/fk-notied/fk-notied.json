@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "fk-transition": "/components/fk-transition/fk-transition"
+  },
+  "component": true
+}

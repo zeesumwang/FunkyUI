@@ -47,7 +47,7 @@
 			@mousemove.native="mousemove($event)"
 			@mouseup="mouseup"
 			@mouseleave="mouseup"
-			offset-accuracy="15"
+			:offset-accuracy="15"
 			:enable-flex="true"
 			:scroll-into-view="scrollIntoView"
 			:scroll-y="true" 
@@ -70,6 +70,7 @@
 			:scrollable="true"
 			:loadmoreoffset="50"
 			:offset-accuracy="15"
+			:alwaysScrollableVertical="true"
 			@scroll="scroll"
 			@loadmore="loadmore"
 		>
@@ -520,7 +521,6 @@
 			
 			// nvue下释放刷新也转到touchend
 			onrefresh: function(e) {
-				console.log(e)
 				this.touchend()
 			},
 			onpullingdown: function(e) {

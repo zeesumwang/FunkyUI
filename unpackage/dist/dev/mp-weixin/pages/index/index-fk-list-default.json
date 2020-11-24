@@ -1,8 +1,7 @@
 {
-  "navigationStyle": "custom",
-  "backgroundColor": "#0d0d0d",
-  "disableScroll": true,
+  "component": true,
   "usingComponents": {
+    "index-fk-list-default": "/pages/index/index-fk-list-default",
     "fk-index": "/components/fk-index/fk-index",
     "fk-notied": "/components/fk-notied/fk-notied",
     "fk-list": "/components/fk-list/fk-list",

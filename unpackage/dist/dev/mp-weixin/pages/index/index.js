@@ -103,6 +103,9 @@ var components = {
   fkIndex: function() {
     return __webpack_require__.e(/*! import() | components/fk-index/fk-index */ "components/fk-index/fk-index").then(__webpack_require__.bind(null, /*! @/components/fk-index/fk-index.vue */ 28))
   },
+  fkNotied: function() {
+    return __webpack_require__.e(/*! import() | components/fk-notied/fk-notied */ "components/fk-notied/fk-notied").then(__webpack_require__.bind(null, /*! @/components/fk-notied/fk-notied.vue */ 84))
+  },
   fkList: function() {
     return __webpack_require__.e(/*! import() | components/fk-list/fk-list */ "components/fk-list/fk-list").then(__webpack_require__.bind(null, /*! @/components/fk-list/fk-list.vue */ 35))
   },
@@ -268,35 +271,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js */ 17));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //

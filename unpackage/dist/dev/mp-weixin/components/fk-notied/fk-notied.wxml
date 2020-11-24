@@ -1,0 +1,1 @@
+<fk-transition vue-id="0f59bac6-1" blurEffect="none" backgroundColor="{{backgroundColor}}" opacity="{{opacity}}" duration="{{200}}" mode-class="{{['fade','slide-top','zoom-in']}}" styles="{{transfromClass}}" show="{{isNotied}}" bind:__l="__l" vue-slots="{{['default']}}"><text>{{msg}}</text></fk-transition>

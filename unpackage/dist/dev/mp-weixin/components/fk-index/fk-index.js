@@ -78,7 +78,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "components", function() { return components; });
 var components = {
   fkTransition: function() {
-    return __webpack_require__.e(/*! import() | components/fk-transition/fk-transition */ "components/fk-transition/fk-transition").then(__webpack_require__.bind(null, /*! @/components/fk-transition/fk-transition.vue */ 64))
+    return __webpack_require__.e(/*! import() | components/fk-transition/fk-transition */ "components/fk-transition/fk-transition").then(__webpack_require__.bind(null, /*! @/components/fk-transition/fk-transition.vue */ 59))
   }
 }
 var render = function() {
@@ -119,39 +119,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -288,41 +255,41 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: function _default() {return [];} }, duration: { type: Number, default: 300 }, isFabShow: { type: Boolean, default: function _default() {return true;} }, backgroundColor: { type: String, default: function _default() {return "30,30,30,0.618";} }, opacity: { type: Number, default: 0.8 }, borderRadius: { type: Number, default: function _default() {return 50;} }, fabModeClass: { type: Array, default: function _default() {return ['fade', 'zoom-in', 'slide-bottom'];} }, position: { type: String, default: function _default() {return 'right';} }, widthScale: { type: Number, default: function _default() {return 0.618;} }, bottom: { type: Number, default: function _default() {return 21;} }, hideCount: { type: Number, default: function _default() {return 1;} }, current: { type: Number, default: function _default() {return 0;} } }, data: function data() {return { transfromClass: {}, isFabClick: false, isContinuity: 0, currentFabIndex: 0, virtualCurrentFabIndex: 0, virtualCurrentFabIndexOpacity: 1, targetFabIndex: '', targetFabIndexOpacity: 0.2, screenHeight: '', screenHeightPx: {}, screenWidthPx: '', statusBarHeight: '' };}, created: function created() {// 设置显示页加上负一屏的偏移
-    this.currentFabIndex = this.current + this.hideCount;this.virtualCurrentFabIndex = this.current + this.hideCount; // 获取全局变量中的屏幕宽高		
-    this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;
+var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: function _default() {return [];} }, duration: { type: Number, default: 300 }, isFabShow: { type: Boolean, default: function _default() {return true;} }, backgroundColor: { type: String, default: function _default() {return "30,30,30,0.618";} }, opacity: { type: Number, default: 0.8 }, borderRadius: { type: Number, default: function _default() {return 50;} }, fabModeClass: { type: Array, default: function _default() {return ['fade', 'zoom-in', 'slide-bottom'];} }, position: { type: String, default: function _default() {return 'right';} }, widthScale: { type: Number, default: function _default() {return 0.618;} }, bottom: { type: Number, default: function _default() {return 21;} }, hideCount: { type: Number, default: function _default() {return 1;} },
+    current: {
+      type: Number,
+      default: function _default() {
+        return 0;
+      } } },
+
+
+  data: function data() {
+    return {
+      transfromClass: {},
+
+      isFabClick: false,
+      isContinuity: 0,
+
+      currentFabIndex: 0,
+      virtualCurrentFabIndex: 0,
+      virtualCurrentFabIndexOpacity: 1,
+      targetFabIndex: '',
+      targetFabIndexOpacity: 0.2,
+
+      screenHeight: '',
+      screenHeightPx: {},
+      screenWidthPx: '',
+      statusBarHeight: '' };
+
+  },
+  created: function created() {
+    // 设置显示页加上负一屏的偏移
+    this.currentFabIndex = this.current + this.hideCount;
+    this.virtualCurrentFabIndex = this.current + this.hideCount;
+
+    // 获取全局变量中的屏幕宽高		
+    this.screenHeightPx = _helper.default.screenHeightPx;
+    this.screenWidthPx = _helper.default.screenWidthPx;
     this.statusBarHeight = _helper.default.system.statusBarHeight;
 
     this.transfromClass = {
@@ -339,8 +306,7 @@ var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: fun
 
     if (this.position == 'left') {
       this.transfromClass.right = (this.screenWidthPx - Math.max(200, this.screenWidthPx * this.widthScale)) / 2 + 'px';
-    } else
-    {
+    } else {
       this.transfromClass.left = (this.screenWidthPx - Math.max(200, this.screenWidthPx * this.widthScale)) / 2 + 'px';
     }
   },
@@ -355,26 +321,22 @@ var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: fun
       }
 
       // 对连续的滑屏事件进行dx校准，在连续滑屏的时候只有一段连续的transition事件
-
       if (e.detail.dx > 0) {
         var dx = e.detail.dx - this.screenWidthPx * this.isContinuity;
-      } else
-      {
+      } else {
         var dx = e.detail.dx + this.screenWidthPx * this.isContinuity;
       }
 
       if (dx > 0 && this.virtualCurrentFabIndex != 4) {
         this.targetFabIndex = this.virtualCurrentFabIndex + 1;
-      } else
-      if (dx < 0 && this.virtualCurrentFabIndex != 0) {
+      } else if (dx < 0 && this.virtualCurrentFabIndex != 0) {
         this.targetFabIndex = this.virtualCurrentFabIndex - 1;
       }
 
       this.targetFabIndexOpacity = Math.max(1.0 * Math.abs(dx) / this.screenWidthPx, 0.2);
       this.virtualCurrentFabIndexOpacity = Math.max(1.2 - this.targetFabIndexOpacity, 0.2);
 
-
-      // 优化H5连续滑屏
+      // 优化H5/MP/APP-IOS连续滑屏
       if (this.targetFabIndexOpacity > 1) {
         // console.log("连续滑动触发",this.currentFabIndex,this.virtualCurrentFabIndex,this.targetFabIndex)
         this.isContinuity += 1;
@@ -386,8 +348,7 @@ var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: fun
         if (real_dx > 0 && this.virtualCurrentFabIndex != 4) {
           this.targetFabIndex += 1;
           this.virtualCurrentFabIndex += 1;
-        } else
-        if (real_dx < 0 && this.virtualCurrentFabIndex != 0) {
+        } else if (real_dx < 0 && this.virtualCurrentFabIndex != 0) {
           this.targetFabIndex -= 1;
           this.virtualCurrentFabIndex -= 1;
         }
@@ -414,7 +375,9 @@ var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: fun
 
       var clickId = e.currentTarget.id;
 
-      this.$emit('fabClick', { 'clickId': clickId });
+      this.$emit('fabClick', {
+        'clickId': clickId });
+
       for (var i = 0; i < this.fabList.length; i++) {
         if (clickId == this.fabList[i].id) {
           this.currentFabIndex = this.hideCount + i;
@@ -426,11 +389,12 @@ var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: fun
     swiperChange: function swiperChange(e) {
       var swiper_item_index = e.detail.current;
       this.currentFabIndex = swiper_item_index;
-      this.$emit('indexChange', { 'nowPage': this.currentFabIndex - this.hideCount });
+      this.$emit('indexChange', {
+        'nowPage': this.currentFabIndex - this.hideCount });
+
       if (swiper_item_index < this.hideCount) {
         // console.log("显示负一屏")
-      } else
-        {
+      } else {
           // console.log("隐藏负一屏"）
         }
     } } };exports.default = _default2;

@@ -9,6 +9,7 @@
 		:scrollable="true"
 		:loadmoreoffset="50"
 		:offset-accuracy="20"
+		:alwaysScrollableVertical="true"
 		@scroll="scroll"
 		@loadmore="$emit('loadmore')"
 	>

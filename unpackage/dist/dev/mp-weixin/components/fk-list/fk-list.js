@@ -237,6 +237,7 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
 
 
+
 var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js */ 17));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} //
 //
 //
@@ -351,8 +352,8 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 //
-var _default2 = { name: "fkList", props: { height: { type: Number, default: function _default() {return 350;} }, width: { type: Number, default: function _default() {return 350;} }, hasRefresh: { type: Boolean, default: function _default() {return true;} }, iconRealTimeRotate: { type: Boolean, default: function _default() {return false;} }, pullingIcon: { type: String, default: function _default() {return "/static/pullingDown.png";} }, refreshingIcon: { type: String, default: function _default() {return "/static/refreshing.png";} }, showScrollbar: { type: Boolean, default: function _default() {return false;} }, bounce: { type: Boolean, default: function _default() {return true;} }, maxPullingDistance: { type: Number, default: function _default() {return 60;} }, refreshDistance: { type: Number, default: function _default() {return 55;} }, refreshTextColor: { type: String, default: function _default() {return "#ffffff";} }, refreshTextFontSize: { type: String, default: function _default() {return '12px';} }, isRefresh: { type: Boolean, default: function _default() {return false;} }, tips: { type: Object, default: function _default() {return { 'notSatisfied': '下拉刷新', 'satisfied': '释放刷新', 'release': '正在刷新..' };} } }, data: function data() {return { isTouchDown: false, isTouchMove: false, isTop: true, isBottom: false, isFirst: true, moveStartY: 0, moveStartX: 0, movedDistance: 0, display: false, isMouseDown: false, rotateDegree: 0, refreshTip: '', scrollWithAnimation: false, scrollIntoView: '', scrollTop: 0, maxScrollTop: 0, latestY: 0,
-      lastHeight: 0,
+//
+var _default2 = { name: "fkList", props: { height: { type: Number, default: function _default() {return 350;} }, width: { type: Number, default: function _default() {return 350;} }, hasRefresh: { type: Boolean, default: function _default() {return true;} }, iconRealTimeRotate: { type: Boolean, default: function _default() {return false;} }, pullingIcon: { type: String, default: function _default() {return "/static/pullingDown.png";} }, refreshingIcon: { type: String, default: function _default() {return "/static/refreshing.png";} }, showScrollbar: { type: Boolean, default: function _default() {return false;} }, bounce: { type: Boolean, default: function _default() {return true;} }, maxPullingDistance: { type: Number, default: function _default() {return 60;} }, refreshDistance: { type: Number, default: function _default() {return 55;} }, refreshTextColor: { type: String, default: function _default() {return "#ffffff";} }, refreshTextFontSize: { type: String, default: function _default() {return '12px';} }, isRefresh: { type: Boolean, default: function _default() {return false;} }, tips: { type: Object, default: function _default() {return { 'notSatisfied': '下拉刷新', 'satisfied': '释放刷新', 'release': '正在刷新..' };} } }, data: function data() {return { isTouchDown: false, isTouchMove: false, isTop: true, isBottom: false, isFirst: true, moveStartY: 0, moveStartX: 0, movedDistance: 0, display: false, isMouseDown: false, rotateDegree: 0, refreshTip: '', scrollWithAnimation: false, scrollIntoView: '', scrollTop: 0, maxScrollTop: 0, latestY: 0, lastHeight: 0,
       movementY: 0,
       dragingDown: false,
       dragingUp: false };
@@ -640,7 +641,6 @@ var _default2 = { name: "fkList", props: { height: { type: Number, default: func
 
     // nvue下释放刷新也转到touchend
     onrefresh: function onrefresh(e) {
-      console.log(e);
       this.touchend();
     },
     onpullingdown: function onpullingdown(e) {
