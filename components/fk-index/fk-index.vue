@@ -93,7 +93,7 @@
 			backgroundColor: {
 				type: String,
 				default () {
-					return "30,30,30,0.618"
+					return "#1e1e1e"
 				}
 			},
 			opacity: {

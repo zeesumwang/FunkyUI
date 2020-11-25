@@ -113,7 +113,7 @@
 			rgbaObject() {
 				let hex = this.backgroundColor
 				let opacity = 1
-				if(this.blurEffect == 'dark' && screenInfo.system.brand == "Apple"){
+				if(this.blurEffect !== 'none' && screenInfo.system.brand == "Apple"){
 					opacity = 0.8
 				}
 				else{

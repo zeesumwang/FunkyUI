@@ -103,9 +103,6 @@ var components = {
   fkIndex: function() {
     return __webpack_require__.e(/*! import() | components/fk-index/fk-index */ "components/fk-index/fk-index").then(__webpack_require__.bind(null, /*! @/components/fk-index/fk-index.vue */ 28))
   },
-  fkNotied: function() {
-    return __webpack_require__.e(/*! import() | components/fk-notied/fk-notied */ "components/fk-notied/fk-notied").then(__webpack_require__.bind(null, /*! @/components/fk-notied/fk-notied.vue */ 84))
-  },
   fkList: function() {
     return __webpack_require__.e(/*! import() | components/fk-list/fk-list */ "components/fk-list/fk-list").then(__webpack_require__.bind(null, /*! @/components/fk-list/fk-list.vue */ 35))
   },
@@ -117,6 +114,9 @@ var components = {
   },
   fkWaterfall: function() {
     return Promise.all(/*! import() | components/fk-waterfall/fk-waterfall */[__webpack_require__.e("common/vendor"), __webpack_require__.e("components/fk-waterfall/fk-waterfall")]).then(__webpack_require__.bind(null, /*! @/components/fk-waterfall/fk-waterfall.vue */ 54))
+  },
+  fkNotied: function() {
+    return __webpack_require__.e(/*! import() | components/fk-notied/fk-notied */ "components/fk-notied/fk-notied").then(__webpack_require__.bind(null, /*! @/components/fk-notied/fk-notied.vue */ 64))
   }
 }
 var render = function() {
@@ -155,6 +155,10 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
+
+
+
+
 
 
 
@@ -387,11 +391,15 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 //
-var _default = { data: function data() {return { fabList: [{ id: 'home', url: "../../static/home.png" }, { id: 'search', url: "../../static/search.png" }, { id: 'message', url: "../../static/flash.png" }, { id: 'user', url: "../../static/logo.jpg" }], screenHeightPx: 0, screenWidthPx: 0, isRefresh: false, isFabShow: true, currentPage: 0, urlList: ['https://funkydog.club/uniapp-test-upload/1603126324184.jpg', 'https://funkydog.club/uniapp-test-upload/1601053289716.jpg', 'https://funkydog.club/uniapp-test-upload/1603185557528.jpg', 'https://funkydog.club/uniapp-test-upload/1603126324184.jpg', 'https://funkydog.club/uniapp-test-upload/1603126324184.jpg', 'https://funkydog.club/uniapp-test-upload/1603185557528.jpg', 'https://funkydog.club/uniapp-test-upload/1601053289716.jpg', 'https://funkydog.club/uniapp-test-upload/1603185557528.jpg', 'https://funkydog.club/uniapp-test-upload/1603126324184.jpg', 'https://funkydog.club/uniapp-test-upload/1603126324184.jpg', 'https://funkydog.club/uniapp-test-upload/1601053289716.jpg', 'https://funkydog.club/uniapp-test-upload/1603185557528.jpg', 'https://funkydog.club/uniapp-test-upload/1603126324184.jpg', 'https://funkydog.club/uniapp-test-upload/1603126324184.jpg', 'https://funkydog.club/uniapp-test-upload/1603185557528.jpg', 'https://funkydog.club/uniapp-test-upload/1601053289716.jpg', 'https://funkydog.club/uniapp-test-upload/1603126324184.jpg'] };}, onLoad: function onLoad() {this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;}, onShow: function onShow() {}, // onPullDownRefresh() {
+//
+//
+//
+//
+var _default = { data: function data() {return { fabList: [{ id: 'home', url: "../../static/home.png" }, { id: 'search', url: "../../static/search.png" }, { id: 'message', url: "../../static/flash.png" }, { id: 'user', url: "../../static/logo.jpg" }], screenHeightPx: 0, screenWidthPx: 0, isRefresh: false, isFabShow: true, isNotied: false, notiedMsg: '', currentPage: 0, urlList: ['https://funkydog.club/uniapp-test-upload/1603126324184.jpg', 'https://funkydog.club/uniapp-test-upload/1601053289716.jpg', 'https://funkydog.club/uniapp-test-upload/1603185557528.jpg', 'https://funkydog.club/uniapp-test-upload/1603126324184.jpg', 'https://funkydog.club/uniapp-test-upload/1603126324184.jpg', 'https://funkydog.club/uniapp-test-upload/1603185557528.jpg', 'https://funkydog.club/uniapp-test-upload/1601053289716.jpg', 'https://funkydog.club/uniapp-test-upload/1603185557528.jpg', 'https://funkydog.club/uniapp-test-upload/1603126324184.jpg', 'https://funkydog.club/uniapp-test-upload/1603126324184.jpg', 'https://funkydog.club/uniapp-test-upload/1601053289716.jpg', 'https://funkydog.club/uniapp-test-upload/1603185557528.jpg', 'https://funkydog.club/uniapp-test-upload/1603126324184.jpg', 'https://funkydog.club/uniapp-test-upload/1603126324184.jpg', 'https://funkydog.club/uniapp-test-upload/1603185557528.jpg', 'https://funkydog.club/uniapp-test-upload/1601053289716.jpg', 'https://funkydog.club/uniapp-test-upload/1603126324184.jpg'] };}, onLoad: function onLoad() {this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;}, onShow: function onShow() {}, // onPullDownRefresh() {
   // 	console.log("下拉刷新")
   // 	setTimeout(()=>{uni.stopPullDownRefresh()},1000)
   // },
-  methods: { loadmore: function loadmore() {var newUrlList = this.urlList;for (var i = 0; i < 17; i++) {newUrlList.push(this.urlList[i]);}this.urlList = newUrlList;}, refreshing: function refreshing() {var _this = this;this.isRefresh = true;setTimeout(function () {_this.isRefresh = false;uni.showToast({ title: "刷新成功" });}, 1200);}, hideFab: function hideFab() {this.isFabShow = false;}, showFab: function showFab() {this.isFabShow = true;}, test: function test() {uni.navigateTo({ url: "../list_test/list_test" });}, indexChange: function indexChange(e) {console.log(e);if (e.nowPage == '-1') {this.hideFab();} else {this.showFab();}}, fabClick: function fabClick(e) {if (e.clickId == 'home') {this.$refs['fk-list'].backToTop();console.log(e);}if (e.clickId == 'search') {this.$refs['fk-waterfall'].backToTop();} // if(e.clickId == 'search'){
+  methods: { loadmore: function loadmore() {var newUrlList = this.urlList;for (var i = 0; i < 17; i++) {newUrlList.push(this.urlList[i]);}this.urlList = newUrlList;}, refreshing: function refreshing() {var _this = this;this.isRefresh = true;setTimeout(function () {_this.isRefresh = false;_this.showNotied('刷新成功', 1500);}, 1200);}, showNotied: function showNotied(msg, duration) {var _this2 = this;this.notiedMsg = msg;this.isNotied = true;setTimeout(function () {_this2.isNotied = false;}, duration);}, hideFab: function hideFab() {this.isFabShow = false;}, showFab: function showFab() {this.isFabShow = true;}, test: function test() {uni.navigateTo({ url: "../list_test/list_test" });}, indexChange: function indexChange(e) {console.log(e);if (e.nowPage == '-1') {this.hideFab();} else {this.showFab();}}, fabClick: function fabClick(e) {if (e.clickId == 'home') {this.$refs['fk-list'].backToTop();console.log(e);}if (e.clickId == 'search') {this.$refs['fk-waterfall'].backToTop();} // if(e.clickId == 'search'){
       // 	uni.navigateTo({
       // 		url: '../list_test/list_test'
       // 	})

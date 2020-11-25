@@ -1,88 +1,92 @@
 <template>
-	<fk-index ref="fk-index" 
-		@indexChange="indexChange" 
-		@fabClick="fabClick" 
-		:isFabShow="isFabShow"
-		:fabList="fabList" 
-		:hideCount="1" 
-		:backgroundColor="'#1e1e1e'" 
-		:opacity="0.98" 
-		:bottom="21" 
-		:widthScale="0.618"
-		:current="currentPage"
-	>
-		
-		<template v-slot:hidePage>
-			<text style="color: #007AFF;">-1</text>
-		</template>
-		
-		<template v-slot:mainPage0>
-			<fk-notied :isNotied="isFabShow"></fk-notied>
-			<fk-list ref="fk-list" 
-				:height="screenHeightPx" 
-				:width="screenWidthPx"
-				:isRefresh="isRefresh" 
-				@refreshing="refreshing" 
-				@dragingDown="showFab" 
-				@dragingUp="hideFab"
-			>	
-				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #2effd7;" :style="{'width':screenWidthPx + 'px'}"></view>
-				</fk-cell>
+	<view>	
+		<fk-index ref="fk-index" 
+			@indexChange="indexChange" 
+			@fabClick="fabClick" 
+			:isFabShow="isFabShow"
+			:fabList="fabList" 
+			:hideCount="1" 
+			:backgroundColor="'#1e1e1e'" 
+			:opacity="0.98" 
+			:bottom="21" 
+			:widthScale="0.618"
+			:current="currentPage"
+		>
+			
+			<template v-slot:hidePage>
+				<text style="color: #007AFF;">-1</text>
+			</template>
+			
+			<template v-slot:mainPage0>
 				
-				<fk-header>
-					<view style="height: 100px;background-color: #8F9CFF;justify-content: center;">
-						<text style="color: #EBEBEB;font-size: 20px;te;text-align: center;">STICK HEADER</text>
-					</view>
-				</fk-header>
-				
-				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #007AFF;" :style="{'width':screenWidthPx + 'px'}"></view>
-				</fk-cell>
-				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #edff55;" :style="{'width':screenWidthPx + 'px'}"></view>
-				</fk-cell>
-				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #fc4945;" :style="{'width':screenWidthPx + 'px'}"></view>
-				</fk-cell>
-				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #4bff6c;" :style="{'width':screenWidthPx + 'px'}"></view>
-				</fk-cell>
-				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #2effd7;" :style="{'width':screenWidthPx + 'px'}"></view>
-				</fk-cell>
-				<fk-cell>
-					<view style="width: 300px;height: 300px;background-color: #ec66ff;" :style="{'width':screenWidthPx + 'px'}"></view>
-				</fk-cell>
-				
-			</fk-list>
-		</template>
+				<fk-list ref="fk-list" 
+					:height="screenHeightPx" 
+					:width="screenWidthPx"
+					:isRefresh="isRefresh" 
+					@refreshing="refreshing" 
+					@dragingDown="showFab" 
+					@dragingUp="hideFab"
+				>	
+					<fk-cell>
+						<view style="width: 300px;height: 300px;background-color: #2effd7;" :style="{'width':screenWidthPx + 'px'}"></view>
+					</fk-cell>
+					
+					<fk-header>
+						<view style="height: 100px;background-color: #8F9CFF;justify-content: center;">
+							<text style="color: #EBEBEB;font-size: 20px;te;text-align: center;">STICK HEADER</text>
+						</view>
+					</fk-header>
+					
+					<fk-cell>
+						<view style="width: 300px;height: 300px;background-color: #007AFF;" :style="{'width':screenWidthPx + 'px'}"></view>
+					</fk-cell>
+					<fk-cell>
+						<view style="width: 300px;height: 300px;background-color: #edff55;" :style="{'width':screenWidthPx + 'px'}"></view>
+					</fk-cell>
+					<fk-cell>
+						<view style="width: 300px;height: 300px;background-color: #fc4945;" :style="{'width':screenWidthPx + 'px'}"></view>
+					</fk-cell>
+					<fk-cell>
+						<view style="width: 300px;height: 300px;background-color: #4bff6c;" :style="{'width':screenWidthPx + 'px'}"></view>
+					</fk-cell>
+					<fk-cell>
+						<view style="width: 300px;height: 300px;background-color: #2effd7;" :style="{'width':screenWidthPx + 'px'}"></view>
+					</fk-cell>
+					<fk-cell>
+						<view style="width: 300px;height: 300px;background-color: #ec66ff;" :style="{'width':screenWidthPx + 'px'}"></view>
+					</fk-cell>
+					
+				</fk-list>
+			</template>
+			
+			<template v-slot:mainPage1>
+				<fk-waterfall 
+					ref="fk-waterfall"
+					:columnCount="2"
+					:urlList="urlList"
+					:height="screenHeightPx" 
+					:width="screenWidthPx"
+					:isRefresh="isRefresh"
+					@refreshing="refreshing" 
+					@dragingDown="showFab" 
+					@dragingUp="hideFab"
+					@loadmore="loadmore"
+				>
+				</fk-waterfall>
+			</template>
+			
+			<template v-slot:mainPage2>
+				<text style="color: #007AFF;">1</text>
+			</template>
+			
+			<template v-slot:mainPage3>
+				<text style="color: #007AFF;">1</text>
+			</template>
+			
+		</fk-index>
 		
-		<template v-slot:mainPage1>
-			<fk-waterfall 
-				ref="fk-waterfall"
-				:columnCount="2"
-				:urlList="urlList"
-				:height="screenHeightPx" 
-				:width="screenWidthPx"
-				:isRefresh="isRefresh"
-				@refreshing="refreshing" 
-				@dragingDown="showFab" 
-				@dragingUp="hideFab"
-				@loadmore="loadmore"
-			>
-			</fk-waterfall>
-		</template>
-		
-		<template v-slot:mainPage2>
-			<text style="color: #007AFF;">1</text>
-		</template>
-		
-		<template v-slot:mainPage3>
-			<text style="color: #007AFF;">1</text>
-		</template>
-		
-	</fk-index>
+		<fk-notied :isNotied="isNotied" :msg="notiedMsg" style="position: fixed;"></fk-notied>
+	</view>
 </template>
 
 <script>
@@ -113,6 +117,8 @@
 				screenWidthPx: 0,
 				isRefresh: false,
 				isFabShow: true,
+				isNotied: false,
+				notiedMsg: '',
 				currentPage: 0,
 				urlList: [
 						'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',					
@@ -158,10 +164,15 @@
 				this.isRefresh = true
 				setTimeout(()=>{
 					this.isRefresh = false
-					uni.showToast({
-						title: "刷新成功"
-					})
+					this.showNotied('刷新成功',1500)
 				},1200)
+			},
+			showNotied: function(msg,duration) {
+				this.notiedMsg = msg
+				this.isNotied = true
+				setTimeout(()=>{
+					this.isNotied = false
+				},duration)
 			},
 			hideFab: function() {
 				this.isFabShow = false

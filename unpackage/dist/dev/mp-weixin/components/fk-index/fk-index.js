@@ -78,7 +78,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "components", function() { return components; });
 var components = {
   fkTransition: function() {
-    return __webpack_require__.e(/*! import() | components/fk-transition/fk-transition */ "components/fk-transition/fk-transition").then(__webpack_require__.bind(null, /*! @/components/fk-transition/fk-transition.vue */ 59))
+    return __webpack_require__.e(/*! import() | components/fk-transition/fk-transition */ "components/fk-transition/fk-transition").then(__webpack_require__.bind(null, /*! @/components/fk-transition/fk-transition.vue */ 69))
   }
 }
 var render = function() {
@@ -255,7 +255,7 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 //
-var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: function _default() {return [];} }, duration: { type: Number, default: 300 }, isFabShow: { type: Boolean, default: function _default() {return true;} }, backgroundColor: { type: String, default: function _default() {return "30,30,30,0.618";} }, opacity: { type: Number, default: 0.8 }, borderRadius: { type: Number, default: function _default() {return 50;} }, fabModeClass: { type: Array, default: function _default() {return ['fade', 'zoom-in', 'slide-bottom'];} }, position: { type: String, default: function _default() {return 'right';} }, widthScale: { type: Number, default: function _default() {return 0.618;} }, bottom: { type: Number, default: function _default() {return 21;} }, hideCount: { type: Number, default: function _default() {return 1;} },
+var _default2 = { name: "fkIndex", props: { fabList: { type: Array, default: function _default() {return [];} }, duration: { type: Number, default: 300 }, isFabShow: { type: Boolean, default: function _default() {return true;} }, backgroundColor: { type: String, default: function _default() {return "#1e1e1e";} }, opacity: { type: Number, default: 0.8 }, borderRadius: { type: Number, default: function _default() {return 50;} }, fabModeClass: { type: Array, default: function _default() {return ['fade', 'zoom-in', 'slide-bottom'];} }, position: { type: String, default: function _default() {return 'right';} }, widthScale: { type: Number, default: function _default() {return 0.618;} }, bottom: { type: Number, default: function _default() {return 21;} }, hideCount: { type: Number, default: function _default() {return 1;} },
     current: {
       type: Number,
       default: function _default() {
