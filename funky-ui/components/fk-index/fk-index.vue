@@ -1,8 +1,6 @@
 <template>
 	<view class="index">
-		<!-- #ifndef H5-->
-		<view :style="{height: statusBarHeight + 'px'}"></view>
-		<!-- #endif -->
+		
 
 		<swiper :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}" @change="swiperChange" @transition="transition"
 		 @animationfinish="animationfinish" :duration="duration" :indicator-dots="false" :current="currentFabIndex">

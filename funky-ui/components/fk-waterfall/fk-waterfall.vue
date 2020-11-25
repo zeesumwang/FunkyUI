@@ -369,7 +369,7 @@
 			},
 			// nvue下释放刷新也转到touchend
 			onrefresh: function(e) {
-				console.log(e)
+				// console.log(e)
 				this.touchend()
 			},
 			onpullingdown: function(e) {

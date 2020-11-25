@@ -4,7 +4,7 @@
 var system = uni.getSystemInfoSync()
 // console.log(system)
 // #ifndef H5
-var screenHeightPx = system.windowHeight - system.statusBarHeight
+var screenHeightPx = system.windowHeight
 var screenWidthPx = system.windowWidth
 // #endif
 

@@ -1,4 +1,7 @@
 {
+	"easycom": {
+		"^fk-(.*)": "@/funky-ui/components/fk-$1/fk-$1.vue"
+	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
 			"path": "pages/index/index",
@@ -6,11 +9,6 @@
 				"navigationStyle":"custom",
 				"backgroundColor": "#0d0d0d",
 				"disableScroll": true
-				// #ifndef APP-NVUE
-				// ,
-				// "enablePullDownRefresh": true//开启下拉刷新
-				// #endif
-				
 			}
 		}
         ,{

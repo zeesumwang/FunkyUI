@@ -1,102 +1,72 @@
 <template>
-	<view>	
-		<fk-index ref="fk-index" 
-			@indexChange="indexChange" 
-			@fabClick="fabClick" 
-			:isFabShow="isFabShow"
-			:fabList="fabList" 
-			:hideCount="1" 
-			:backgroundColor="'#1e1e1e'" 
-			:opacity="0.98" 
-			:bottom="21" 
-			:widthScale="0.618"
-			:current="currentPage"
-		>
-			
+	<view>
+		<fk-index ref="fk-index" @indexChange="indexChange" @fabClick="fabClick" :isFabShow="isFabShow" :fabList="fabList"
+		 :hideCount="1" :backgroundColor="'#1e1e1e'" :opacity="0.98" :bottom="21" :widthScale="0.618" :current="currentPage">
+
 			<template v-slot:hidePage>
-				<text style="color: #007AFF;">-1</text>
+				<fk-video-list :video_data="video_data"></fk-video-list>
 			</template>
-			
+
 			<template v-slot:mainPage0>
-				
-				<fk-list ref="fk-list" 
-					:height="screenHeightPx" 
-					:width="screenWidthPx"
-					:isRefresh="isRefresh" 
-					@refreshing="refreshing" 
-					@dragingDown="showFab" 
-					@dragingUp="hideFab"
-				>	
+				<!-- #ifndef H5-->
+				<view :style="{height: statusBarHeight + 'px'}"></view>
+				<!-- #endif -->
+
+				<fk-list ref="fk-list" :height="screenHeightPx" :width="screenWidthPx" :isRefresh="isRefresh" @refreshing="refreshing"
+				 @dragingDown="showFab" @dragingUp="hideFab">
 					<fk-cell>
 						<view style="width: 300px;height: 300px;background-color: #2effd7;" :style="{'width':screenWidthPx + 'px'}"></view>
 					</fk-cell>
-					
+
 					<fk-header>
 						<view style="height: 100px;background-color: #8F9CFF;justify-content: center;">
 							<text style="color: #EBEBEB;font-size: 20px;te;text-align: center;">STICK HEADER</text>
 						</view>
 					</fk-header>
-					
+
 					<fk-cell>
 						<view style="width: 300px;height: 300px;background-color: #007AFF;" :style="{'width':screenWidthPx + 'px'}"></view>
 					</fk-cell>
-					<fk-cell>
-						<view style="width: 300px;height: 300px;background-color: #edff55;" :style="{'width':screenWidthPx + 'px'}"></view>
-					</fk-cell>
-					<fk-cell>
-						<view style="width: 300px;height: 300px;background-color: #fc4945;" :style="{'width':screenWidthPx + 'px'}"></view>
-					</fk-cell>
-					<fk-cell>
-						<view style="width: 300px;height: 300px;background-color: #4bff6c;" :style="{'width':screenWidthPx + 'px'}"></view>
-					</fk-cell>
-					<fk-cell>
-						<view style="width: 300px;height: 300px;background-color: #2effd7;" :style="{'width':screenWidthPx + 'px'}"></view>
-					</fk-cell>
-					<fk-cell>
-						<view style="width: 300px;height: 300px;background-color: #ec66ff;" :style="{'width':screenWidthPx + 'px'}"></view>
-					</fk-cell>
 					
+					<fk-cell>
+						<view style="width: 300px;height: 300px;background-color: #fc4c07;" :style="{'width':screenWidthPx + 'px'}"></view>
+					</fk-cell>
+
 				</fk-list>
 			</template>
-			
+
 			<template v-slot:mainPage1>
-				<fk-waterfall 
-					ref="fk-waterfall"
-					:columnCount="2"
-					:urlList="urlList"
-					:height="screenHeightPx" 
-					:width="screenWidthPx"
-					:isRefresh="isRefresh"
-					@refreshing="refreshing" 
-					@dragingDown="showFab" 
-					@dragingUp="hideFab"
-					@loadmore="loadmore"
-				>
+				<!-- #ifndef H5-->
+				<view :style="{height: statusBarHeight + 'px'}"></view>
+				<!-- #endif -->
+
+				<fk-waterfall ref="fk-waterfall" :columnCount="2" :urlList="urlList" :height="screenHeightPx" :width="screenWidthPx"
+				 :isRefresh="isRefresh" @refreshing="refreshing" @dragingDown="showFab" @dragingUp="hideFab" @loadmore="loadmore">
 				</fk-waterfall>
 			</template>
-			
+
 			<template v-slot:mainPage2>
 				<text style="color: #007AFF;">1</text>
 			</template>
-			
+
 			<template v-slot:mainPage3>
 				<text style="color: #007AFF;">1</text>
 			</template>
-			
+
 		</fk-index>
-		
+
 		<fk-notied :isNotied="isNotied" :msg="notiedMsg" style="position: fixed;"></fk-notied>
 	</view>
 </template>
 
 <script>
 	import screenInfo from "@/common/helper.js"
-	
+	import data from "@/test_data/data.js"
+
 	export default {
 		data() {
 			return {
-				fabList:[
-					{
+				fabList: [{
 						id: 'home',
 						url: "../../static/home.png"
 					},
@@ -115,64 +85,64 @@
 				],
 				screenHeightPx: 0,
 				screenWidthPx: 0,
+				statusBarHeight: 0,
 				isRefresh: false,
 				isFabShow: true,
 				isNotied: false,
 				notiedMsg: '',
 				currentPage: 0,
 				urlList: [
-						'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',					
-						'https://funkydog.club/uniapp-test-upload/1601053289716.jpg',
-						'https://funkydog.club/uniapp-test-upload/1603185557528.jpg',
-						'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
-						'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
-						'https://funkydog.club/uniapp-test-upload/1603185557528.jpg',
-						'https://funkydog.club/uniapp-test-upload/1601053289716.jpg',
-						'https://funkydog.club/uniapp-test-upload/1603185557528.jpg',
-						'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
-						'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
-						'https://funkydog.club/uniapp-test-upload/1601053289716.jpg',
-						'https://funkydog.club/uniapp-test-upload/1603185557528.jpg',
-						'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
-						'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
-						'https://funkydog.club/uniapp-test-upload/1603185557528.jpg',
-						'https://funkydog.club/uniapp-test-upload/1601053289716.jpg',
-						'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
-					]
+					'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
+					'https://funkydog.club/uniapp-test-upload/1601053289716.jpg',
+					'https://funkydog.club/uniapp-test-upload/1603185557528.jpg',
+					'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
+					'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
+					'https://funkydog.club/uniapp-test-upload/1603185557528.jpg',
+					'https://funkydog.club/uniapp-test-upload/1601053289716.jpg',
+					'https://funkydog.club/uniapp-test-upload/1603185557528.jpg',
+					'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
+					'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
+					'https://funkydog.club/uniapp-test-upload/1601053289716.jpg',
+					'https://funkydog.club/uniapp-test-upload/1603185557528.jpg',
+					'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
+					'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
+					'https://funkydog.club/uniapp-test-upload/1603185557528.jpg',
+					'https://funkydog.club/uniapp-test-upload/1601053289716.jpg',
+					'https://funkydog.club/uniapp-test-upload/1603126324184.jpg',
+				],
+				video_data: []
 			}
 		},
 		onLoad() {
 			this.screenHeightPx = screenInfo.screenHeightPx
 			this.screenWidthPx = screenInfo.screenWidthPx
+			this.statusBarHeight = screenInfo.system.statusBarHeight
+			this.video_data = data.video_data
 		},
 		onShow() {
-			
+
 		},
-		// onPullDownRefresh() {
-		// 	console.log("下拉刷新")
-		// 	setTimeout(()=>{uni.stopPullDownRefresh()},1000)
-		// },
 		methods: {
 			loadmore: function() {
 				let newUrlList = this.urlList
-				for(var i = 0; i < 17; i++){
+				for (var i = 0; i < 17; i++) {
 					newUrlList.push(this.urlList[i])
 				}
 				this.urlList = newUrlList
 			},
 			refreshing: function() {
 				this.isRefresh = true
-				setTimeout(()=>{
+				setTimeout(() => {
 					this.isRefresh = false
-					this.showNotied('刷新成功',1500)
-				},1200)
+					this.showNotied('刷新成功', 1500)
+				}, 1200)
 			},
-			showNotied: function(msg,duration) {
+			showNotied: function(msg, duration) {
 				this.notiedMsg = msg
 				this.isNotied = true
-				setTimeout(()=>{
+				setTimeout(() => {
 					this.isNotied = false
-				},duration)
+				}, duration)
 			},
 			hideFab: function() {
 				this.isFabShow = false
@@ -187,19 +157,18 @@
 			},
 			indexChange: function(e) {
 				console.log(e)
-				if(e.nowPage=='-1'){
+				if (e.nowPage == '-1') {
 					this.hideFab()
-				}
-				else{
+				} else {
 					this.showFab()
 				}
 			},
 			fabClick: function(e) {
-				if(e.clickId == 'home'){
+				if (e.clickId == 'home') {
 					this.$refs['fk-list'].backToTop()
 					console.log(e)
 				}
-				if(e.clickId == 'search') {
+				if (e.clickId == 'search') {
 					this.$refs['fk-waterfall'].backToTop()
 				}
 				// if(e.clickId == 'search'){
