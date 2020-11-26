@@ -1,4 +1,4 @@
-var video_data = [{
+var videoData = [{
 		nickname: "@岳老板",
 		title: "生活需要有仪式感",
 		url: 'http://alimov2.a.yximgs.com/upic/2020/05/01/17/BMjAyMDA1MDExNzQzMzlfNzQyNjgwNV8yNzc1MzI4ODE5NV8xXzM=_b_Ba6505d9e7300f19dbd8a53b985c002c8.mp4',
@@ -37,5 +37,5 @@ var video_data = [{
 	}]
 	
 export default {
-	video_data
+	videoData
 }

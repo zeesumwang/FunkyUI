@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "fk-transition": "/funky-ui/components/fk-transition/fk-transition"
+  },
+  "component": true
+}

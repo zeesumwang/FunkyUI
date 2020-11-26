@@ -3,11 +3,12 @@
   "backgroundColor": "#0d0d0d",
   "disableScroll": true,
   "usingComponents": {
-    "fk-index": "/components/fk-index/fk-index",
-    "fk-list": "/components/fk-list/fk-list",
-    "fk-cell": "/components/fk-cell/fk-cell",
-    "fk-header": "/components/fk-header/fk-header",
-    "fk-waterfall": "/components/fk-waterfall/fk-waterfall",
-    "fk-notied": "/components/fk-notied/fk-notied"
+    "fk-index": "/funky-ui/components/fk-index/fk-index",
+    "fk-video-list": "/funky-ui/components/fk-video-list/fk-video-list",
+    "fk-list": "/funky-ui/components/fk-list/fk-list",
+    "fk-cell": "/funky-ui/components/fk-cell/fk-cell",
+    "fk-header": "/funky-ui/components/fk-header/fk-header",
+    "fk-waterfall": "/funky-ui/components/fk-waterfall/fk-waterfall",
+    "fk-notied": "/funky-ui/components/fk-notied/fk-notied"
   }
 }

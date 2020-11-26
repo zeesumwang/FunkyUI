@@ -1,8 +1,0 @@
-{
-  "usingComponents": {
-    "fk-list": "/components/fk-list/fk-list",
-    "fk-cell": "/components/fk-cell/fk-cell",
-    "fk-image": "/components/fk-image/fk-image"
-  },
-  "component": true
-}

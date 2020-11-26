@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "fk-list": "/funky-ui/components/fk-list/fk-list",
+    "fk-cell": "/funky-ui/components/fk-cell/fk-cell",
+    "fk-image": "/funky-ui/components/fk-image/fk-image"
+  },
+  "component": true
+}

@@ -105,11 +105,11 @@
 /******/
 /******/
 /******/ 		// mini-css-extract-plugin CSS loading
-/******/ 		var cssChunks = {"components/fk-waterfall/fk-waterfall":1,"components/fk-header/fk-header":1,"components/fk-index/fk-index":1,"components/fk-list/fk-list":1,"components/fk-transition/fk-transition":1};
+/******/ 		var cssChunks = {"funky-ui/components/fk-waterfall/fk-waterfall":1,"funky-ui/components/fk-header/fk-header":1,"funky-ui/components/fk-index/fk-index":1,"funky-ui/components/fk-list/fk-list":1,"funky-ui/components/fk-transition/fk-transition":1};
 /******/ 		if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 		else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 			promises.push(installedCssChunks[chunkId] = new Promise(function(resolve, reject) {
-/******/ 				var href = "" + ({"components/fk-waterfall/fk-waterfall":"components/fk-waterfall/fk-waterfall","components/fk-cell/fk-cell":"components/fk-cell/fk-cell","components/fk-header/fk-header":"components/fk-header/fk-header","components/fk-index/fk-index":"components/fk-index/fk-index","components/fk-list/fk-list":"components/fk-list/fk-list","components/fk-notied/fk-notied":"components/fk-notied/fk-notied","components/fk-image/fk-image":"components/fk-image/fk-image","components/fk-transition/fk-transition":"components/fk-transition/fk-transition"}[chunkId]||chunkId) + ".wxss";
+/******/ 				var href = "" + ({"funky-ui/components/fk-waterfall/fk-waterfall":"funky-ui/components/fk-waterfall/fk-waterfall","funky-ui/components/fk-cell/fk-cell":"funky-ui/components/fk-cell/fk-cell","funky-ui/components/fk-header/fk-header":"funky-ui/components/fk-header/fk-header","funky-ui/components/fk-index/fk-index":"funky-ui/components/fk-index/fk-index","funky-ui/components/fk-list/fk-list":"funky-ui/components/fk-list/fk-list","funky-ui/components/fk-notied/fk-notied":"funky-ui/components/fk-notied/fk-notied","funky-ui/components/fk-video-list/fk-video-list":"funky-ui/components/fk-video-list/fk-video-list","funky-ui/components/fk-image/fk-image":"funky-ui/components/fk-image/fk-image","funky-ui/components/fk-transition/fk-transition":"funky-ui/components/fk-transition/fk-transition","funky-ui/components/fk-video/fk-video":"funky-ui/components/fk-video/fk-video"}[chunkId]||chunkId) + ".wxss";
 /******/ 				var fullhref = __webpack_require__.p + href;
 /******/ 				var existingLinkTags = document.getElementsByTagName("link");
 /******/ 				for(var i = 0; i < existingLinkTags.length; i++) {

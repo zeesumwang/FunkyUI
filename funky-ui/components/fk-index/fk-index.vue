@@ -154,10 +154,10 @@
 				targetFabIndex: '',
 				targetFabIndexOpacity: 0.2,
 
-				screenHeight: '',
-				screenHeightPx: {},
-				screenWidthPx: '',
-				statusBarHeight: '',
+				screenHeight: 0,
+				screenHeightPx: 0,
+				screenWidthPx: 0,
+				statusBarHeight: 0,
 			}
 		},
 		created() {
@@ -268,7 +268,7 @@
 				let swiper_item_index = e.detail.current
 				this.currentFabIndex = swiper_item_index
 				this.$emit('indexChange', {
-					'nowPage': this.currentFabIndex - this.hideCount
+					'currentPage': this.currentFabIndex - this.hideCount
 				})
 				if (swiper_item_index < this.hideCount) {
 					// console.log("显示负一屏")

@@ -1,22 +1,53 @@
 <template>
-	<scroll-view :pagingEnabled="true" :scroll-y="true">
-		<view 
-			v-for="(video,index) in video_data"
+	<!-- #ifdef APP-NVUE -->
+	<list :pagingEnabled="true" @scrollend="listScrollEnd" :show-scrollbar="false">
+		<cell 
+			v-for="(video,index) in videoData"
 			:key="index"
 		>
-		
-			<video
-				:autoplay="false" 
-				:show-progress="false"
-				:show-fullscreen-btn="false"
-				:show-play-btn="false"
-				:style="{'width': screenWidthPx + 'px','height': screenHeightPx + 'px'}" 
+	<!-- #endif -->
+	
+	<!-- #ifndef APP-NVUE -->
+	<swiper :circular="true" :vertical="true" :style="{'width': screenWidthPx + 'px','height': screenHeightPx + 'px'}" @change="swiperChange" @animationfinish="swiperAnimationfinish">
+		<swiper-item
+			v-for="(video,index) in videoDataRecycle"
+			:key="index"
+		>
+	<!-- #endif -->	
+			
+			<!-- #ifdef APP-NVUE -->
+			<fk-video
+				:videoId="'video'+index"
+				:width="screenWidthPx"
+				:height="screenHeightPx"
 				:src="video.url"
-			>
-			</video>
+				:poster="video.cover"
+				:isPlay="(index == currentVideo) && isAnimationfinish && isPlay"
+			/>
+			<!-- #endif -->
+			
+			<!-- #ifndef APP-NVUE -->
+			<fk-video
+				:videoId="'video'+index"
+				:width="screenWidthPx"
+				:height="screenHeightPx"
+				:src="video.url"
+				:poster="video.cover"
+				:isPlay="(index == currentVideoRecycle) && isAnimationfinish && isPlay"
+			/>
+			<!-- #endif -->
+			
 		
-		</view>
-	</scroll-view>
+	<!-- #ifndef APP-NVUE -->
+		</swiper-item>
+	</swiper>
+	<!-- #endif -->
+		
+	<!-- #ifdef APP-NVUE -->
+		</cell>
+	</list>
+	<!-- #endif -->
+	
 </template>
 
 <script>
@@ -25,27 +56,80 @@
 	export default {
 		name: "fkVideoList",
 		props: {
-			video_data: {
+			videoData: {
 				type: Array,
 				default() {
 					return[]
 				}
+			},
+			isPlay: {
+				type: Boolean,
+				default: false
 			}
 		},
 		data() {
 			return {
 				screenHeightPx: 0,
-				screenWidthPx: 0
+				screenWidthPx: 0,
+				currentVideo: 0,
+				currentVideoRecycle: 0,
+				nextVideo: 0,
+				preVideo: 0,
+				isAnimationfinish: true,
+				videoDataRecycle: [],
 			};
 		},
 		created() {
 			this.screenHeightPx = screenInfo.screenHeightPx
 			this.screenWidthPx = screenInfo.screenWidthPx
+			if(this.videoData.length >= 3) {
+				this.videoDataRecycle = this.videoData.slice(0,3)
+			}
+			else{
+				this.videoDataRecycle = this.videoData
+			}
+			// console.log(this.videoDataRecycle.length)
 		},
 		methods: {
-			apear: function(e) {
-				console.log(e)
-			}
+			listScrollEnd: function(e) {
+				let videoCount = this.videoData.length
+				let currentVideo = Math.abs(e.contentOffset.y) / e.contentSize.height * videoCount
+				if(currentVideo !== this.currentVideo){
+					this.currentVideo = currentVideo
+					this.videoChange()
+				}
+			},
+			swiperChange: function(e) {
+				// console.log(this.currentVideo%3)
+				// console.log(e.detail.current, this.currentVideoRecycle)
+				if(e.detail.current > this.currentVideoRecycle || e.detail.current == 0 && this.currentVideoRecycle == 2 ||  e.detail.current == 2 && this.currentVideoRecycle == 0) {
+					this.currentVideo += 1
+					this.nextVideo = this.currentVideo + 1
+					this.preVideo = Math.max(this.currentVideo - 1,0)
+				}
+				else{
+					this.currentVideo -= 1
+					this.nextVideo = this.currentVideo + 1
+					this.preVideo = Math.max(this.currentVideo - 1,0)
+				}
+				console.log(this.currentVideo)
+				this.currentVideoRecycle = e.detail.current
+				this.isAnimationfinish = false
+				this.videoChange()
+			},
+			swiperAnimationfinish: function(e) {
+				this.isAnimationfinish = true
+			},			
+			videoChange: function() {
+				// #ifndef APP-NVUE
+				
+				if(this.videoData.length > 3 && this.nextVideo > 2){
+					this.videoDataRecycle[0] = this.videoData[this.nextVideo]
+				}
+				// #endif
+				
+				this.$emit('videoChange',{'currentVideo': this.currentVideo,'videoCount': this.videoData.length})
+			},
 		}
 	}
 </script>
