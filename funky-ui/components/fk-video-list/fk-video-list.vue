@@ -100,17 +100,35 @@
 				}
 			},
 			swiperChange: function(e) {
-				// console.log(this.currentVideo%3)
-				// console.log(e.detail.current, this.currentVideoRecycle)
-				if(e.detail.current > this.currentVideoRecycle || e.detail.current == 0 && this.currentVideoRecycle == 2 ||  e.detail.current == 2 && this.currentVideoRecycle == 0) {
+				let action = ''
+				if(e.detail.current > this.currentVideoRecycle) {
+					if(e.detail.current == 2 && this.currentVideoRecycle == 0){
+						action = 'sub'
+					}
+					else{
+						action = 'add'
+					}					
+				}
+				else{
+					if(e.detail.current == 0 && this.currentVideoRecycle == 2) {
+						action = 'add'
+					}
+					else{
+						action = 'sub'
+					}
+				}
+				if(action == 'sub') {
+					this.currentVideo -= 1
+					this.nextVideo = this.currentVideo + 1
+					this.preVideo = Math.max(this.currentVideo - 1,0)
+				}
+				else if(action == 'add') {
 					this.currentVideo += 1
 					this.nextVideo = this.currentVideo + 1
 					this.preVideo = Math.max(this.currentVideo - 1,0)
 				}
-				else{
-					this.currentVideo -= 1
-					this.nextVideo = this.currentVideo + 1
-					this.preVideo = Math.max(this.currentVideo - 1,0)
+				else {
+					throw Error
 				}
 				console.log(this.currentVideo)
 				this.currentVideoRecycle = e.detail.current
