@@ -117,7 +117,7 @@
 				videoData: []
 			}
 		},
-		onLoad() {
+		created() {
 			this.screenHeightPx = screenInfo.screenHeightPx
 			this.screenWidthPx = screenInfo.screenWidthPx
 			this.statusBarHeight = screenInfo.system.statusBarHeight
@@ -183,9 +183,7 @@
 				// }
 			},
 			videoChange: function(e) {
-				if(e.videoCount - e.currentVideo <= 3){
-					this.videoData.push(this.videoData[0])
-				}
+				console.log(e)
 			}
 		}
 	}

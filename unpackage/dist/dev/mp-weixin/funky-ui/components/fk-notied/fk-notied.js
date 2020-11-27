@@ -168,7 +168,8 @@ var _default2 = { props: { isNotied: { type: Boolean, default: false }, msg: { t
         'borderRadius': '50px',
         'top': '0px',
         'height': this.height + 'px',
-        'width': _helper.default.screenWidthPx + 'px' },
+        'width': _helper.default.screenWidthPx + 'px',
+        'pointer-events': 'none' },
 
       blurEffect: 'none',
       opacity: 0.8 };

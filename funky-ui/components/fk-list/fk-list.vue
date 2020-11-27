@@ -25,14 +25,14 @@
 			>
 			</image>
 			<image 
-				v-if="!isRefresh && (!iconRealTimeRotate)" 
+				v-if="!isRefresh && (!iconRealTimeRotate) && movedDistance > 0" 
 				class="refreshIcon"
 				:class="{'refreshIconActive': movedDistance >= refreshDistance}" 
 				:style="{width: isRefresh || isTouchMove == false ? 0 : '26px', margin: isRefresh  || isTouchMove == false ? 0 : '7px'}" 
 				:src="pullingIcon"
 			>
 			</image>
-			<text v-if="isTouchMove || isRefresh" style="width: 60px;" :style="{color: refreshTextColor, fontSize: refreshTextFontSize}">{{refreshTip}}</text>
+			<text v-if="isTouchMove && movedDistance > 0 || isRefresh" style="width: 60px;" :style="{color: refreshTextColor, fontSize: refreshTextFontSize}">{{refreshTip}}</text>
 		</view>
 		
 		<scroll-view 
@@ -399,10 +399,13 @@
 					// 计算当前X轴偏移量
 					var movedX = Math.abs(e.changedTouches[0].pageX - this.moveStartX)
 					
-					// 当拖拽角度小于45度才进行下拉更新，tan45` = 1，对边比临边。
-					if(movedX / movedY < 1 && movedX < this.maxPullingDistance || this.movedDistance > 0) {
+					// 当拖拽角度小于30度才进行下拉更新，tan30` ~ 0.577，对边比临边。
+					if(movedX / movedY < 0.577 && movedX < 44 || this.movedDistance > 0) {
 						this.movedDistance = Math.min(movedY,this.maxPullingDistance)
 						this.detectRefresh()
+					}
+					else{
+						this.isFirst = true
 					}
 				}
 			},

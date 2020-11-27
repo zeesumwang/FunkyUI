@@ -221,32 +221,100 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 //
-var _default2 = { name: "fkVideoList", props: { videoData: { type: Array, default: function _default() {return [];} }, isPlay: { type: Boolean, default: false } }, data: function data() {return { screenHeightPx: 0, screenWidthPx: 0, currentVideo: 0, currentVideoRecycle: 0, nextVideo: 0, preVideo: 0, isAnimationfinish: true, videoDataRecycle: [] };}, created: function created() {this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;if (this.videoData.length >= 3) {this.videoDataRecycle = this.videoData.slice(0, 3);} else {this.videoDataRecycle = this.videoData;} // console.log(this.videoDataRecycle.length)
-  }, methods: { listScrollEnd: function listScrollEnd(e) {var videoCount = this.videoData.length;var currentVideo = Math.abs(e.contentOffset.y) / e.contentSize.height * videoCount;if (currentVideo !== this.currentVideo) {this.currentVideo = currentVideo;this.videoChange();}}, swiperChange: function swiperChange(e) {// console.log(this.currentVideo%3)
-      // console.log(e.detail.current, this.currentVideoRecycle)
-      if (e.detail.current > this.currentVideoRecycle || e.detail.current == 0 && this.currentVideoRecycle == 2 || e.detail.current == 2 && this.currentVideoRecycle == 0) {this.currentVideo += 1;this.nextVideo = this.currentVideo + 1;this.preVideo = Math.max(this.currentVideo - 1, 0);} else
+var _default2 = { name: "fkVideoList", props: { videoData: { type: Array, default: function _default() {return [];} }, isPlay: { type: Boolean, default: false }, loadmoreoffset: { type: Number, default: 0 } }, data: function data() {return { screenHeightPx: 0, screenWidthPx: 0, currentVideo: 0, currentVideoRecycle: 0, lastPlayVideo: 0, nextVideo: 0, preVideo: 0, isAnimationfinish: true, videoDataRecycle: [], isTop: true, isBottom: false };}, created: function created() {this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;if (this.videoData.length >= 3) {this.videoDataRecycle = this.videoData.slice(0, 3);} else {this.videoDataRecycle = this.videoData;} // console.log(this.videoData.length)
+  }, methods: { listScrollEnd: function listScrollEnd(e) {var videoCount = this.videoData.length;var currentVideo = Math.abs(e.contentOffset.y) / e.contentSize.height * videoCount;if (currentVideo !== this.currentVideo) {this.currentVideo = currentVideo;this.videoChange();}
+    },
+    swiperChange: function swiperChange(e) {
+      var action = '';
+      if (e.detail.current > this.currentVideoRecycle) {
+        if (e.detail.current == 2 && this.currentVideoRecycle == 0) {
+          action = 'sub';
+        } else
+        {
+          action = 'add';
+        }
+      } else
       {
+        if (e.detail.current == 0 && this.currentVideoRecycle == 2) {
+          action = 'add';
+        } else
+        {
+          action = 'sub';
+        }
+      }
+      if (action == 'sub') {
         this.currentVideo -= 1;
         this.nextVideo = this.currentVideo + 1;
         this.preVideo = Math.max(this.currentVideo - 1, 0);
+      } else
+      if (action == 'add') {
+        this.currentVideo += 1;
+        this.nextVideo = this.currentVideo + 1;
+        this.preVideo = Math.max(this.currentVideo - 1, 0);
+      } else
+      {
+        throw Error;
       }
-      console.log(this.currentVideo);
       this.currentVideoRecycle = e.detail.current;
       this.isAnimationfinish = false;
+      // console.log(this.currentVideoRecycle,this.preVideo,this.currentVideo,this.nextVideo)
       this.videoChange();
     },
-    swiperAnimationfinish: function swiperAnimationfinish(e) {
+    swiperAnimationfinish: function swiperAnimationfinish() {
       this.isAnimationfinish = true;
+      this.lastPlayVideo = this.currentVideo;
     },
     videoChange: function videoChange() {
 
+      var preIndex = this.currentVideoRecycle - 1;
+      var nextIndex = this.currentVideoRecycle + 1;
+      if (this.currentVideoRecycle == 0) {
+        preIndex = 2;
+      }
+      if (this.currentVideoRecycle == 2) {
+        nextIndex = 0;
+      }
 
-      if (this.videoData.length > 3 && this.nextVideo > 2) {
-        this.videoDataRecycle[0] = this.videoData[this.nextVideo];
+      if (this.nextVideo < this.videoData.length - this.loadmoreoffset) {
+        this.videoDataRecycle[preIndex] = this.videoData[this.preVideo];
+        this.videoDataRecycle[nextIndex] = this.videoData[this.nextVideo];
+        this.isBottom = false;
+      } else
+      {
+        this.isBottom = true;
+        this.$emit('loadmore');
+        // console.log('bottom')
+      }
+
+      if (this.preVideo == this.currentVideoRecycle && this.currentVideo == 0) {
+        this.isTop = true;
+        this.$emit('reachTop');
+        // console.log('top')
+      } else
+      {
+        this.isTop = false;
       }
 
 
       this.$emit('videoChange', { 'currentVideo': this.currentVideo, 'videoCount': this.videoData.length });
+    },
+    transition: function transition(e) {
+      if (this.isTop) {
+        // console.log(this.lastPlayVideo)
+        if (this.lastPlayVideo > 0) {
+          this.swiperAnimationfinish();
+        }
+        if (e.detail.dy < 0 && this.videoDataRecycle.length !== 1) {
+          this.videoDataRecycle = this.videoDataRecycle.slice(0, 1);
+
+        } else
+        if (e.detail.dy > 0) {
+          this.videoDataRecycle = this.videoData.slice(0, 3);
+        } else
+        {
+          // console.log(e.detail.dy,this.currentVideo,this.lastPlayVideo)
+        }
+      }
     } } };exports.default = _default2;
 
 /***/ })

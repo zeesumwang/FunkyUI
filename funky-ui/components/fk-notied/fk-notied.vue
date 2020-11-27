@@ -50,7 +50,8 @@
 					'borderRadius': '50px',
 					'top': '0px',
 					'height': this.height + 'px',
-					'width': screenInfo.screenWidthPx + 'px'
+					'width': screenInfo.screenWidthPx + 'px',
+					'pointer-events': 'none'
 				},
 				blurEffect: 'none',
 				opacity: 0.8

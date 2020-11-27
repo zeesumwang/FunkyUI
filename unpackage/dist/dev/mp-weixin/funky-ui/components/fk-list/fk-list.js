@@ -519,10 +519,13 @@ var _default2 = { name: "fkList", props: { height: { type: Number, default: func
         // 计算当前X轴偏移量
         var movedX = Math.abs(e.changedTouches[0].pageX - this.moveStartX);
 
-        // 当拖拽角度小于45度才进行下拉更新，tan45` = 1，对边比临边。
-        if (movedX / movedY < 1 && movedX < this.maxPullingDistance || this.movedDistance > 0) {
+        // 当拖拽角度小于30度才进行下拉更新，tan30` ~ 0.577，对边比临边。
+        if (movedX / movedY < 0.577 && movedX < 44 || this.movedDistance > 0) {
           this.movedDistance = Math.min(movedY, this.maxPullingDistance);
           this.detectRefresh();
+        } else
+        {
+          this.isFirst = true;
         }
       }
     },
