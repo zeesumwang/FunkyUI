@@ -23,7 +23,7 @@
 			:backgroundColor="'#000000'" 
 			:show="!isPlay && poster!==''" 
 			:styles="{'width': width + 'px','height': height + 'px','justify-content':'center','align-items':'center'}" 
-			:duration="300" 
+			:duration="200" 
 			:mode-class="['fade','zoom-out']"
 		>
 			<image
