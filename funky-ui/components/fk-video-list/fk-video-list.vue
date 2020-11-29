@@ -83,7 +83,8 @@
 				isAnimationfinish: true,
 				videoDataRecycle: [],
 				isTop: true,
-				isBottom: false
+				isBottom: false,
+				moveY: 0
 			};
 		},
 		created() {
@@ -182,7 +183,7 @@
 			},
 			transition: function(e) {
 				if(this.isTop){
-					// console.log(this.lastPlayVideo)
+					console.log(this.lastPlayVideo)
 					if(this.lastPlayVideo > 0){
 						this.swiperAnimationfinish()
 					}

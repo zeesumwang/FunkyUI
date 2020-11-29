@@ -2,12 +2,19 @@
 	<view style="justify-content: center;align-items: center;flex: 1;display: flex;" :style="{'width': width + 'px','height': height + 'px'}" >
 		
 		<!-- #ifdef APP-NVUE -->
-		<image
-			v-if="poster!=='' && !isPlay && !isVideoLoad"
-			:src="poster" 
-			:style="{'width': width + 'px','height': imageHight + 'px'}" 
-			@load="imageLoad"
-		/>
+		<fk-transition
+			:backgroundColor="'#000000'" 
+			:show="isShowPoster && poster!==''" 
+			:styles="{'width': width + 'px','height': height + 'px','justify-content':'center','align-items':'center'}" 
+			:duration="200" 
+			:mode-class="['fade', 'zoom-out']"
+		>
+			<image
+				:src="poster" 
+				:style="{'width': width + 'px','height': imageHight + 'px'}" 
+				@load="imageLoad"
+			/>
+		</fk-transition>
 		<!-- #endif -->
 		
 		<!-- #ifndef APP-NVUE -->
@@ -32,7 +39,9 @@
 		<!-- #ifdef APP-NVUE -->
 		<video
 			:id="videoId"
-			:style="{'width': width + 'px','height': (isPlay ? height : 0) + 'px'}" 
+			:ref="videoId"
+			style="position: absolute;"
+			:style="{'width': width + 'px','height': (isPlay && !isShowPoster ? height : 0) + 'px'}" 
 			:src="src"
 			:autoplay="false" 
 			:loop="true"
@@ -118,16 +127,24 @@
 		data() {
 			return {
 				imageHight: 0,
-				isVideoLoad: false
+				isVideoLoad: false,
+				isShowPoster: true
 			}
 		},
 		watch:  {
 			isPlay: function(val) {
 				// console.log(this.videoId,val)
 				if (val === false) {
-					uni.createVideoContext(this.videoId).pause();
+					uni.createVideoContext(this.videoId).pause()
+					this.isShowPoster = true
 				} else {
-					uni.createVideoContext(this.videoId).play();
+					console.log(this.isShowPoster)
+					if(this.poster == ''){
+						uni.createVideoContext(this.videoId).play();
+					}
+					else{
+						setTimeout(()=> {this.isShowPoster = false;uni.createVideoContext(this.videoId).play();}, 200)
+					}				
 				}
 			}
 		},
@@ -141,7 +158,7 @@
 			waiting: function(e) {
 			},
 			pause: function(e) {
-				this.isVideoLoad = false
+				// this.isVideoLoad = false
 			},
 			loadedmetadata: function(e) {
 				this.isVideoLoad = true
