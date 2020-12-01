@@ -45,15 +45,17 @@
 			:src="src"
 			:autoplay="false" 
 			:loop="true"
-			:show-loading="true"
+			:show-loading="false"
 			:show-progress="false"
 			:show-fullscreen-btn="false"
 			:show-play-btn="false"
 			:enable-progress-gesture="false"				
 			:controls="false"
 			@play="play"
+			@loadedmetadata="loadedmetadata"
 			@waiting="waiting"
 			@pause="pause"
+			@timeupdate="timeupdate"
 		/>
 		<!-- #endif -->
 		
@@ -72,6 +74,10 @@
 			:enable-progress-gesture="false"				
 			:controls="false"
 			@play="play"
+			@loadedmetadata="loadedmetadata"
+			@waiting="waiting"
+			@pause="pause"
+			@timeupdate="timeupdate"
 		/>
 		<!-- #endif -->
 		
@@ -90,8 +96,13 @@
 			:controls="false"
 			@play="play"
 			@loadedmetadata="loadedmetadata"
+			@waiting="waiting"
+			@pause="pause"
+			@timeupdate="timeupdate"
 		/>
 		<!-- #endif -->
+		
+		<fk-loading :show="!isVideoLoad" style="position: absolute;"></fk-loading>
 		
 	</view>
 </template>
@@ -122,7 +133,7 @@
 			isPlay: {
 				type: Boolean,
 				default: false
-			}
+			},
 		},
 		data() {
 			return {
@@ -138,7 +149,7 @@
 					uni.createVideoContext(this.videoId).pause()
 					this.isShowPoster = true
 				} else {
-					console.log(this.isShowPoster)
+					// console.log(this.isShowPoster)
 					if(this.poster == ''){
 						uni.createVideoContext(this.videoId).play();
 					}
@@ -153,20 +164,32 @@
 				this.imageHight = this.width / e.detail.width * e.detail.height
 			},
 			play: function(e) {
-				this.isVideoLoad = true
+				// console.log(this.videoId,e)
 			},
 			waiting: function(e) {
+				setTimeout(()=> {
+					if(this.isVideoLoad == true){
+						this.isVideoLoad = false
+					}
+				},200)
+				
+				// console.log(this.videoId,e)
+			},
+			timeupdate: function(e) {
+				if(this.isVideoLoad == false){
+					this.isVideoLoad = true
+				}
 			},
 			pause: function(e) {
 				// this.isVideoLoad = false
 			},
 			loadedmetadata: function(e) {
-				this.isVideoLoad = true
+				this.$emit('loadedmetadata',e)
 			}
 		}
 	}
 </script>
 
-<style>
+<style scoped>
 
 </style>

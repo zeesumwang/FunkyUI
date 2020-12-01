@@ -119,6 +119,7 @@
 	// #endif
 	
 	import screenInfo from "@/common/helper.js"
+	import icons from "../../common/iconBase64.js"
 	
 	export default {
 		name: "fkList",
@@ -150,13 +151,13 @@
 			pullingIcon: {
 				type: String,
 				default() {
-					return "/static/pullingDown.png"
+					return icons.pullingDownIcon
 				}
 			},
 			refreshingIcon: {
 				type: String,
 				default() {
-					return "/static/refreshing.png"
+					return icons.refreshingIcon
 				}
 			},
 			showScrollbar: {
@@ -552,8 +553,8 @@
 	
 	/* 旋转动画 */
 	.scroll-rotate {
-		-webkit-animation: scrollRotate 0.618s linear infinite;
-		animation: scrollRotate 0.618s linear infinite;
+		-webkit-animation: scrollRotate 1s linear infinite;
+		animation: scrollRotate 1s linear infinite;
 	}
 	
 	@-webkit-keyframes scrollRotate {

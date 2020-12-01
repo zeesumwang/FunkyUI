@@ -83,6 +83,7 @@
 	// #ifdef APP-NVUE
 	const dom = uni.requireNativePlugin('dom') // 在APP端引入weex的dom组件
 	// #endif
+	import icons from "../../common/iconBase64.js"
 	
 	export default {
 		name: "fkWaterfall",
@@ -114,13 +115,13 @@
 			pullingIcon: {
 				type: String,
 				default() {
-					return "/static/pullingDown.png"
+					return icons.pullingDownIcon
 				}
 			},
 			refreshingIcon: {
 				type: String,
 				default() {
-					return "/static/refreshing.png"
+					return icons.refreshingIcon
 				}
 			},
 			showScrollbar: {

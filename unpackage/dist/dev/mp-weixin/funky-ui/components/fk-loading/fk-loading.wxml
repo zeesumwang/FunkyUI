@@ -1,0 +1,1 @@
+<block wx:if="{{show}}"><image class="scroll-rotate data-v-59c49e13" style="{{'color:'+(refreshColor)+';'+('width:'+(width+'px')+';')+('height:'+(height+'px')+';')}}" src="{{refreshingIcon}}"></image></block>

@@ -76,7 +76,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "components", function() { return components; });
 var components = {
   fkVideo: function() {
-    return __webpack_require__.e(/*! import() | funky-ui/components/fk-video/fk-video */ "funky-ui/components/fk-video/fk-video").then(__webpack_require__.bind(null, /*! @/funky-ui/components/fk-video/fk-video.vue */ 82))
+    return __webpack_require__.e(/*! import() | funky-ui/components/fk-video/fk-video */ "funky-ui/components/fk-video/fk-video").then(__webpack_require__.bind(null, /*! @/funky-ui/components/fk-video/fk-video.vue */ 83))
   }
 }
 var render = function() {
@@ -221,8 +221,9 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 //
-var _default2 = { name: "fkVideoList", props: { videoData: { type: Array, default: function _default() {return [];} }, isPlay: { type: Boolean, default: false }, loadmoreoffset: { type: Number, default: 0 } }, data: function data() {return { screenHeightPx: 0, screenWidthPx: 0, currentVideo: 0, currentVideoRecycle: 0, lastPlayVideo: 0, nextVideo: 0, preVideo: 0, isAnimationfinish: true, videoDataRecycle: [], isTop: true, isBottom: false };}, created: function created() {this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;if (this.videoData.length >= 3) {this.videoDataRecycle = this.videoData.slice(0, 3);} else {this.videoDataRecycle = this.videoData;} // console.log(this.videoData.length)
-  }, methods: { listScrollEnd: function listScrollEnd(e) {var videoCount = this.videoData.length;var currentVideo = Math.abs(e.contentOffset.y) / e.contentSize.height * videoCount;if (currentVideo !== this.currentVideo) {this.currentVideo = currentVideo;this.videoChange();}
+var _default2 = { name: "fkVideoList", props: { videoData: { type: Array, default: function _default() {return [];} }, isPlay: { type: Boolean, default: false }, loadmoreoffset: { type: Number, default: 0 } }, data: function data() {return { screenHeightPx: 0, screenWidthPx: 0, currentVideo: 0, currentVideoRecycle: 0, lastPlayVideo: 0, nextVideo: 0, preVideo: 0, isAnimationfinish: true, videoDataRecycle: [], isTop: true, isBottom: false, moveY: 0 };}, created: function created() {this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;if (this.videoData.length >= 3) {this.videoDataRecycle = this.videoData.slice(0, 3);} else {this.videoDataRecycle = this.videoData;} // console.log(this.videoData.length)
+  }, methods: { listScrollEnd: function listScrollEnd(e) {var videoCount = this.videoData.length;var currentVideo = Math.abs(e.contentOffset.y) / e.contentSize.height * videoCount;if (currentVideo !== this.currentVideo) {this.currentVideo = currentVideo;this.videoChange();
+      }
     },
     swiperChange: function swiperChange(e) {
       var action = '';
@@ -300,7 +301,7 @@ var _default2 = { name: "fkVideoList", props: { videoData: { type: Array, defaul
     },
     transition: function transition(e) {
       if (this.isTop) {
-        // console.log(this.lastPlayVideo)
+        console.log(this.lastPlayVideo);
         if (this.lastPlayVideo > 0) {
           this.swiperAnimationfinish();
         }

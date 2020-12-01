@@ -542,6 +542,7 @@
 
 
 
+
 /* 下拉松开回弹动画 */
 .pulldown {
 	height: 0px;
@@ -553,8 +554,8 @@
 }
 /* 旋转动画 */
 .scroll-rotate {
-	-webkit-animation: scrollRotate 0.618s linear infinite;
-	animation: scrollRotate 0.618s linear infinite;
+	-webkit-animation: scrollRotate 1s linear infinite;
+	animation: scrollRotate 1s linear infinite;
 }
 @-webkit-keyframes scrollRotate {
 0% {
