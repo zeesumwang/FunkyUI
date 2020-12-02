@@ -245,6 +245,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 var _default =
 {
   props: {
@@ -277,7 +278,8 @@ var _default =
     return {
       imageHight: 0,
       isVideoLoad: false,
-      isShowPoster: true };
+      isShowPoster: true,
+      waitCount: 0 };
 
   },
   watch: {
@@ -292,7 +294,13 @@ var _default =
           uni.createVideoContext(this.videoId).play();
         } else
         {
+
           setTimeout(function () {_this.isShowPoster = false;uni.createVideoContext(_this.videoId).play();}, 200);
+
+
+
+
+
         }
       }
     } },
@@ -302,15 +310,15 @@ var _default =
       this.imageHight = this.width / e.detail.width * e.detail.height;
     },
     play: function play(e) {
+      console.log(this.isVideoLoad);
       // console.log(this.videoId,e)
     },
-    waiting: function waiting(e) {var _this2 = this;
-      setTimeout(function () {
-        if (_this2.isVideoLoad == true) {
-          _this2.isVideoLoad = false;
-        }
-      }, 200);
-
+    waiting: function waiting(e) {
+      this.waitCount += 1;
+      console.log('缓冲次数:', this.waitCount);
+      if (this.isVideoLoad == true && this.waitCount > 1) {
+        this.isVideoLoad = false;
+      }
       // console.log(this.videoId,e)
     },
     timeupdate: function timeupdate(e) {

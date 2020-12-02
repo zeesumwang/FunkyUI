@@ -45,7 +45,7 @@
 			:src="src"
 			:autoplay="false" 
 			:loop="true"
-			:show-loading="false"
+			:show-loading="true"
 			:show-progress="false"
 			:show-fullscreen-btn="false"
 			:show-play-btn="false"
@@ -102,8 +102,12 @@
 		/>
 		<!-- #endif -->
 		
-		<fk-loading :show="!isVideoLoad" style="position: absolute;"></fk-loading>
+		<!-- #ifndef APP-NVUE -->
+		<fk-loading :show="!isVideoLoad" style="position: absolute;opacity: 0.618;"></fk-loading>
+		<!-- #endif -->
 		
+		
+		<!-- <slot :name="videoId"></slot> -->
 	</view>
 </template>
 
@@ -139,7 +143,8 @@
 			return {
 				imageHight: 0,
 				isVideoLoad: false,
-				isShowPoster: true
+				isShowPoster: true,
+				waitCount: 0
 			}
 		},
 		watch:  {
@@ -154,7 +159,13 @@
 						uni.createVideoContext(this.videoId).play();
 					}
 					else{
+						// #ifndef APP-NVUE
 						setTimeout(()=> {this.isShowPoster = false;uni.createVideoContext(this.videoId).play();}, 200)
+						// #endif
+						// #ifdef APP-NVUE
+						this.isShowPoster = false
+						uni.createVideoContext(this.videoId).play()
+						// #endif
 					}				
 				}
 			}
@@ -164,15 +175,15 @@
 				this.imageHight = this.width / e.detail.width * e.detail.height
 			},
 			play: function(e) {
+				console.log(this.isVideoLoad)
 				// console.log(this.videoId,e)
 			},
 			waiting: function(e) {
-				setTimeout(()=> {
-					if(this.isVideoLoad == true){
-						this.isVideoLoad = false
-					}
-				},200)
-				
+				this.waitCount += 1
+				console.log('缓冲次数:',this.waitCount)
+				if(this.isVideoLoad == true && this.waitCount>1){
+					this.isVideoLoad = false
+				}
 				// console.log(this.videoId,e)
 			},
 			timeupdate: function(e) {

@@ -169,6 +169,11 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 
 
 
+
+
+
+
+
 var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js */ 17));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} //
 //
 //
@@ -221,13 +226,13 @@ var _helper = _interopRequireDefault(__webpack_require__(/*! @/common/helper.js 
 //
 //
 //
+//
+//
+//
+//
+//
 var _default2 = { name: "fkVideoList", props: { videoData: { type: Array, default: function _default() {return [];} }, isPlay: { type: Boolean, default: false }, loadmoreoffset: { type: Number, default: 0 } }, data: function data() {return { screenHeightPx: 0, screenWidthPx: 0, currentVideo: 0, currentVideoRecycle: 0, lastPlayVideo: 0, nextVideo: 0, preVideo: 0, isAnimationfinish: true, videoDataRecycle: [], isTop: true, isBottom: false, moveY: 0 };}, created: function created() {this.screenHeightPx = _helper.default.screenHeightPx;this.screenWidthPx = _helper.default.screenWidthPx;if (this.videoData.length >= 3) {this.videoDataRecycle = this.videoData.slice(0, 3);} else {this.videoDataRecycle = this.videoData;} // console.log(this.videoData.length)
-  }, methods: { listScrollEnd: function listScrollEnd(e) {var videoCount = this.videoData.length;var currentVideo = Math.abs(e.contentOffset.y) / e.contentSize.height * videoCount;if (currentVideo !== this.currentVideo) {this.currentVideo = currentVideo;this.videoChange();
-      }
-    },
-    swiperChange: function swiperChange(e) {
-      var action = '';
-      if (e.detail.current > this.currentVideoRecycle) {
+  }, methods: { listScrollEnd: function listScrollEnd(e) {var videoCount = this.videoData.length;var currentVideo = Math.abs(e.contentOffset.y) / e.contentSize.height * videoCount;if (currentVideo !== this.currentVideo) {this.currentVideo = currentVideo;this.videoChange();}}, swiperChange: function swiperChange(e) {var action = '';if (e.detail.current > this.currentVideoRecycle) {
         if (e.detail.current == 2 && this.currentVideoRecycle == 0) {
           action = 'sub';
         } else

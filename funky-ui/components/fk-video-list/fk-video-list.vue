@@ -37,6 +37,11 @@
 			/>
 			<!-- #endif -->
 			
+			<!-- #ifdef APP-NVUE -->
+			<!-- 目前多端不一致，放弃动态插槽 -->
+			<!-- <slot :name="'video'+index"></slot> -->
+			<!-- #endif -->
+			
 		
 	<!-- #ifndef APP-NVUE -->
 		</swiper-item>

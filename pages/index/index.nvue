@@ -4,7 +4,9 @@
 		 :hideCount="1" :backgroundColor="'#1e1e1e'" :opacity="0.98" :bottom="21" :widthScale="0.618" :current="currentPage">
 
 			<template v-slot:hidePage>
-				<fk-video-list :videoData="videoData" :isPlay="currentPage==-1" @videoChange="videoChange"></fk-video-list>
+				<fk-video-list :videoData="videoData" :isPlay="currentPage==-1" @videoChange="videoChange">
+	
+				</fk-video-list>
 			</template>
 
 			<template v-slot:mainPage0>
