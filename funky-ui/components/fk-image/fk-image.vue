@@ -41,7 +41,7 @@
 		},
 		data() {
 			return {
-				height: 68,
+				height: 0,
 				loadStatus: 'loading'
 			};
 		},

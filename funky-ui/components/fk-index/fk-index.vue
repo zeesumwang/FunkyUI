@@ -1,9 +1,9 @@
 <template>
-	<view class="index">
+	<view class="index" :style="{backgroundColor: pageColor}">
 		
 
 		<swiper :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}" @change="swiperChange" @transition="transition"
-		 @animationfinish="animationfinish" :duration="duration" :indicator-dots="false" :current="currentFabIndex">
+		 @animationfinish="animationfinish" :duration="duration" :indicator-dots="false" :disable-touch="disableTouch" :current="currentFabIndex">
 
 			<swiper-item v-if="hideCount>0">
 				<view class="page" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
@@ -64,7 +64,7 @@
 
 <script>
 	// #ifdef APP-NVUE
-	const BindingX = uni.requireNativePlugin('bindingx');
+	// const BindingX = uni.requireNativePlugin('bindingx');
 	// #endif
 
 	import screenInfo from "../../common/helper.js"
@@ -77,6 +77,10 @@
 				default () {
 					return []
 				}
+			},
+			disableTouch: {
+				type: Boolean,
+				default: false
 			},
 			duration: {
 				type: Number,
@@ -91,6 +95,12 @@
 				type: Boolean,
 				default () {
 					return true
+				}
+			},
+			pageColor: {
+				type: String,
+				default () {
+					return "#0D0D0D"
 				}
 			},
 			backgroundColor: {
@@ -294,7 +304,6 @@
 
 <style scoped>
 	.index {
-		background-color: #0D0D0D;
 		flex: 1;
 		flex-direction: column;
 	}
