@@ -80,7 +80,12 @@
 			},
 			duration: {
 				type: Number,
-				default: 300
+				// #ifdef APP-NVUE
+				default: 500,
+				// #endif
+				// #ifndef APP-NVUE
+				default: 300,
+				// #endif
 			},
 			isFabShow: {
 				type: Boolean,
@@ -193,6 +198,7 @@
 		},
 		methods: {
 			transition: function(e) {
+				this.$emit('transition',e)
 				// 如果是点击fab进行切换，则不用展示过度动画。
 				if (this.isFabClick == true) {
 					return
@@ -204,18 +210,23 @@
 				} else {
 					var dx = e.detail.dx + this.screenWidthPx * this.isContinuity
 				}
-
+				
+				if(Math.floor(Math.abs(dx)%5) == 0){
+					// 减少jsbridge通信
+					return
+				}
+				
 				if (dx > 0 && this.virtualCurrentFabIndex != 4) {
 					this.targetFabIndex = this.virtualCurrentFabIndex + 1
 				} else if (dx < 0 && this.virtualCurrentFabIndex != 0) {
 					this.targetFabIndex = this.virtualCurrentFabIndex - 1
 				}
 
-				this.targetFabIndexOpacity = Math.max(1.0 * Math.abs(dx) / this.screenWidthPx, 0.2)
+				this.targetFabIndexOpacity = Math.max(Math.abs(dx) / this.screenWidthPx, 0.2)
 				this.virtualCurrentFabIndexOpacity = Math.max(1.2 - this.targetFabIndexOpacity, 0.2)
 				
 				// 优化H5/MP/APP-IOS连续滑屏
-				if (this.targetFabIndexOpacity > 1) {
+				if (this.targetFabIndexOpacity > 1 && screenInfo.system.platform !=='android') {
 					// console.log("连续滑动触发",this.currentFabIndex,this.virtualCurrentFabIndex,this.targetFabIndex)
 					this.isContinuity += 1
 					// if (this.isContinuity > 0){
@@ -230,14 +241,15 @@
 						this.targetFabIndex -= 1
 						this.virtualCurrentFabIndex -= 1
 					}
-
+					
 					let tempOpacity = this.virtualCurrentFabIndexOpacity
 					this.virtualCurrentFabIndexOpacity = 1
 					this.targetFabIndexOpacity = 0.2
 					// console.log("改变fab的指向",this.currentFabIndex,this.virtualCurrentFabIndex,this.targetFabIndex)
 				}
 			},
-			animationfinish: function() {
+			animationfinish: function(e) {
+				this.$emit('animationfinish',e)
 				this.isContinuity = 0
 				this.virtualCurrentFabIndexOpacity = 1
 				this.targetFabIndexOpacity = 0.2
