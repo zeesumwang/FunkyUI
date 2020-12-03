@@ -118,7 +118,7 @@
 	const dom = uni.requireNativePlugin('dom') // 在APP端引入weex的dom组件
 	// #endif
 	
-	import screenInfo from "@/common/helper.js"
+	import screenInfo from "../../common/helper.js"
 	import icons from "../../common/iconBase64.js"
 	
 	export default {

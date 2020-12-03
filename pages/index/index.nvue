@@ -46,7 +46,7 @@
 				<view :style="{height: statusBarHeight + 'px'}"></view>
 				<!-- #endif -->
 
-				<fk-waterfall ref="fk-waterfall" :columnCount="2" :urlList="urlList" :height="screenHeightPx" :width="screenWidthPx"
+				<fk-waterfall ref="fk-waterfall" :columnCount="3" :urlList="urlList" :height="screenHeightPx" :width="screenWidthPx"
 				 :isRefresh="isRefresh" @refreshing="refreshing" @dragingDown="showFab" @dragingUp="hideFab" @loadmore="loadmore">
 				</fk-waterfall>
 			</template>

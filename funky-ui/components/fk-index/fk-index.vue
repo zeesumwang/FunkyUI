@@ -67,7 +67,7 @@
 	const BindingX = uni.requireNativePlugin('bindingx');
 	// #endif
 
-	import screenInfo from "@/common/helper.js"
+	import screenInfo from "../../common/helper.js"
 
 	export default {
 		name: "fkIndex",

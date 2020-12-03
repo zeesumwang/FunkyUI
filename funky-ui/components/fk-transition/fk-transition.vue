@@ -14,7 +14,7 @@
 </template>
 
 <script>
-	import screenInfo from "@/common/helper.js"
+	import screenInfo from "../../common/helper.js"
 	// #ifdef APP-NVUE
 	const animation = uni.requireNativePlugin('animation');
 	// #endif

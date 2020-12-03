@@ -56,7 +56,7 @@
 </template>
 
 <script>
-	import screenInfo from "@/common/helper.js"
+	import screenInfo from "../../common/helper.js"
 	
 	export default {
 		name: "fkVideoList",
