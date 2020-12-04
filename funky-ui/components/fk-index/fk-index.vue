@@ -239,6 +239,9 @@
 				if (this.targetFabIndexOpacity > 1 && screenInfo.system.platform !=='android') {
 					// console.log("连续滑动触发",this.currentFabIndex,this.virtualCurrentFabIndex,this.targetFabIndex)
 					this.isContinuity += 1
+					if (this.isContinuity < 0 || this.isContinuity + 1 >3){
+						return
+					}
 					// if (this.isContinuity > 0){
 					// 	console.log('连续滑屏 x',this.isContinuity + 1)
 					// }

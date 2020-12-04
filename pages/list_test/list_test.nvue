@@ -1,139 +1,16 @@
 <template>
-	<fk-page
-		:pageStyle="{
-			alignItems: 'center',
-			justifyContent: 'center'
-		}"
-	>
-		<fk-swiper
-			ref="swiper"
-			:autoplay="true"
-			:circular="circular"
-			:current.sync="current"
-			:size="normalList.length"
-			:plus="plus"
-			:width="750"
-			:height="750"
-			:itemWidth="750"
-			:space="0"
-		>
-			<fk-swiper-item @click="itemClick(i)" v-for="(i, idx) in normalList" :index="idx" :key="idx">
-				
-				<view style="display: flex;flex:1;align-items: center;justify-content: center;height: 750rpx;width: 750rpx;background-color: #fb73c8;">
-					<text class="title">{{i.title}}</text>
-				</view>
-				
-			</fk-swiper-item>
-		</fk-swiper>
-		
-	</fk-page>
+	<!-- <fk-tab></fk-tab> -->
+	<fk-slide></fk-slide>
 </template>
 
 <script>
 export default {
 	data() {
-		return {
-			current: 1,
-			current2: 0,
-			swiperList: [
-				{
-					index: 0,
-					title: '0'
-				},
-				{
-					index: 1,
-					title: '1'
-				},
-				{
-					index: 2,
-					title: '2'
-				},
-				{
-					index: 3,
-					title: '3'
-				}
-			],
-			plus: 2,
-			circular: true
-		};
+		
 	},
-	computed: {
-		normalList() {
-			return []
-				.concat(this.leftPlusList)
-				.concat(this.swiperList)
-				.concat(this.rightPlusList);
-		},
-		leftPlusList() {
-			if (this.circular == false) return [];
-			return [...this.swiperList]
-				.reverse()
-				.slice(0, this.plus)
-				.reverse();
-		},
-		rightPlusList() {
-			if (this.circular == false) return [];
-			return [...this.swiperList].slice(0, this.plus);
-		}
-	},
-	onLoad() {},
-	methods: {
-		prev() {
-			this.$refs.swiper.prev();
-			setTimeout(() => {
-				console.log('current', this.current);
-			}, 150);
-		},
-		next() {
-			this.$refs.swiper.next();
-			setTimeout(() => {
-				console.log('current', this.current);
-			}, 150);
-		},
-		prev1() {
-			this.$refs.swiper3d.prev();
-			setTimeout(() => {
-				console.log('current2', this.current2);
-			}, 150);
-		},
-		next1() {
-			this.$refs.swiper3d.next();
-			setTimeout(() => {
-				console.log('current2', this.current2);
-			}, 150);
-		},
-		itemClick(i) {
-			uni.showToast({
-				icon: 'none',
-				title: i.title
-			});
-		}
-	}
 };
 </script>
 
 <style>
-.title {
-	font-size: 36rpx;
-	color: #1e1e1e;
-}
 
-.item {
-	background-color: #f0ad4e;
-	flex: 1;
-	align-items: center;
-	justify-content: center;
-	border-radius: 30rpx;
-}
-
-.txt {
-	color: red;
-	font-size: 40rpx;
-	font-weight: bold;
-}
-
-.btns {
-	margin-top: 20rpx;
-	flex-direction: row;
-}
 </style>

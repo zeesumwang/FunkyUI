@@ -1,39 +1,110 @@
 <template>
 	<view class="container">
-		
-		<view ref="my" :style="{height: screenWidthPx + 'px',width: screenWidthPx + 'px'}" style="background-color: #fb73c8;" @touchstart="touchStart">
-			
-		</view>
 
+		<scroller ref="scroller" :scroll-left="scrollLeft" :show-scrollbar="false" scroll-direction='horizontal' :scroll-x="true" :pagingEnabled="true"
+		 :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}" style="flex-direction: row;">
+			<view style="background-color: #fb73c8;justify-content: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
+				<view :style="{height: statusBarHeight + 'px'}"></view>
+				<list>
+					<cell v-for="(item, index) in data" :key="index">
+						<view style="height: 100px;justify-content: center;align-items: center;">
+							<text>{{item}}</text>
+						</view>
+					</cell>
+				</list>
+			</view>
+			<view style="background-color: #f4e159;justify-content: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
+				<view :style="{height: statusBarHeight + 'px'}"></view>
+				<list>
+					<cell v-for="(item, index) in data" :key="index">
+						<view style="height: 100px;justify-content: center;align-items: center;">
+							<text>{{item}}</text>
+						</view>
+					</cell>
+				</list>
+			</view>
+			<view style="background-color: #2ef1f5;justify-content: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
+				<view :style="{height: statusBarHeight + 'px'}"></view>
+				<list>
+					<cell v-for="(item, index) in data" :key="index">
+						<view style="height: 100px;justify-content: center;align-items: center;">
+							<text>{{item}}</text>
+						</view>
+					</cell>
+				</list>
+			</view>
+			<view style="background-color: #28d72a;justify-content: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
+				<view :style="{height: statusBarHeight + 'px'}"></view>
+				<list>
+					<cell v-for="(item, index) in data" :key="index">
+						<view style="height: 100px;justify-content: center;align-items: center;">
+							<text>{{item}}</text>
+						</view>
+					</cell>
+				</list>
+			</view>
+			<view style="background-color: #f23021;justify-content: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
+				<view :style="{height: statusBarHeight + 'px'}"></view>
+				<list>
+					<cell v-for="(item, index) in data" :key="index">
+						<view style="height: 100px;justify-content: center;align-items: center;">
+							<text>{{item}}</text>
+						</view>
+					</cell>
+				</list>
+			</view>
+		</scroller>
+
+
+		<view ref='fab' style="height: 46px;position: fixed;justify-content: space-around;align-items: center;flex-direction: row;background-color: #393a3a;border-radius: 50px;"
+		 :style="{left: screenWidthPx * (1-0.618) *0.5 + 'px',bottom: statusBarHeight * 0.5 + 'px',width: screenWidthPx * 0.618 + 'px'}">
+			<image v-for="(item, index) in fabList" :key="item.id" :id="item.id" :ref="item.id" :src="item.url" style="width: 20px;height: 20px;"
+				:style="{borderRadius: item.id == 'user' ? '25px' : 0, opacity: index == 0 ? 1 : 0.2}"
+			>
+			</image>
+		</view>
 	</view>
 </template>
 
 <style>
 	.container {
 		flex: 1;
-		background-color: #0D0D0D;
+		background-color: #ffffff;
 		justify-content: center;
 		align-items: center;
 	}
-
-
 </style>
 
 <script>
 	const Binding = uni.requireNativePlugin('bindingx');
 	import screenInfo from "../../common/helper.js"
-	
+
 	export default {
 		data() {
 			return {
-				x: 0,
-				y: 0,
-				isInAnimation: false,
-				gesToken: 0,
-				opacity: 1,
+				fabList: [{
+						id: 'home',
+						url: "/static/home.png"
+					},
+					{
+						id: 'search',
+						url: "/static/search.png"
+					},
+					{
+						id: 'message',
+						url: "/static/flash.png"
+					},
+					{
+						id: 'user',
+						url: "/static/logo.jpg"
+					}
+				],
 				screenHeightPx: 0,
 				screenWidthPx: 0,
+				screenWidthRpx: 750,
 				statusBarHeight: 0,
+				data: [],
+				scrollLeft: 0
 			}
 		},
 		created() {
@@ -41,111 +112,63 @@
 			this.screenHeightPx = screenInfo.screenHeightPx
 			this.screenWidthPx = screenInfo.screenWidthPx
 			this.statusBarHeight = screenInfo.system.statusBarHeight
+			this.scrollLeft = this.screenWidthPx
+			if(screenInfo.system.platform !== 'ios'){
+				this.screenWidthRpx = this.screenWidthPx
+			}
+			for (var i = 0; i < 50; i++) {
+				this.data.push(i)
+			}
+		},
+		mounted() {
+			setTimeout(()=>{
+				this.bindTap()
+			},100)
 		},
 		methods: {
+			bindTap: function() {
+				var swiper = this.getEl(this.$refs['scroller'])
+				var fab = this.getEl(this.$refs['fab'])
+				var fabHeight = this.statusBarHeight * 0.5
+				var maxTranslateY = fabHeight * 5
+				
+				
+				var props = [{
+							element: fab,
+							property: 'transform.translateY',
+							expression: `${maxTranslateY} * (x < ${this.screenWidthRpx} ? (1 - x / ${this.screenWidthRpx}) : 0)`
+						}]
+				
+				
+				for(var i = 0; i < this.fabList.length; i++){
+					let fabItem = this.getEl(this.$refs[this.fabList[i].id])
+					let subExpression = (1+i)*this.screenWidthRpx
+					let expression = `x == ${subExpression} ? 1 : (x < ${subExpression} ? max((x - ${i*this.screenWidthRpx}) / 750, 0.2) : max(1 - ((x - ${subExpression}) / 750), 0.2))`
+					let prop = {
+						element: fabItem,
+						property: 'opacity',
+						expression: expression
+					}
+					props.push(prop)
+				}
+				
+				Binding.bind({
+					eventType: 'scroll',
+					anchor: swiper,
+					props: props
+				}, ((e) => {
+					console.log(e.x)
+				}))
+			},
 			getEl: function(e) {
-				return e.ref;
-			},
-			touchStart: function(e) {
-				var self = this;
-				if (this.isInAnimation === true) {
-					console.log('we are in animation, drop pan gesture...');
-					if (this.gesToken) {
-						Binding.unbind({
-							eventType: 'pan',
-							token: self.gesToken
-						});
-						this.gesToken = undefined;
-					}
-					return;
+				if(typeof(e[0])=='object'){
+					return e[0].ref
 				}
-				var my = this.getEl(this.$refs.my);
-				var translate_x_origin = 'x+0';
-				var opacity_x_origin = '1-abs(x)/600';
-				var gesTokenObj = Binding.bind({
-					anchor: my,
-					eventType: 'pan',
-					props: [{
-							element: my,
-							property: 'transform.translateX',
-							expression: translate_x_origin
-						},
-						{
-							element: my,
-							property: 'opacity',
-							expression: opacity_x_origin
-						}
-					]
-				}, function(e) {
-					// console.log(e)
-					if (e.state === 'end') {
-						self.x += e.deltaX;
-						self.y += e.deltaY;
-						self.opacity = 1 - Math.abs(e.deltaX) / 600;
-						// anim
-						self.bindTiming();
-					}
-				});
-				self.gesToken = gesTokenObj.token;
-			},
-			bindTiming: function() {
-				this.isInAnimation = true;
-				var my = this.getEl(this.$refs.my);
-				var self = this;
-				// should equal with timing duration
-				var exit_origin = 't>1000';
-				var changed_x;
-				var final_x;
-				var final_opacity;
-				var translate_x_origin;
-				var shouldDismiss = false;
-				if (self.x >= -750 / 2 && self.x <= 750 / 2) {
-					shouldDismiss = false;
-					final_x = 0;
-					changed_x = 0 - self.x;
-					final_opacity = 1;
-					translate_x_origin = `easeOutElastic(t,${self.x},${changed_x},1000)`
-				} else if (self.x < -750 / 2) {
-					shouldDismiss = true;
-					final_x = -750;
-					changed_x = -750 - self.x;
-					final_opacity = 0;
-					translate_x_origin = `easeOutExpo(t,${self.x},${changed_x},1000)`
-				} else { // x > 750/2
-					final_x = 750;
-					shouldDismiss = true;
-					changed_x = 750 - self.x;
-					final_opacity = 0;
-					translate_x_origin = `easeOutExpo(t,${self.x},${changed_x},1000)`
+				else{
+					return e.ref
 				}
-				var changed_opacity = final_opacity - self.opacity;
-				var opacity_origin = `linear(t,${self.opacity},${changed_opacity},1000)`;
-				var result = Binding.bind({
-					eventType: 'timing',
-					exitExpression: exit_origin,
-					props: [{
-							element: my,
-							property: 'transform.translateX',
-							expression: translate_x_origin
-						},
-						{
-							element: my,
-							property: 'opacity',
-							expression: opacity_origin
-						}
-					]
-				}, function(e) {
-					if (e.state === 'end' ||
-						e.state === 'exit') {
-						// reset x
-						self.x = final_x;
-						self.isInAnimation = false;
-						if (shouldDismiss) {
-							// remove card from hierarchy
-						}
-					}
-				});
 			}
 		}
 	}
+	
 </script>
