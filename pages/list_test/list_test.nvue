@@ -1,6 +1,6 @@
 <template>
-	<!-- <fk-tab></fk-tab> -->
-	<fk-slide></fk-slide>
+	<fk-tab></fk-tab>
+	<!-- <fk-slide></fk-slide> -->
 </template>
 
 <script>
