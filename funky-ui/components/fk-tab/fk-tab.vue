@@ -2,43 +2,44 @@
 	<view class="container">
 
 		<scroller ref="scroller" @scroll="scroll" @horizontalpan="horizontalpan"
-		 @swipe="swipe" :scrollable="false" :show-scrollbar="false" :scrollToBegin="false" :offset-accuracy="1"
+		 :scrollable="false" :show-scrollbar="false" :scrollToBegin="false" :offset-accuracy="1"
 		 :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
 		 style="flex-direction: row;">
 		 
 			<view @touchstart="checkPage(0)" ref='page-hide' id='page-hide' style="background-color: #b97b00;justify-content: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
 				<view :style="{height: statusBarHeight + 'px'}"></view>
-				<list>
-					<cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
+				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :isRefresh="isRefresh" @refreshing="refreshing">
+					<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
 						<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #1e1e1e;"
 						 :style="{width: screenWidthPx -10 + 'px'}">
-							<!-- <text style="color: #ebebeb">{{item}}</text> -->
+							<text style="color: #ebebeb">{{item}}</text>
 						</view>
-					</cell>
-				</list>
+					</fk-cell>
+				</fk-list>
 			</view>
 			
-			<view v-for="(item,index) in fabList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + 1)" style="background-color: #000000;justify-content: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
+			<view v-for="(item,index) in fabList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + 1)" style="background-color: #0d0d0d;justify-content: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
 				<view :style="{height: statusBarHeight + 'px'}"></view>
-				<list>
-					<cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
-						<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #1e1e1e;"
+				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :isRefresh="isRefresh" @refreshing="refreshing">
+					<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
+						<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #191919;"
 						 :style="{width: screenWidthPx -10 + 'px'}">
-							<!-- <text style="color: #ebebeb">{{item}}</text> -->
+							<text style="color: #ebebeb">{{item}}</text>
 						</view>
-					</cell>
-				</list>
+					</fk-cell>
+				</fk-list>
 			</view>
 			
+			<view ref='fab' elevation="10px" style="height: 46px;position: fixed;justify-content: space-around;align-items: center;flex-direction: row;background-color: #1e1e1e;border-radius: 50px;"
+			 :style="{left: screenWidthPx * (1-0.618) *0.5 + 'px',bottom: statusBarHeight * 0.5 + 'px',width: screenWidthPx * 0.618 + 'px'}">
+				<image v-for="(item, index) in fabList" :key="item.id" :id="item.id" :ref="item.id" :src="item.url" style="width: 20px;height: 20px;"
+				 :style="{borderRadius: item.id == 'user' ? '25px' : 0, opacity: index == 0 ? 1 : 0.2}">
+				</image>
+			</view>
 		</scroller>
 
 
-		<view ref='fab' elevation="10px" style="height: 46px;position: fixed;justify-content: space-around;align-items: center;flex-direction: row;background-color: #1e1e1e;border-radius: 50px;"
-		 :style="{left: screenWidthPx * (1-0.618) *0.5 + 'px',top: statusBarHeight * 1.5 + 'px',width: screenWidthPx * 0.618 + 'px'}">
-			<image v-for="(item, index) in fabList" :key="item.id" :id="item.id" :ref="item.id" :src="item.url" style="width: 20px;height: 20px;"
-			 :style="{borderRadius: item.id == 'user' ? '25px' : 0, opacity: index == 0 ? 1 : 0.2}">
-			</image>
-		</view>
+		
 	</view>
 </template>
 
@@ -52,8 +53,14 @@
 </style>
 
 <script>
-	const BindingX = uni.requireNativePlugin('bindingx');
+	
+	import BindingX from "weex-bindingx"
+	console.log(BindingX)
+	// #ifdef APP-NVUE
+	// const BindingX = uni.requireNativePlugin('bindingx');
 	const dom = uni.requireNativePlugin('dom') // 在APP端引入weex的dom组件
+	// #endif
+	
 	import screenInfo from "../../common/helper.js"
 
 	export default {
@@ -86,6 +93,10 @@
 				startContentOffsetX: 360,
 				swiper: 0,
 				contentOffsetX: 0,
+				panToken: 0,
+				scrollToken: 0,
+				anmToken: 0,
+				isRefresh: false
 			}
 		},
 		created() {
@@ -96,7 +107,11 @@
 
 			if (screenInfo.system.platform !== 'ios') {
 				this.realScreenWidth = this.screenWidthPx,
-					this.contentOffsetX = this.screenWidthPx
+				this.contentOffsetX = this.screenWidthPx
+			}
+			else{
+				this.realScreenWidth = 750,
+				this.contentOffsetX = 750
 			}
 			for (var i = 0; i < 20; i++) {
 				this.data.push(i)
@@ -107,13 +122,24 @@
 				this.bindTap()
 			}, 100)
 			var indexElement = this.$refs['page-home'][0]
+			
+			// #ifdef APP-NVUE
 			dom.scrollToElement(indexElement, {
 				offset: 0,
 				animated: true
 			})
+			// #endif
+			
 			this.swiper = this.getEl(this.$refs['scroller'])
 		},
 		methods: {
+			refreshing: function() {
+				this.isRefresh = true
+				setTimeout(() => {
+					this.isRefresh = false
+					// this.showNotied('刷新成功', 1500)
+				}, 1200)
+			},
 			bindTap: function() {
 				var fab = this.getEl(this.$refs['fab'])
 				var fabHeight = this.statusBarHeight * 0.5
@@ -138,7 +164,7 @@
 					props.push(prop)
 				}
 
-				BindingX.bind({
+				this.scrollToken = BindingX.bind({
 					eventType: 'scroll',
 					anchor: this.swiper,
 					props: props
@@ -154,39 +180,74 @@
 					return e.ref
 				}
 			},
-			horizontalpan: function(e) {
-				if (e.state == 'start') {
-					this.touchstart(e)
-					// BindingX.prepare({
-					// 	eventType: 'pan',
-					// 	anchor: this.swiper
-					// })
-
-					BindingX.bind({
-						eventType: 'pan',
-						anchor: this.swiper,
-						props: [{
-							element: this.swiper,
-							property: 'scroll.contentOffsetX',
-							expression: `${this.contentOffsetX} - x`
-						}]
-					}, ((e) => {
-						
-					}))
+			getDuration: function(speed) {
+				let anmDuration = 0
+				if(speed > 3) {
+					anmDuration = 200
 				}
-				else if(e.state == 'end') {
-					this.touchend(e)
+				else if(speed > 2) {
+					anmDuration = 300
 				}
+				else if(speed > 1 && speed < 2) {
+					anmDuration = 400
+				}
+				else {
+					anmDuration = 500
+				}
+				return anmDuration
 			},
 			scroll: function(e) {
-				this.contentOffsetX = Math.ceil(Math.abs(e.contentOffset.x))
+				if(screenInfo.system.platform == 'ios') {
+					this.contentOffsetX = Math.ceil(Math.abs(e.contentOffset.x)) * (750 / this.screenWidthPx)
+				}
+				else {
+					this.contentOffsetX = Math.ceil(Math.abs(e.contentOffset.x))
+				}
+				// console.log(this.contentOffsetX)
 			},
 			checkPage: function(index) {
 				this.startContentOffsetX = Math.abs(index * this.realScreenWidth)
 				// console.log(index,this.startContentOffsetX)
 			},
+			horizontalpan: function(e) {
+				if (e.state == 'start') {
+					this.touchstart(e)
+					// console.log(this.contentOffsetX)
+					if(screenInfo.system.platform == 'ios') {
+						var expression = `${this.contentOffsetX} - x * (750 / 175)`
+					}
+					else{
+						var expression = `${this.contentOffsetX} - x`
+					}
+					this.panToken = BindingX.bind({
+						eventType: 'pan',
+						anchor: this.swiper,
+						props: [{
+							element: this.swiper,
+							property: 'scroll.contentOffsetX',
+							expression: expression
+						}]
+					}, ((e) => {
+						// console.log(e)
+					}))
+				}
+				else if(e.state == 'end') {
+					this.touchend(e)
+				}
+			},			
 			touchstart: function(e) {
-				BindingX.unbindAll()
+				if(screenInfo.system.platform == 'ios'){
+					BindingX.unbindAll()
+					this.bindTap()
+				}
+				else{
+					BindingX.unbindAll()
+				}
+				
+				BindingX.prepare({
+					eventType: 'pan',
+					anchor: this.swiper
+				})
 				
 				var identifier = e.changedTouches[0].identifier
 				var screenX = e.changedTouches[0].screenX
@@ -223,37 +284,20 @@
 						var duration = e.timestamp - this.changedTouches[i].timestamp
 						var deltaX = -(screenX - this.changedTouches[i].screenX)
 						var speed = Math.abs(deltaX) / duration
-
-						if (speed > 0.68) {
+						console.log(speed)
+						if (speed > 0.5) {
 							if (deltaX > 10) {
 								let changeBy = this.startContentOffsetX + this.realScreenWidth - this.contentOffsetX
-								let anmDuration = Math.abs(changeBy) / speed
-								if(speed > 2) {
-									anmDuration = 300
-								}
-								else if(speed > 1 && speed < 2) {
-									anmDuration = 400
-								}
-								else {
-									anmDuration = 500
-								}
-								console.log('加速下一屏', anmDuration, speed)
+								let anmDuration = this.getDuration(speed)
+								
+								// console.log('加速下一屏', anmDuration, speed)
 								this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 									
 								}))
 							} else if (deltaX < -10) {
 								let changeBy = -(this.contentOffsetX - (this.startContentOffsetX - this.realScreenWidth))
-								let anmDuration = Math.abs(changeBy) / speed
-								if(speed > 2) {
-									anmDuration = 300
-								}
-								else if(speed > 1 && speed < 2) {
-									anmDuration = 400
-								}
-								else {
-									anmDuration = 500
-								}
-								console.log('加速上一屏', anmDuration, speed)
+								let anmDuration = this.getDuration(speed)
+								// console.log('加速上一屏', anmDuration, speed)
 								this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 									
 								}))
@@ -267,32 +311,14 @@
 									if (deltaX > 0) {
 										// console.log('下一屏')
 										let changeBy = this.startContentOffsetX + this.realScreenWidth - this.contentOffsetX
-										let anmDuration = Math.abs(changeBy) / speed
-										if(speed > 2) {
-											anmDuration = 300
-										}
-										else if(speed > 1 && speed < 2) {
-											anmDuration = 400
-										}
-										else {
-											anmDuration = 500
-										}
+										let anmDuration = this.getDuration(speed)
 										this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 										
 										}))
 									} else {
 										// console.log('上一屏')
 										let changeBy = -(this.contentOffsetX - (this.startContentOffsetX - this.realScreenWidth))
-										let anmDuration = Math.abs(changeBy) / speed
-										if(speed > 2) {
-											anmDuration = 300
-										}
-										else if(speed > 1 && speed < 2) {
-											anmDuration = 400
-										}
-										else {
-											anmDuration = 500
-										}
+										let anmDuration = this.getDuration(speed)
 										this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 											
 										}))
@@ -300,7 +326,7 @@
 								} else {
 									// console.log('回弹')
 									let changeBy = -deltaX
-									let anmDuration = Math.abs(changeBy) / speed
+									let anmDuration = this.getDuration(speed)
 									this.transition(500, this.swiper, changeBy, ((e) => {}))
 								}
 							}
@@ -313,7 +339,7 @@
 			transition: function(duration, el, changeBy, callback) {
 				let easingFunction = 'easeOutQuart'
 				var expression = `${easingFunction}(t,${this.contentOffsetX},${changeBy},${duration})`
-				let token = BindingX.bind({
+				this.anmToken = BindingX.bind({
 					eventType: 'timing',
 					exitExpression: {
 						origin: `t>${duration}`
@@ -324,7 +350,7 @@
 						expression: expression
 					}]
 				}, callback)
-				return token
+				return this.anmToken
 			},
 			swipe: function(e) {
 				// console.log(e)

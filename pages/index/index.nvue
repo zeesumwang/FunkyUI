@@ -52,7 +52,7 @@
 			</template>
 
 			<template v-slot:mainPage2>
-				<fk-tab></fk-tab>
+				<!-- <fk-tab></fk-tab> -->
 				<!-- <text style="color: #007AFF;">1</text> -->
 			</template>
 
@@ -180,9 +180,9 @@
 					this.$refs['fk-waterfall'].backToTop()
 				}
 				if(e.clickId == 'message'){
-					// uni.navigateTo({
-					// 	url: '../list_test/list_test'
-					// })
+					uni.navigateTo({
+						url: '../list_test/list_test'
+					})
 				}
 			},
 			videoChange: function(e) {
