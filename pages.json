@@ -20,7 +20,7 @@
                 "navigationBarTitleText": "fk-list",
                 "backgroundColor": "#ffffff",
 				"navigationBarBackgroundColor":"#0d0d0d",
-				"disableScroll": true
+				"enablePullDownRefresh": true				
             }
             
         }
