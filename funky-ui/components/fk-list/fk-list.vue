@@ -582,6 +582,9 @@
 			},
 			verticalpan: function(e) {
 				e.stopPropagation()
+			},
+			horizontalpan: function(e) {
+				e.stopPropagation()
 			}
 		}
 	}

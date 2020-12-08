@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 
-		<scroller ref="scroller" @scroll="scroll" @horizontalpan="horizontalpan" @panend="touchend" :scrollable="false" :show-scrollbar="false"
+		<scroller ref="scroller" @scroll="scroll" @horizontalpan="horizontalpan" @touchend="touchend" @touchstart="touchstart" :scrollable="false" :show-scrollbar="false"
 		 :scrollToBegin="false" :offset-accuracy="0.9" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
 		 style="flex-direction: row;">
 
@@ -28,9 +28,9 @@
 				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
 				 @refreshing="refreshing">
 					<!-- <list :style="{width: screenWidthPx + 'px', height: screenHeightPx - statusBarHeight+ 'px'}"> -->
-					<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
-						<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #eb6191;"
-						 :style="{width: screenWidthPx -10 + 'px'}">
+					<fk-cell v-for="(item, idx) in data" :key="idx" style="justify-content: center;align-items: center;">
+						<view style="border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #eb6191;"
+						 :style="{width: screenWidthPx -10 + 'px',height: (index + 1) * 88 + 'px'}">
 							<text style="color: #ebebeb">{{item}}</text>
 						</view>
 					</fk-cell>
@@ -147,7 +147,6 @@
 				dom.getComponentRect(this.getEl(this.$refs.fab),(res)=>{
 					var fabLeft = res.size.left
 					dom.getComponentRect(this.getEl(this.$refs[this.fabList[0].id]), ((res) => {
-						console.log(res)
 						if(this.platform == 'ios'){
 							this.headFabX = res.size.left + res.size.width * 0.5 - fabLeft
 						}
@@ -155,7 +154,6 @@
 							this.headFabX = res.size.left + res.size.width * 0.5 - fabLeft
 						}
 						dom.getComponentRect(this.getEl(this.$refs[this.fabList[endFabIndex].id]), ((res) => {
-							console.log(res)
 							if(this.platform == 'ios'){
 								this.endFabX = res.size.left + res.size.width * 0.5 - fabLeft
 							}
@@ -188,7 +186,6 @@
 				}
 				else {
 					var indicatorMaxTranslateX = this.endFabX - this.headFabX
-					console.log(indicatorMaxTranslateX)
 				}
 				var indicatorExpression = `x > ${this.realScreenWidth} ? (x - ${this.realScreenWidth}) * ${indicatorMaxTranslateX / 3} / ${this.realScreenWidth} : 0`
 					// `x > ${this.realScreenWidth} ? max((x * ${indicatorMaxTranslateX - 10} / ${this.realScreenWidth * (this.fabList.length + 1)} - ${indicatorMaxTranslateX / 4}), 0) : 0`
@@ -268,10 +265,30 @@
 				// console.log(e)
 				// e.stopPropagation()
 				if (e.state == 'start') {
-					this.touchstart(e)
+					// this.touchstart(e)
+					// binding pan
+					if (screenInfo.system.platform == 'ios') {
+						var expression = `${this.contentOffsetX} - x * (750 / 175)`
+					} else {
+						var expression = `${this.contentOffsetX} - x`
+					}
+					
+					this.panToken = BindingX.bind({
+						eventType: 'pan',
+						anchor: this.swiper,
+						props: [{
+								element: this.swiper,
+								property: 'scroll.contentOffsetX',
+								expression: expression
+							},
+					
+						]
+					}, ((e) => {
+						// console.log(e)
+					}))
 					// console.log(this.contentOffsetX)
 				} else if (e.state == 'end') {
-					this.touchend(e)
+					// this.touchend(e)
 				}
 			},
 			touchstart: function(e) {
@@ -314,26 +331,7 @@
 						'screenY': screenY
 					})
 				}
-				// binding pan
-				if (screenInfo.system.platform == 'ios') {
-					var expression = `${this.contentOffsetX} - x * (750 / 175)`
-				} else {
-					var expression = `${this.contentOffsetX} - x`
-				}
-
-				this.panToken = BindingX.bind({
-					eventType: 'pan',
-					anchor: this.swiper,
-					props: [{
-							element: this.swiper,
-							property: 'scroll.contentOffsetX',
-							expression: expression
-						},
-
-					]
-				}, ((e) => {
-					// console.log(e)
-				}))
+				
 				// console.log(e)
 			},
 			touchend: function(e) {
@@ -345,21 +343,34 @@
 						var duration = e.timestamp - this.changedTouches[i].timestamp
 						var deltaX = -(screenX - this.changedTouches[i].screenX)
 						var deltaY = -(screenY - this.changedTouches[i].screenY)
-
+						
+						
 						var speedX = Math.abs(deltaX) / duration
 						var speedY = Math.abs(deltaY) / duration
 						var speed = speedX
 
-						this.changePage(speed, deltaX)
+						this.changePage(speed, deltaX, deltaY)
 						break
 					}
 				}
 
 			},
-			changePage: function(speed, deltaX) {
+			changePage: function(speed, deltaX,deltaY) {
 				// console.log(speed)
+				
 				if (speed > 0.5) {
-					if (deltaX > 10) {
+					if(this.contentOffsetX % this.realScreenWidth == 0){
+						if(Math.abs(deltaY)/Math.abs(deltaX) > 0.44)  {
+							console.log("手势过滤",Math.abs(deltaY)/Math.abs(deltaX))
+							return
+						}
+						else{
+							console.log(this.contentOffsetX % this.realScreenWidth,Math.abs(deltaY),Math.abs(deltaY)/Math.abs(deltaX))
+						}
+					}
+					
+					
+					if (deltaX > 50) {
 						let changeBy = this.startContentOffsetX + this.realScreenWidth - this.contentOffsetX
 						let anmDuration = this.getDuration(speed)
 
@@ -367,7 +378,7 @@
 						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 
 						}))
-					} else if (deltaX < -10) {
+					} else if (deltaX < -50) {
 						let changeBy = -(this.contentOffsetX - (this.startContentOffsetX - this.realScreenWidth))
 						let anmDuration = this.getDuration(speed)
 						// console.log('加速上一屏', anmDuration, speed)
@@ -400,7 +411,7 @@
 							// console.log('回弹')
 							let changeBy = -deltaX
 							let anmDuration = this.getDuration(speed)
-							this.transition(500, this.swiper, changeBy, ((e) => {}))
+							this.transition(300, this.swiper, changeBy, ((e) => {}))
 						}
 					}
 				}
