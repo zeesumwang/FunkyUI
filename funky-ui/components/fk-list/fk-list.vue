@@ -1,8 +1,9 @@
 <template>
-	<!-- #ifndef APP-NVUE -->
 	<view>
-	<!-- #endif -->
-	
+		<!-- #ifdef APP-NVUE -->
+		<!-- <view ref="refresh" style="width: 40px;height: 40px;border-radius: 20px;background-color: #4CD964;position: absolute;opacity: 1;top: 0;"></view> -->
+		<!-- #endif -->
+		
 		<!-- #ifndef APP-NVUE -->
 		<view
 			v-if="hasRefresh"
@@ -59,11 +60,51 @@
 		>
 		
 		<view> <!-- scroll-view中加入一个view防止scrollview的固定高度影响position: sticky;的粘性布局，以实现吸顶效果 -->
-		
+			<fk-cell ref="topElement" id="topElement"></fk-cell>
+			<slot></slot>
+		</view>
+			
+		</scroll-view>
+	
 		<!-- #endif -->
 		
 		<!-- #ifdef APP-NVUE -->
 		<list 
+			v-if="platform=='android'"
+			:style="{'height': height + 'px','width': width + 'px'}" 
+			:show-scrollbar="showScrollbar" 
+			:bounce="bounce"
+			:scrollable="true"
+			:loadmoreoffset="50"
+			:offset-accuracy="15"
+			:alwaysScrollableVertical="true"
+			@scroll="scroll"
+			@loadmore="loadmore"
+			@verticalpan="verticalpan"
+		>
+			<refresh v-if="hasRefresh" ref="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="isRefresh ? 'show' : 'hide'">
+				<view 
+					style="justify-content: center;align-items: center;flex-direction: row;flex-wrap: nowrap;" 
+					:style="{'width': width + 'px', 'height': maxPullingDistance + 'px'}"
+				>
+					<loading-indicator v-if="isRefresh" :animating="true" style="width: 20px;height: 20px;margin: 10px;" :style="{color: refreshTextColor}"></loading-indicator>
+					<image 
+						class="refreshIcon" 
+						:class="{'refreshIconActive': movedDistance >= refreshDistance}" 
+						:style="{width: isRefresh || isTouchMove == false ? 0 : '26px', margin: isRefresh  || isTouchMove == false ? 0 : '7px'}" 
+						:src="pullingIcon"
+					>
+					</image>
+					
+					<text :style="{color: refreshTextColor, fontSize: refreshTextFontSize, width: !isRefresh && isTouchMove == false ? 0 : '60px'}">{{refreshTip}}</text>
+				</view>
+			</refresh>
+			<fk-cell ref="topElement" id="topElement"></fk-cell>
+			<slot></slot>
+		</list>
+	
+		<list
+			v-if="platform=='ios'"
 			:style="{'height': height + 'px','width': width + 'px'}" 
 			:show-scrollbar="showScrollbar" 
 			:bounce="bounce"
@@ -91,26 +132,11 @@
 					<text :style="{color: refreshTextColor, fontSize: refreshTextFontSize, width: !isRefresh && isTouchMove == false ? 0 : '60px'}">{{refreshTip}}</text>
 				</view>
 			</refresh>
-		<!-- #endif -->
-			
 			<fk-cell ref="topElement" id="topElement"></fk-cell>
 			<slot></slot>
-			
-		<!-- #ifdef APP-NVUE -->
 		</list>
 		<!-- #endif -->
-		
-		<!-- #ifndef APP-NVUE -->
-		
-		</view>		
-		
-		</scroll-view>
-		<!-- #endif -->
-	
-	<!-- #ifndef APP-NVUE -->
-	</view>
-	<!-- #endif -->
-	
+</view>
 </template>
 
 <script>
@@ -140,6 +166,12 @@
 				type: Boolean,
 				default() {
 					return true
+				}
+			},
+			refreshMode: {
+				type: String,
+				default() {
+					return 'bindingX'
 				}
 			},
 			iconRealTimeRotate: {
@@ -215,6 +247,7 @@
 		},
 		data() {
 			return {
+				platform: '',
 				isTouchDown: false,
 				isTouchMove: false,
 				isTop: true,
@@ -247,6 +280,9 @@
 			if(!screenInfo.browser.versions.mobile){
 				this.scrollWithAnimation = false
 			}
+			// #endif
+			// #ifdef APP-NVUE
+			this.platform = screenInfo.system.platform
 			// #endif
 		},
 		mounted() {
@@ -536,6 +572,16 @@
 			
 			loadmore: function() {
 				this.$emit('loadmore')
+			},
+			getEl: function(e) {
+				if (typeof(e[0]) == 'object') {
+					return e[0].ref
+				} else {
+					return e.ref
+				}
+			},
+			verticalpan: function(e) {
+				e.stopPropagation()
 			}
 		}
 	}

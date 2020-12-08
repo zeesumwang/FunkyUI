@@ -17,10 +17,8 @@
             "style" :                                                                                    
             {
 				"navigationStyle":"custom",
-                "navigationBarTitleText": "fk-list",
-                "backgroundColor": "#ffffff",
-				"navigationBarBackgroundColor":"#0d0d0d",
-				"enablePullDownRefresh": true				
+                "backgroundColor": "#0d0d0d",
+				"enablePullDownRefresh": false				
             }
             
         }
