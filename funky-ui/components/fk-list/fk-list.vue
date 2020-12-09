@@ -71,6 +71,7 @@
 		<!-- #ifdef APP-NVUE -->
 		<list 
 			v-if="platform=='android'"
+			ref="list"
 			:style="{'height': height + 'px','width': width + 'px'}" 
 			:show-scrollbar="showScrollbar" 
 			:bounce="false"

@@ -5,10 +5,17 @@
 		 :scrollToBegin="false" :offset-accuracy="0.9" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
 		 style="flex-direction: row;">
 
-			<scroller :scrollToBegin="false" @touchstart="checkPage(0)" ref='page-hide' id='page-hide' style="background-color: #76c6e6;justify-content: center;align-items: center;"
+			<list fixFreezing="true" @touchstart="checkPage(0)" ref='page-hide' id='page-hide' style="background-color: #76c6e6;justify-content: center;align-items: center;"
 			 :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
-				<slot name="hidePage"></slot>
-			</scroller>
+				<cell>
+					<slot name="hidePageHeader"></slot>
+				</cell>
+				<cell>
+					<list @scroll="scrolltoupper" fixFreezing="true" ref="hide-list" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
+						<slot name="hidePage"></slot>
+					</list>
+				</cell>				
+			</list>
 
 			<scroller :scrollToBegin="false" v-for="(item,index) in fabList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + 1)"
 			 style="background-color: #eb6191;justify-content: center;align-items: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
@@ -144,7 +151,10 @@
 				})				
 			}, 100)
 			
-
+			this.$refs['hide-list'].setSpecialEffects({
+				id: 'page-hide',
+				headerHeight: 200
+			})
 
 		},
 		methods: {
@@ -223,6 +233,9 @@
 					this.contentOffsetX = Math.ceil(Math.abs(e.contentOffset.x))
 				}
 				// console.log(this.contentOffsetX)
+			},
+			scrolltoupper: function(e) {
+				console.log(e)
 			},
 			checkPage: function(index) {
 				let touchPageContentOffset = Math.abs(index * this.realScreenWidth)
