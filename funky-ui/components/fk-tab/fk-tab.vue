@@ -1,42 +1,19 @@
 <template>
 	<view class="container">
 
-		<scroller ref="scroller" @scroll="scroll" @horizontalpan="horizontalpan" @touchend="touchend" @touchstart="touchstart" :scrollable="false" :show-scrollbar="false"
+		<scroller ref="scroller" @scroll="scroll" @horizontalpan="horizontalpan" @swpie="swipe" :scrollable="false" :show-scrollbar="false"
 		 :scrollToBegin="false" :offset-accuracy="0.9" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
 		 style="flex-direction: row;">
 
-			<view @touchstart="checkPage(0)" ref='page-hide' id='page-hide' style="background-color: #76c6e6;justify-content: center;"
+			<scroller :scrollToBegin="false" @touchstart="checkPage(0)" ref='page-hide' id='page-hide' style="background-color: #76c6e6;justify-content: center;align-items: center;"
 			 :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
-				<view :style="{height: statusBarHeight + 'px'}"></view>
+				<slot name="hidePage"></slot>
+			</scroller>
 
-				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="false" :isRefresh="isRefresh"
-				 @refreshing="refreshing">
-					<!-- <list :style="{width: screenWidthPx + 'px', height: screenHeightPx - statusBarHeight+ 'px'}" > -->
-					<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
-						<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #1e1e1e;"
-						 :style="{width: screenWidthPx -10 + 'px'}">
-							<text style="color: #ebebeb">{{item}}</text>
-						</view>
-					</fk-cell>
-					<!-- </list> -->
-				</fk-list>
-			</view>
-
-			<view v-for="(item,index) in fabList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + 1)"
-			 style="background-color: #0d0d0d;justify-content: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
-				<view :style="{height: statusBarHeight + 'px'}"></view>
-				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
-				 @refreshing="refreshing">
-					<!-- <list :style="{width: screenWidthPx + 'px', height: screenHeightPx - statusBarHeight+ 'px'}"> -->
-					<fk-cell v-for="(item, idx) in data" :key="idx" style="justify-content: center;align-items: center;">
-						<view style="border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #eb6191;"
-						 :style="{width: screenWidthPx -10 + 'px',height: (index + 1) * 88 + 'px'}">
-							<text style="color: #ebebeb">{{item}}</text>
-						</view>
-					</fk-cell>
-					<!-- </list> -->
-				</fk-list>
-			</view>
+			<scroller :scrollToBegin="false" v-for="(item,index) in fabList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + 1)"
+			 style="background-color: #eb6191;justify-content: center;align-items: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
+				<slot :name="'mainPage'+index"></slot>
+			</scroller>
 
 			<view ref='fab' elevation="10px" style="height: 46px;position: fixed;justify-content: space-around;align-items: center;flex-direction: row;background-color: #1e1e1e;border-radius: 50px;"
 			 :style="{left: screenWidthPx * (1-0.618) *0.5 + 'px',bottom: statusBarHeight * 0.5 + 'px',width: screenWidthPx * 0.618 + 'px'}">
@@ -109,6 +86,7 @@
 				isRefresh: false,
 				headFabX: 0,
 				endFabX: 0,
+				isVerticalPan: false
 			}
 		},
 		created() {
@@ -170,12 +148,7 @@
 
 		},
 		methods: {
-			refreshing: function() {
-				this.isRefresh = true
-				setTimeout(() => {
-					this.isRefresh = false
-				}, 2000)
-			},
+			
 			bindTap: function() {
 				var indicator = this.getEl(this.$refs['indicator'])
 				var fab = this.getEl(this.$refs['fab'])
@@ -254,18 +227,31 @@
 			checkPage: function(index) {
 				let touchPageContentOffset = Math.abs(index * this.realScreenWidth)
 				let scrollDistance = Math.abs(touchPageContentOffset - this.contentOffsetX)
-				if (scrollDistance > this.realScreenWidth * 0.5) {
-					this.startContentOffsetX = Math.abs((index + 1) * this.realScreenWidth)
+				if (scrollDistance > 0) {
+					if(this.contentOffsetX % this.realScreenWidth > this.realScreenWidth * 0.5) {
+						this.startContentOffsetX = (Math.floor(this.contentOffsetX / this.realScreenWidth) + 1) * this.realScreenWidth
+					}
+					else{
+						this.startContentOffsetX = Math.floor(this.contentOffsetX / this.realScreenWidth)* this.realScreenWidth
+					}					
 				} else {
 					this.startContentOffsetX = touchPageContentOffset
 				}
 				// console.log(index, this.startContentOffsetX, this.contentOffsetX, scrollDistance)
 			},
+			verticalpan: function(e) {
+				if(e.state == 'start') {
+					this.isVerticalPan = true
+				}
+				else if(e.state == 'end') {
+					this.isVerticalPan = false
+				}
+			},
 			horizontalpan: function(e) {
 				// console.log(e)
 				// e.stopPropagation()
 				if (e.state == 'start') {
-					// this.touchstart(e)
+					this.touchstart(e)
 					// binding pan
 					if (screenInfo.system.platform == 'ios') {
 						var expression = `${this.contentOffsetX} - x * (750 / 175)`
@@ -288,10 +274,14 @@
 					}))
 					// console.log(this.contentOffsetX)
 				} else if (e.state == 'end') {
-					// this.touchend(e)
+					this.touchend(e)
+				}
+				else if(e.state !== 'move') {
+					console.log(e)
 				}
 			},
 			touchstart: function(e) {
+				// console.log('触摸开始')
 				// 取消之前全部绑定，实现在timing过程中能够点击停止
 				if (screenInfo.system.platform == 'ios') {
 					BindingX.unbindAll()
@@ -331,10 +321,9 @@
 						'screenY': screenY
 					})
 				}
-				
-				// console.log(e)
 			},
 			touchend: function(e) {
+				// console.log('触摸结束')
 				var identifier = e.changedTouches[0].identifier
 				var screenX = e.changedTouches[0].screenX
 				var screenY = e.changedTouches[0].screenY
@@ -343,7 +332,6 @@
 						var duration = e.timestamp - this.changedTouches[i].timestamp
 						var deltaX = -(screenX - this.changedTouches[i].screenX)
 						var deltaY = -(screenY - this.changedTouches[i].screenY)
-						
 						
 						var speedX = Math.abs(deltaX) / duration
 						var speedY = Math.abs(deltaY) / duration
@@ -359,18 +347,21 @@
 				// console.log(speed)
 				
 				if (speed > 0.5) {
-					if(this.contentOffsetX % this.realScreenWidth == 0){
-						if(Math.abs(deltaY)/Math.abs(deltaX) > 0.44)  {
-							console.log("手势过滤",Math.abs(deltaY)/Math.abs(deltaX))
-							return
-						}
-						else{
-							console.log(this.contentOffsetX % this.realScreenWidth,Math.abs(deltaY),Math.abs(deltaY)/Math.abs(deltaX))
-						}
-					}
+					// if(this.isVerticalPan) {
+					// 	console.log("手势过滤",Math.abs(deltaY)/Math.abs(deltaX))
+					// 	return
+					// }
+					// if(this.contentOffsetX % this.realScreenWidth == 0){
+					// 	if(Math.abs(deltaY)/Math.abs(deltaX) > 0.44)  {
+					// 		console.log("手势过滤",Math.abs(deltaY)/Math.abs(deltaX))
+					// 		return
+					// 	}
+					// 	else{
+					// 		// console.log(this.contentOffsetX % this.realScreenWidth,Math.abs(deltaY),Math.abs(deltaY)/Math.abs(deltaX))
+					// 	}
+					// }					
 					
-					
-					if (deltaX > 50) {
+					if (deltaX > 0) {
 						let changeBy = this.startContentOffsetX + this.realScreenWidth - this.contentOffsetX
 						let anmDuration = this.getDuration(speed)
 
@@ -378,7 +369,7 @@
 						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 
 						}))
-					} else if (deltaX < -50) {
+					} else if (deltaX < 0) {
 						let changeBy = -(this.contentOffsetX - (this.startContentOffsetX - this.realScreenWidth))
 						let anmDuration = this.getDuration(speed)
 						// console.log('加速上一屏', anmDuration, speed)
@@ -434,7 +425,7 @@
 				return this.anmToken
 			},
 			swipe: function(e) {
-				// console.log(e)
+				console.log(e)
 			}
 		}
 	}

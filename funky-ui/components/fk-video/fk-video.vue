@@ -180,7 +180,7 @@
 			},
 			waiting: function(e) {
 				this.waitCount += 1
-				console.log('缓冲次数:',this.waitCount)
+				// console.log('缓冲次数:',this.waitCount)
 				if(this.isVideoLoad == true && this.waitCount>1){
 					this.isVideoLoad = false
 				}

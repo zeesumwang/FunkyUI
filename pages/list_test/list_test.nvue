@@ -1,21 +1,113 @@
 <template>
 	
-	<fk-tab></fk-tab>
+	<fk-tab>
+		<template v-slot:hidePage>
+			<view :style="{height: statusBarHeight + 'px'}"></view>
+			
+			<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
+			 @refreshing="refreshing">
+				<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
+					<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #1e1e1e;"
+					 :style="{width: screenWidthPx -10 + 'px'}">
+						<text style="color: #ebebeb">{{item}}</text>
+					</view>
+				</fk-cell>
+			</fk-list>
+			
+		</template>
+		
+		<template v-slot:mainPage0>
+			<view :style="{height: statusBarHeight + 'px'}"></view>
+			<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
+			 @refreshing="refreshing">
+				<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
+					<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #1e1e1e;"
+					 :style="{width: screenWidthPx -10 + 'px'}">
+						<text style="color: #ebebeb">{{item}}</text>
+					</view>
+				</fk-cell>
+			</fk-list>
+		</template>
+		
+		<template v-slot:mainPage1>
+			<view :style="{height: statusBarHeight + 'px'}"></view>
+			<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
+			 @refreshing="refreshing">
+				<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
+					<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #1e1e1e;"
+					 :style="{width: screenWidthPx -10 + 'px'}">
+						<text style="color: #ebebeb">{{item}}</text>
+					</view>
+				</fk-cell>
+			</fk-list>
+		</template>
+		
+		<template v-slot:mainPage2>
+			<view :style="{height: statusBarHeight + 'px'}"></view>
+			<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
+			 @refreshing="refreshing">
+				<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
+					<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #1e1e1e;"
+					 :style="{width: screenWidthPx -10 + 'px'}">
+						<text style="color: #ebebeb">{{item}}</text>
+					</view>
+				</fk-cell>
+			</fk-list>
+		</template>
+		
+		<template v-slot:mainPage3>
+			<view :style="{height: statusBarHeight + 'px'}"></view>
+			<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
+			 @refreshing="refreshing">
+				<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
+					<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #1e1e1e;"
+					 :style="{width: screenWidthPx -10 + 'px'}">
+						<text style="color: #ebebeb">{{item}}</text>
+					</view>
+				</fk-cell>
+			</fk-list>
+		</template>
+	</fk-tab>
 	
 	
 	<!-- <fk-slide></fk-slide> -->
 </template>
 
 <script>
-export default {
-	data() {
-		
-	},
-	onPullDownRefresh() {
-		console.log("页面下拉刷新!")
-		setTimeout(()=>{uni.stopPullDownRefresh},2000)
-	},
-};
+	
+	import screenInfo from "@/common/helper.js"
+
+	export default {
+		data() {
+			return {
+				data: [],
+				screenHeightPx: 0,
+				screenWidthPx: 0,
+				statusBarHeight: 0,
+				isRefresh: false
+			}			
+		},
+		onPullDownRefresh() {
+			console.log("页面下拉刷新!")
+			setTimeout(()=>{uni.stopPullDownRefresh},2000)
+		},
+		onLoad() {
+			this.screenHeightPx = screenInfo.screenHeightPx
+			this.screenWidthPx = screenInfo.screenWidthPx
+			this.statusBarHeight = screenInfo.system.statusBarHeight
+			for (var i = 0; i < 20; i++) {
+				this.data.push(i)
+			}
+		},
+		methods: {
+			refreshing: function() {
+				this.isRefresh = true
+				setTimeout(() => {
+					this.isRefresh = false
+				}, 2000)
+			},
+		}
+	};
 </script>
 
 <style>

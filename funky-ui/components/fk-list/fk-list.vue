@@ -73,14 +73,14 @@
 			v-if="platform=='android'"
 			:style="{'height': height + 'px','width': width + 'px'}" 
 			:show-scrollbar="showScrollbar" 
-			:bounce="bounce"
+			:bounce="false"
 			:scrollable="true"
 			:loadmoreoffset="50"
-			:offset-accuracy="15"
+			:offset-accuracy="20"
 			:alwaysScrollableVertical="true"
 			@scroll="scroll"
 			@loadmore="loadmore"
-			@verticalpan="verticalpan"
+			
 		>
 			<refresh v-if="hasRefresh" ref="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="isRefresh ? 'show' : 'hide'">
 				<view 
@@ -581,10 +581,7 @@
 				}
 			},
 			verticalpan: function(e) {
-				e.stopPropagation()
-			},
-			horizontalpan: function(e) {
-				e.stopPropagation()
+				// e.stopPropagation()
 			}
 		}
 	}
