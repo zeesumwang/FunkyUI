@@ -1,26 +1,18 @@
 <template>
 	<view class="container">
 
-		<scroller ref="scroller" @scroll="scroll" @horizontalpan="horizontalpan" @swpie="swipe" :scrollable="false" :show-scrollbar="false"
+		<scroller ref="scroller" @scroll="scroll" @horizontalpan="horizontalpan" :scrollable="false" :show-scrollbar="false"
 		 :scrollToBegin="false" :offset-accuracy="0.9" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
 		 style="flex-direction: row;">
 
-			<list fixFreezing="true" @touchstart="checkPage(0)" ref='page-hide' id='page-hide' style="background-color: #76c6e6;justify-content: center;align-items: center;"
-			 :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
-				<cell>
-					<slot name="hidePageHeader"></slot>
-				</cell>
-				<cell>
-					<list @scroll="scrolltoupper" fixFreezing="true" ref="hide-list" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
-						<slot name="hidePage"></slot>
-					</list>
-				</cell>				
-			</list>
+			<view @touchstart="checkPage(0)" ref='page-hide' id='page-hide'>
+				<slot name="hidePage"></slot>
+			</view>
 
-			<scroller :scrollToBegin="false" v-for="(item,index) in fabList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + 1)"
+			<view v-for="(item,index) in fabList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + 1)"
 			 style="background-color: #eb6191;justify-content: center;align-items: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
 				<slot :name="'mainPage'+index"></slot>
-			</scroller>
+			</view>
 
 			<view ref='fab' elevation="10px" style="height: 46px;position: fixed;justify-content: space-around;align-items: center;flex-direction: row;background-color: #1e1e1e;border-radius: 50px;"
 			 :style="{left: screenWidthPx * (1-0.618) *0.5 + 'px',bottom: statusBarHeight * 0.5 + 'px',width: screenWidthPx * 0.618 + 'px'}">
@@ -47,7 +39,7 @@
 </style>
 
 <script>
-	import BindingX from "weex-bindingx"
+	import BindingX from "weex-bindingx" //bindingX兼容H5端，可是uniapp.require无法引入
 	// console.log(BindingX)
 	// #ifdef APP-NVUE
 	// const BindingX = uni.requireNativePlugin('bindingx');
@@ -57,31 +49,38 @@
 	import screenInfo from "../../common/helper.js"
 
 	export default {
+		name: 'fkTab',
+		props: {
+			fabList: {
+				type: Array,
+				default () {
+					return [{
+							id: 'home',
+							url: "/static/home.png"
+						},
+						{
+							id: 'search',
+							url: "/static/search.png"
+						},
+						{
+							id: 'message',
+							url: "/static/flash.png"
+						},
+						{
+							id: 'user',
+							url: "/static/logo.jpg"
+						}
+					]
+				}
+			}
+		},
 		data() {
 			return {
 				platform: '',
-				fabList: [{
-						id: 'home',
-						url: "/static/home.png"
-					},
-					{
-						id: 'search',
-						url: "/static/search.png"
-					},
-					{
-						id: 'message',
-						url: "/static/flash.png"
-					},
-					{
-						id: 'user',
-						url: "/static/logo.jpg"
-					}
-				],
 				screenHeightPx: 0,
 				screenWidthPx: 0,
 				realScreenWidth: 750,
 				statusBarHeight: 0,
-				data: [],
 				changedTouches: [],
 
 				startContentOffsetX: 360,
@@ -93,7 +92,8 @@
 				isRefresh: false,
 				headFabX: 0,
 				endFabX: 0,
-				isVerticalPan: false
+				isBindingPan: false,
+				recordCount: 0,
 			}
 		},
 		created() {
@@ -110,9 +110,6 @@
 				this.realScreenWidth = 750,
 					this.contentOffsetX = 750
 			}
-			for (var i = 0; i < 20; i++) {
-				this.data.push(i)
-			}
 		},
 		mounted() {
 			var indexElement = this.$refs['page-home'][0]
@@ -127,51 +124,42 @@
 			this.swiper = this.getEl(this.$refs['scroller'])
 
 			var endFabIndex = this.fabList.length - 1
-			
+
 			setTimeout(() => {
-				dom.getComponentRect(this.getEl(this.$refs.fab),(res)=>{
+				dom.getComponentRect(this.getEl(this.$refs.fab), (res) => {
 					var fabLeft = res.size.left
 					dom.getComponentRect(this.getEl(this.$refs[this.fabList[0].id]), ((res) => {
-						if(this.platform == 'ios'){
+						if (this.platform == 'ios') {
 							this.headFabX = res.size.left + res.size.width * 0.5 - fabLeft
-						}
-						else{
+						} else {
 							this.headFabX = res.size.left + res.size.width * 0.5 - fabLeft
 						}
 						dom.getComponentRect(this.getEl(this.$refs[this.fabList[endFabIndex].id]), ((res) => {
-							if(this.platform == 'ios'){
+							if (this.platform == 'ios') {
 								this.endFabX = res.size.left + res.size.width * 0.5 - fabLeft
-							}
-							else{
+							} else {
 								this.endFabX = res.size.left + res.size.width * 0.5 - fabLeft
 							}
 							this.bindTap()
 						}))
 					}))
-				})				
-			}, 100)
-			
-			this.$refs['hide-list'].setSpecialEffects({
-				id: 'page-hide',
-				headerHeight: 200
-			})
-
+				})
+			}, 10)
 		},
 		methods: {
-			
 			bindTap: function() {
 				var indicator = this.getEl(this.$refs['indicator'])
 				var fab = this.getEl(this.$refs['fab'])
 				var fabHeight = this.statusBarHeight * 0.5
 				var fabMaxTranslateY = fabHeight * 4
-				if(this.platform == 'ios') {
+				if (this.platform == 'ios') {
+					var indicatorMaxTranslateX = this.endFabX - this.headFabX
+				} else {
 					var indicatorMaxTranslateX = this.endFabX - this.headFabX
 				}
-				else {
-					var indicatorMaxTranslateX = this.endFabX - this.headFabX
-				}
-				var indicatorExpression = `x > ${this.realScreenWidth} ? (x - ${this.realScreenWidth}) * ${indicatorMaxTranslateX / 3} / ${this.realScreenWidth} : 0`
-					// `x > ${this.realScreenWidth} ? max((x * ${indicatorMaxTranslateX - 10} / ${this.realScreenWidth * (this.fabList.length + 1)} - ${indicatorMaxTranslateX / 4}), 0) : 0`
+				var indicatorExpression =
+					`x > ${this.realScreenWidth} ? (x - ${this.realScreenWidth}) * ${indicatorMaxTranslateX / 3} / ${this.realScreenWidth} : 0`
+
 				var props = [{
 						element: fab,
 						property: 'transform.translateY',
@@ -206,6 +194,35 @@
 				}))
 
 			},
+			bindPan: function() {
+				this.isBindingPan = true
+				// binding pan
+				if (screenInfo.system.platform == 'ios') {
+					var expression = `${this.contentOffsetX} - x * (750 / ${this.screenWidthPx})`
+				} else {
+					var expression = `${this.contentOffsetX} - x`
+				}
+				// 再次准备绑定pan事件
+				BindingX.prepare({
+					eventType: 'pan',
+					anchor: this.swiper
+				})
+				this.panToken = BindingX.bind({
+					eventType: 'pan',
+					anchor: this.swiper,
+					props: [{
+							element: this.swiper,
+							property: 'scroll.contentOffsetX',
+							expression: expression
+						},
+
+					]
+				}, ((e) => {
+					if (e.state !== 'start') {
+						this.isBindingPan = false
+					}
+				}))
+			},
 			getEl: function(e) {
 				if (typeof(e[0]) == 'object') {
 					return e[0].ref
@@ -216,7 +233,7 @@
 			getDuration: function(speed) {
 				let anmDuration = 0
 				if (speed > 3) {
-					anmDuration = 300
+					anmDuration = 200
 				} else if (speed > 2) {
 					anmDuration = 300
 				} else if (speed > 1 && speed < 2) {
@@ -234,63 +251,40 @@
 				}
 				// console.log(this.contentOffsetX)
 			},
-			scrolltoupper: function(e) {
-				console.log(e)
-			},
 			checkPage: function(index) {
 				let touchPageContentOffset = Math.abs(index * this.realScreenWidth)
 				let scrollDistance = Math.abs(touchPageContentOffset - this.contentOffsetX)
 				if (scrollDistance > 0) {
-					if(this.contentOffsetX % this.realScreenWidth > this.realScreenWidth * 0.5) {
+					if (this.contentOffsetX % this.realScreenWidth > this.realScreenWidth * 0.5) {
 						this.startContentOffsetX = (Math.floor(this.contentOffsetX / this.realScreenWidth) + 1) * this.realScreenWidth
+					} else {
+						this.startContentOffsetX = Math.floor(this.contentOffsetX / this.realScreenWidth) * this.realScreenWidth
 					}
-					else{
-						this.startContentOffsetX = Math.floor(this.contentOffsetX / this.realScreenWidth)* this.realScreenWidth
-					}					
 				} else {
 					this.startContentOffsetX = touchPageContentOffset
 				}
-				// console.log(index, this.startContentOffsetX, this.contentOffsetX, scrollDistance)
-			},
-			verticalpan: function(e) {
-				if(e.state == 'start') {
-					this.isVerticalPan = true
-				}
-				else if(e.state == 'end') {
-					this.isVerticalPan = false
-				}
+				// console.log(this.startContentOffsetX)
 			},
 			horizontalpan: function(e) {
 				// console.log(e)
-				// e.stopPropagation()
 				if (e.state == 'start') {
 					this.touchstart(e)
-					// binding pan
-					if (screenInfo.system.platform == 'ios') {
-						var expression = `${this.contentOffsetX} - x * (750 / 175)`
-					} else {
-						var expression = `${this.contentOffsetX} - x`
-					}
-					
-					this.panToken = BindingX.bind({
-						eventType: 'pan',
-						anchor: this.swiper,
-						props: [{
-								element: this.swiper,
-								property: 'scroll.contentOffsetX',
-								expression: expression
-							},
-					
-						]
-					}, ((e) => {
-						// console.log(e)
-					}))
-					// console.log(this.contentOffsetX)
+					this.bindPan()
 				} else if (e.state == 'end') {
 					this.touchend(e)
 				}
-				else if(e.state !== 'move') {
-					console.log(e)
+			},
+			panmove: function(e) {
+				if (this.recordCount > 0) {
+					return
+				}
+				this.recordCount += 1
+				var deltaX = Math.abs(e.changedTouches[0].screenX - this.changedTouches[0].screenX)
+				var deltaY = Math.abs(e.changedTouches[0].screenY - this.changedTouches[0].screenY)
+
+				if (deltaX > deltaY) {
+					// console.log('横向触摸')
+					this.bindPan()
 				}
 			},
 			touchstart: function(e) {
@@ -304,11 +298,7 @@
 					BindingX.unbindAll()
 					// 安卓端的unbindAll不会取消scroll事件的绑定，无需再次绑定
 				}
-				// 再次准备绑定pan事件
-				BindingX.prepare({
-					eventType: 'pan',
-					anchor: this.swiper
-				})
+
 				// 记录触摸开始位置和触摸指（支持多点触摸）
 				var identifier = e.changedTouches[0].identifier
 				var screenX = e.changedTouches[0].screenX
@@ -336,7 +326,7 @@
 				}
 			},
 			touchend: function(e) {
-				// console.log('触摸结束')
+				this.recordCount = 0
 				var identifier = e.changedTouches[0].identifier
 				var screenX = e.changedTouches[0].screenX
 				var screenY = e.changedTouches[0].screenY
@@ -345,7 +335,7 @@
 						var duration = e.timestamp - this.changedTouches[i].timestamp
 						var deltaX = -(screenX - this.changedTouches[i].screenX)
 						var deltaY = -(screenY - this.changedTouches[i].screenY)
-						
+
 						var speedX = Math.abs(deltaX) / duration
 						var speedY = Math.abs(deltaY) / duration
 						var speed = speedX
@@ -354,40 +344,30 @@
 						break
 					}
 				}
-
+				this.changedTouches = []
 			},
-			changePage: function(speed, deltaX,deltaY) {
+			changePage: function(speed, deltaX, deltaY) {
 				// console.log(speed)
-				
-				if (speed > 0.5) {
-					// if(this.isVerticalPan) {
-					// 	console.log("手势过滤",Math.abs(deltaY)/Math.abs(deltaX))
-					// 	return
-					// }
-					// if(this.contentOffsetX % this.realScreenWidth == 0){
-					// 	if(Math.abs(deltaY)/Math.abs(deltaX) > 0.44)  {
-					// 		console.log("手势过滤",Math.abs(deltaY)/Math.abs(deltaX))
-					// 		return
-					// 	}
-					// 	else{
-					// 		// console.log(this.contentOffsetX % this.realScreenWidth,Math.abs(deltaY),Math.abs(deltaY)/Math.abs(deltaX))
-					// 	}
-					// }					
-					
+				if (speed > 0.5 && (this.contentOffsetX % this.realScreenWidth) !== 0) {
+
 					if (deltaX > 0) {
 						let changeBy = this.startContentOffsetX + this.realScreenWidth - this.contentOffsetX
 						let anmDuration = this.getDuration(speed)
 
 						// console.log('加速下一屏', anmDuration, speed)
 						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
-
+							if (e.state !== 'start') {
+								this.$emit('pageChange', this.contentOffsetX / this.realScreenWidth - 1)
+							}
 						}))
 					} else if (deltaX < 0) {
 						let changeBy = -(this.contentOffsetX - (this.startContentOffsetX - this.realScreenWidth))
 						let anmDuration = this.getDuration(speed)
 						// console.log('加速上一屏', anmDuration, speed)
 						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
-
+							if (e.state !== 'start') {
+								this.$emit('pageChange', this.contentOffsetX / this.realScreenWidth - 1)
+							}
 						}))
 					}
 				} else {
@@ -401,14 +381,18 @@
 								let changeBy = this.startContentOffsetX + this.realScreenWidth - this.contentOffsetX
 								let anmDuration = this.getDuration(speed)
 								this.transition(anmDuration, this.swiper, changeBy, ((e) => {
-
+									if (e.state !== 'start') {
+										this.$emit('pageChange', this.contentOffsetX / this.realScreenWidth - 1)
+									}
 								}))
 							} else {
 								// console.log('上一屏')
 								let changeBy = -(this.contentOffsetX - (this.startContentOffsetX - this.realScreenWidth))
 								let anmDuration = this.getDuration(speed)
 								this.transition(anmDuration, this.swiper, changeBy, ((e) => {
-
+									if (e.state !== 'start') {
+										this.$emit('pageChange', this.contentOffsetX / this.realScreenWidth - 1)
+									}
 								}))
 							}
 						} else {
@@ -436,9 +420,6 @@
 				}, callback)
 				this.anmToken = token
 				return this.anmToken
-			},
-			swipe: function(e) {
-				console.log(e)
 			}
 		}
 	}

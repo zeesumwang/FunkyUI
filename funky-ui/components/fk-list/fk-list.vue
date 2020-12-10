@@ -77,11 +77,11 @@
 			:bounce="false"
 			:scrollable="true"
 			:loadmoreoffset="50"
-			:offset-accuracy="20"
+			:offset-accuracy="15"
 			:alwaysScrollableVertical="true"
 			@scroll="scroll"
 			@loadmore="loadmore"
-			
+			@verticalpan="verticalpan"
 		>
 			<refresh v-if="hasRefresh" ref="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="isRefresh ? 'show' : 'hide'">
 				<view 
@@ -454,6 +454,7 @@
 				// #endif
 			},
 			scroll: function(e) {
+				this.$emit('scroll',e)
 				this.detectScrollAction(e)
 				
 				// #ifndef APP-NVUE

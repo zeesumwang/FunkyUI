@@ -1,6 +1,6 @@
 {
   "navigationStyle": "custom",
-  "backgroundColor": "#0d0d0d",
+  "backgroundColor": "#ffffff",
   "disableScroll": true,
   "usingComponents": {
     "fk-index": "/funky-ui/components/fk-index/fk-index",

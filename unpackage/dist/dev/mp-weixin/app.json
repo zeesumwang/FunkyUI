@@ -8,6 +8,5 @@
     "navigationBarTitleText": "FunkyUI",
     "backgroundColor": "#0d0d0d"
   },
-  "usingComponents": {},
-  "sitemapLocation": "sitemap32.json"
+  "usingComponents": {}
 }

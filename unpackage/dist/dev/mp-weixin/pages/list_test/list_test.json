@@ -1,6 +1,8 @@
 {
-  "navigationBarTitleText": "fk-list",
+  "navigationStyle": "custom",
   "backgroundColor": "#0d0d0d",
-  "navigationBarBackgroundColor": "#0d0d0d",
-  "usingComponents": {}
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "fk-tab": "/funky-ui/components/fk-tab/fk-tab"
+  }
 }

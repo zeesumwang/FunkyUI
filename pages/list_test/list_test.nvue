@@ -1,20 +1,17 @@
 <template>
 	
 	<fk-tab>
-		<template v-slot:hidePageHeader>
-		
-			<view style="width: 300px; height: 300px;background-color: #DD524D;">
-				<text>Header</text>
-			</view>
-		
-		</template>
 		<template v-slot:hidePage>
-			<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
-				<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #1e1e1e;"
-				 :style="{width: screenWidthPx -10 + 'px'}">
-					<text style="color: #ebebeb">{{item}}</text>
-				</view>
-			</fk-cell>
+			<view :style="{height: statusBarHeight + 'px'}"></view>
+			<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
+			 @refreshing="refreshing">
+				<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
+					<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #1e1e1e;"
+					 :style="{width: screenWidthPx -10 + 'px'}">
+						<text style="color: #ebebeb">{{item}}</text>
+					</view>
+				</fk-cell>
+			</fk-list>
 		</template>
 		
 		<template v-slot:mainPage0>
