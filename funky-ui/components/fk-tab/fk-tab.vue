@@ -1,3 +1,4 @@
+
 <template>
 	<view class="container">
 
@@ -10,11 +11,11 @@
 			</view>
 
 			<view v-for="(item,index) in fabList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + 1)"
-			 style="background-color: #eb6191;justify-content: center;align-items: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
+			 style="background-color: #0D0D0D;justify-content: center;align-items: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
 				<slot :name="'mainPage'+index"></slot>
 			</view>
 
-			<view ref='fab' elevation="10px" style="height: 46px;position: fixed;justify-content: space-around;align-items: center;flex-direction: row;background-color: #1e1e1e;border-radius: 50px;"
+			<view ref='fab' elevation="10px" style="height: 46px;position: fixed;justify-content: space-around;align-items: center;flex-direction: row;background-color: #f193ab;border-radius: 50px;"
 			 :style="{left: screenWidthPx * (1-0.618) *0.5 + 'px',bottom: statusBarHeight * 0.5 + 'px',width: screenWidthPx * 0.618 + 'px'}">
 				<image v-for="(item, index) in fabList" :key="item.id" :id="item.id" :ref="item.id" :src="item.url" style="width: 20px;height: 20px;"
 				 :style="{borderRadius: item.id == 'user' ? '25px' : 0, opacity: index == 0 ? 1 : 0.2}">
@@ -357,7 +358,7 @@
 						// console.log('加速下一屏', anmDuration, speed)
 						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 							if (e.state !== 'start') {
-								this.$emit('pageChange', this.contentOffsetX / this.realScreenWidth - 1)
+								this.$emit('pageChange', Math.floor(this.contentOffsetX / this.realScreenWidth) - 1)
 							}
 						}))
 					} else if (deltaX < 0) {
@@ -366,7 +367,7 @@
 						// console.log('加速上一屏', anmDuration, speed)
 						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 							if (e.state !== 'start') {
-								this.$emit('pageChange', this.contentOffsetX / this.realScreenWidth - 1)
+								this.$emit('pageChange', Math.floor(this.contentOffsetX / this.realScreenWidth) - 1)
 							}
 						}))
 					}
@@ -382,7 +383,7 @@
 								let anmDuration = this.getDuration(speed)
 								this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 									if (e.state !== 'start') {
-										this.$emit('pageChange', this.contentOffsetX / this.realScreenWidth - 1)
+										this.$emit('pageChange', Math.floor(this.contentOffsetX / this.realScreenWidth) - 1)
 									}
 								}))
 							} else {
@@ -391,7 +392,7 @@
 								let anmDuration = this.getDuration(speed)
 								this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 									if (e.state !== 'start') {
-										this.$emit('pageChange', this.contentOffsetX / this.realScreenWidth - 1)
+										this.$emit('pageChange', Math.floor(this.contentOffsetX / this.realScreenWidth) - 1)
 									}
 								}))
 							}
