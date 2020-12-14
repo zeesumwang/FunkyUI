@@ -15,13 +15,35 @@
 				<slot :name="'mainPage'+index"></slot>
 			</view>
 
-			<view ref='fab' elevation="10px" style="height: 46px;position: fixed;justify-content: space-around;align-items: center;flex-direction: row;background-color: #f193ab;border-radius: 50px;"
-			 :style="{left: screenWidthPx * (1-0.618) *0.5 + 'px',bottom: statusBarHeight * 0.5 + 'px',width: screenWidthPx * 0.618 + 'px'}">
-				<image v-for="(item, index) in fabList" :key="item.id" :id="item.id" :ref="item.id" :src="item.url" style="width: 20px;height: 20px;"
+			<view 
+				ref='fab' 
+				elevation="10px" 
+				:blurEffect="'dark'"
+				style="
+					height: 46px;
+					position: fixed;
+					justify-content: space-around;
+					align-items: center;
+					flex-direction: row;
+					border-radius: 46px;
+					border-width: 2px;
+					border-color: #ec7d9c;
+					background-color: rgba(30,30,30,0.98);"
+				:style="{left: screenWidthPx * (1-0.618) *0.5 + 'px',bottom: statusBarHeight * 0.5 + 'px',width: screenWidthPx * 0.618 + 'px'}">
+				<image @tap="fabTap($event,index)" v-for="(item, index) in fabList" :key="item.id" :id="item.id" :ref="item.id" :src="item.url" style="width: 20px;height: 20px;"
 				 :style="{borderRadius: item.id == 'user' ? '25px' : 0, opacity: index == 0 ? 1 : 0.2}">
 				</image>
-				<view style="width: 5px;height: 5px;border-radius: 2.5px;background-color: #FFFFFF;position: absolute;bottom: 5px;"
-				 :style="{left: platform == 'ios' ? (headFabX - 2.5 + 'px') : (headFabX - 2.5 + 'px')}" ref="indicator"></view>
+				<view 
+					style="
+						width: 24px;
+						height: 6px;
+						border-top-right-radius: 6px;
+						border-top-left-radius: 6px;
+						border-bottom-width: 0px;
+						background-image: linear-gradient(to bottom, #ffffff, #ec7d9c);
+						position: absolute;
+						bottom: 0px;"
+					:style="{left: (headFabX - (12 + 2) + 'px')}" ref="indicator"></view>
 			</view>
 
 
@@ -93,7 +115,6 @@
 				isRefresh: false,
 				headFabX: 0,
 				endFabX: 0,
-				isBindingPan: false,
 				recordCount: 0,
 			}
 		},
@@ -113,20 +134,20 @@
 			}
 		},
 		mounted() {
-			var indexElement = this.$refs['page-home'][0]
-
-			// #ifdef APP-NVUE
-			dom.scrollToElement(indexElement, {
-				offset: 0,
-				animated: true
-			})
-			// #endif
-
-			this.swiper = this.getEl(this.$refs['scroller'])
-
-			var endFabIndex = this.fabList.length - 1
-
 			setTimeout(() => {
+				var indexElement = this.$refs['page-home'][0]
+				
+				// #ifdef APP-NVUE
+				dom.scrollToElement(indexElement, {
+					offset: 0,
+					animated: true
+				})
+				// #endif
+				
+				this.swiper = this.getEl(this.$refs['scroller'])
+				
+				var endFabIndex = this.fabList.length - 1
+				
 				dom.getComponentRect(this.getEl(this.$refs.fab), (res) => {
 					var fabLeft = res.size.left
 					dom.getComponentRect(this.getEl(this.$refs[this.fabList[0].id]), ((res) => {
@@ -145,7 +166,7 @@
 						}))
 					}))
 				})
-			}, 10)
+			}, 100)
 		},
 		methods: {
 			bindTap: function() {
@@ -196,14 +217,13 @@
 
 			},
 			bindPan: function() {
-				this.isBindingPan = true
 				// binding pan
 				if (screenInfo.system.platform == 'ios') {
-					var expression = `${this.contentOffsetX} - x * (750 / ${this.screenWidthPx})`
+					var expression = `${this.contentOffsetX} - x * (750 / ${this.screenWidthPx * 0.5})`
 				} else {
 					var expression = `${this.contentOffsetX} - x`
 				}
-				// 再次准备绑定pan事件
+				// 准备绑定pan事件
 				BindingX.prepare({
 					eventType: 'pan',
 					anchor: this.swiper
@@ -218,11 +238,7 @@
 						},
 
 					]
-				}, ((e) => {
-					if (e.state !== 'start') {
-						this.isBindingPan = false
-					}
-				}))
+				})
 			},
 			getEl: function(e) {
 				if (typeof(e[0]) == 'object') {
@@ -421,6 +437,14 @@
 				}, callback)
 				this.anmToken = token
 				return this.anmToken
+			},
+			fabTap: function(e,index) {
+				console.log(e,index)
+				var Element = this.$refs['page-'+e.target.id][0]
+				dom.scrollToElement(Element, {
+					offset: 0,
+					animated: true
+				})
 			}
 		}
 	}
