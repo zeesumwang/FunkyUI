@@ -27,23 +27,36 @@
 					flex-direction: row;
 					border-radius: 46px;
 					border-width: 2px;
-					border-color: #ec7d9c;
-					background-color: rgba(30,30,30,0.98);"
-				:style="{left: screenWidthPx * (1-0.618) *0.5 + 'px',bottom: statusBarHeight * 0.5 + 'px',width: screenWidthPx * 0.618 + 'px'}">
-				<image @tap="fabTap($event,index)" v-for="(item, index) in fabList" :key="item.id" :id="item.id" :ref="item.id" :src="item.url" style="width: 20px;height: 20px;"
-				 :style="{borderRadius: item.id == 'user' ? '25px' : 0, opacity: index == 0 ? 1 : 0.2}">
-				</image>
+					border-color: #ec7d9c;"
+				:style="{left: screenWidthPx * (1-0.618) *0.5 + 'px',bottom: statusBarHeight * 0.618 + 'px',width: screenWidthPx * 0.618 + 'px'}">
+				
+				<view 
+					@tap="fabTap($event,index)" 
+					v-for="(item, index) in fabList" 
+					:key="item.id" 
+					:id="item.id" 
+					:ref="item.id" 
+					:style="{opacity: index == 0 ? 1 : 0.2}"
+					style="padding: 15px;"
+				>
+					<image :src="item.url" style="width: 20px;height: 20px;"
+					 :style="{borderRadius: item.id == 'user' ? '25px' : 0}">
+					</image>
+				</view>				
+				
 				<view 
 					style="
 						width: 24px;
-						height: 6px;
 						border-top-right-radius: 6px;
 						border-top-left-radius: 6px;
 						border-bottom-width: 0px;
 						background-image: linear-gradient(to bottom, #ffffff, #ec7d9c);
 						position: absolute;
 						bottom: 0px;"
-					:style="{left: (headFabX - (12 + 2) + 'px')}" ref="indicator"></view>
+					:style="{left: (headFabX - (12 + 2) + 'px'),height: (headFabX == 0 ? 0 : 6) + 'px'}" 
+					ref="indicator"
+				>
+				</view>
 			</view>
 
 
@@ -151,17 +164,9 @@
 				dom.getComponentRect(this.getEl(this.$refs.fab), (res) => {
 					var fabLeft = res.size.left
 					dom.getComponentRect(this.getEl(this.$refs[this.fabList[0].id]), ((res) => {
-						if (this.platform == 'ios') {
-							this.headFabX = res.size.left + res.size.width * 0.5 - fabLeft
-						} else {
-							this.headFabX = res.size.left + res.size.width * 0.5 - fabLeft
-						}
+						this.headFabX = res.size.left + res.size.width * 0.5 - fabLeft
 						dom.getComponentRect(this.getEl(this.$refs[this.fabList[endFabIndex].id]), ((res) => {
-							if (this.platform == 'ios') {
-								this.endFabX = res.size.left + res.size.width * 0.5 - fabLeft
-							} else {
-								this.endFabX = res.size.left + res.size.width * 0.5 - fabLeft
-							}
+							this.endFabX = res.size.left + res.size.width * 0.5 - fabLeft
 							this.bindTap()
 						}))
 					}))
@@ -172,7 +177,7 @@
 			bindTap: function() {
 				var indicator = this.getEl(this.$refs['indicator'])
 				var fab = this.getEl(this.$refs['fab'])
-				var fabHeight = this.statusBarHeight * 0.5
+				var fabHeight = this.statusBarHeight * 0.618
 				var fabMaxTranslateY = fabHeight * 4
 				if (this.platform == 'ios') {
 					var indicatorMaxTranslateX = this.endFabX - this.headFabX
@@ -439,7 +444,7 @@
 				return this.anmToken
 			},
 			fabTap: function(e,index) {
-				console.log(e,index)
+				this.$emit('fabClick',e)
 				var Element = this.$refs['page-'+e.target.id][0]
 				dom.scrollToElement(Element, {
 					offset: 0,
