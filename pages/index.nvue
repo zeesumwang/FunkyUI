@@ -10,7 +10,7 @@
 		<template v-slot:mainPage0>
 			<view :style="{height: statusBarHeight + 'px'}"></view>
 			<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
-			 @refreshing="refreshing" refreshTextColor="#ec7d9c">
+			 @refreshing="refreshing">
 				<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
 					<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #252626;"
 					 :style="{width: screenWidthPx -10 + 'px'}">
@@ -34,29 +34,23 @@
 		</template>
 		
 		<template v-slot:mainPage2>
-			<view :style="{height: statusBarHeight + 'px'}"></view>
-			<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
-			 @refreshing="refreshing">
-				<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
-					<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #252626;"
-					 :style="{width: screenWidthPx -10 + 'px'}">
-						<text style="color: #ebebeb">{{item}}</text>
-					</view>
-				</fk-cell>
-			</fk-list>
+			<view style="">
+				<view :style="{height: statusBarHeight + 'px'}"></view>
+				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
+				 @refreshing="refreshing">
+					<!-- <fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
+						<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #252626;"
+						 :style="{width: screenWidthPx -10 + 'px'}">
+							<text style="color: #ebebeb">{{item}}</text>
+						</view>
+					</fk-cell> -->
+				</fk-list>
+			</view>			
 		</template>
 		
 		<template v-slot:mainPage3>
-			<view :style="{height: statusBarHeight + 'px'}"></view>
-			<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
-			 @refreshing="refreshing">
-				<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
-					<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #252626;"
-					 :style="{width: screenWidthPx -10 + 'px'}">
-						<text style="color: #ebebeb">{{item}}</text>
-					</view>
-				</fk-cell>
-			</fk-list>
+			<userPage></userPage>
+			
 		</template>
 	</fk-tab>
 	
@@ -68,7 +62,13 @@
 	
 	import screenInfo from "@/common/helper.js"
 	import testData from "@/test_data/data.js"
+	
+	import userPage from "@/pages/userPage/userPage.nvue"
+	
 	export default {
+		components: {
+			userPage
+		},
 		data() {
 			return {
 				data: [],

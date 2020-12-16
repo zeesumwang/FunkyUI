@@ -5,14 +5,16 @@
 		<scroller ref="scroller" @scroll="scroll" @horizontalpan="horizontalpan" :scrollable="false" :show-scrollbar="false"
 		 :scrollToBegin="false" :offset-accuracy="0.9" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
 		 style="flex-direction: row;">
-
-			<view @touchstart="checkPage(0)" ref='page-hide' id='page-hide'>
-				<slot name="hidePage"></slot>
-			</view>
-
-			<view v-for="(item,index) in fabList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + 1)"
-			 style="background-color: #0D0D0D;justify-content: center;align-items: center;" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
-				<slot :name="'mainPage'+index"></slot>
+			
+			<view style="flex-direction: row;background-color: #0d0c0d;">
+				<view @touchstart="checkPage(0)" ref='page-hide' id='page-hide'>
+					<slot name="hidePage"></slot>
+				</view>
+				
+				<view v-for="(item,index) in fabList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + 1)"
+				 :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
+					<slot :name="'mainPage'+index"></slot>
+				</view>
 			</view>
 
 			<view 
@@ -68,7 +70,6 @@
 <style>
 	.container {
 		flex: 1;
-		background-color: #0d0d0d;
 		justify-content: center;
 		align-items: center;
 	}
@@ -224,7 +225,7 @@
 			bindPan: function() {
 				// binding pan
 				if (screenInfo.system.platform == 'ios') {
-					var expression = `${this.contentOffsetX} - x * (750 / ${this.screenWidthPx * 0.5})`
+					var expression = `${this.contentOffsetX} - x * (750 / ${this.screenWidthPx})`
 				} else {
 					var expression = `${this.contentOffsetX} - x`
 				}
@@ -240,8 +241,7 @@
 							element: this.swiper,
 							property: 'scroll.contentOffsetX',
 							expression: expression
-						},
-
+						}
 					]
 				})
 			},
