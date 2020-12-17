@@ -7,10 +7,10 @@
 					<image src="/static/logo.jpg" class="logo">
 					</image>
 					<view style="align-items: center;flex-direction: row;">
-						<view style="background-color: #1a181a;justify-content: center;align-items: center;border-radius: 32px;height: 40px;margin-right: 8px;">
+						<view style="background-color: #1a181a;justify-content: center;align-items: center;border-radius: 30px;height: 40px;margin-right: 8px;">
 							<text style="color: #EBEBEB;font-size: 14px;padding: 6px;padding-left: 20px;padding-right: 20px;">编辑资料</text>
 						</view>
-						<view style="background-color: #1a181a;justify-content: center;align-items: center;border-radius: 20px;height: 40px;width: 40px">
+						<view style="background-color: #1a181a;justify-content: center;align-items: center;border-radius: 30px;height: 40px;width: 40px">
 							<text style="color: #EBEBEB;font-size: 14px;">⊙</text>
 						</view>						
 					</view>

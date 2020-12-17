@@ -1,6 +1,25 @@
 <template>
 	
 	<fk-tab @pageChange="pageChange">
+		<template v-slot:fab>
+			<view
+				@tap="fabTap($event,index)" 
+				v-for="(item, index) in fabList" 
+				:key="item.id" 
+				:id="item.id" 
+				:ref="item.id" 
+				:style="{opacity: index == 0 ? 1 : 0.2}"
+				style="padding: 15px;"
+			>
+				<!-- <image :src="item.url" style="width: 20px;height: 20px;"
+				 :style="{borderRadius: item.id == 'user' ? '25px' : 0}">
+				</image> -->
+				<text style="color: #EBEBEB;">{{index}}</text>
+			</view>				
+			
+			
+		</template>
+		
 		<template v-slot:hidePage>
 			<fk-video-list :videoData="videoData" :isPlay="currentPage==-1" @videoChange="videoChange">
 				
@@ -71,6 +90,24 @@
 		},
 		data() {
 			return {
+				fabList: [
+						{
+							id: 'home',
+							url: "/static/home.png"
+						},
+						{
+							id: 'search',
+							url: "/static/search.png"
+						},
+						{
+							id: 'message',
+							url: "/static/flash.png"
+						},
+						{
+							id: 'user',
+							url: "/static/logo.jpg"
+						}
+					],
 				data: [],
 				screenHeightPx: 0,
 				screenWidthPx: 0,

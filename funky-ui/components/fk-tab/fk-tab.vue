@@ -1,10 +1,39 @@
 
 <template>
 	<view class="container">
-
+		<label>		
+			<fk-transition
+				ref="fab"
+				:show="true"
+				:elevation="10" 
+				:blurEffect="'dark'"
+				:styles="fabStyles"
+				:backgroundColor="fabBackgroundColor"
+				:opacity="0.98"
+			>
+				
+				<slot name="fab"></slot>
+				<view
+					style="
+						width: 24px;
+						border-top-right-radius: 6px;
+						border-top-left-radius: 6px;
+						border-bottom-width: 0px;
+						background-image: linear-gradient(to bottom, #ffffff, #ec7d9c);
+						position: absolute;
+						bottom: 0px;"
+					:style="{left: (headFabX - (12 + 3) + 'px'),height: (headFabX == 0 ? 0 : 6) + 'px'}" 
+					ref="indicator"
+				>
+				</view>
+			</fk-transition>
+		</label>
+		
 		<scroller ref="scroller" @scroll="scroll" @horizontalpan="horizontalpan" :scrollable="false" :show-scrollbar="false"
 		 :scrollToBegin="false" :offset-accuracy="0.9" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
 		 style="flex-direction: row;">
+			
+			
 			
 			<view style="flex-direction: row;background-color: #0d0c0d;">
 				<view @touchstart="checkPage(0)" ref='page-hide' id='page-hide'>
@@ -16,51 +45,6 @@
 					<slot :name="'mainPage'+index"></slot>
 				</view>
 			</view>
-
-			<view 
-				ref='fab' 
-				elevation="10px" 
-				:blurEffect="'dark'"
-				style="
-					height: 46px;
-					position: fixed;
-					justify-content: space-around;
-					align-items: center;
-					flex-direction: row;
-					border-radius: 46px;
-					border-width: 2px;
-					border-color: #ec7d9c;"
-				:style="{left: screenWidthPx * (1-0.618) *0.5 + 'px',bottom: statusBarHeight * 0.618 + 'px',width: screenWidthPx * 0.618 + 'px'}">
-				
-				<view 
-					@tap="fabTap($event,index)" 
-					v-for="(item, index) in fabList" 
-					:key="item.id" 
-					:id="item.id" 
-					:ref="item.id" 
-					:style="{opacity: index == 0 ? 1 : 0.2}"
-					style="padding: 15px;"
-				>
-					<image :src="item.url" style="width: 20px;height: 20px;"
-					 :style="{borderRadius: item.id == 'user' ? '25px' : 0}">
-					</image>
-				</view>				
-				
-				<view 
-					style="
-						width: 24px;
-						border-top-right-radius: 6px;
-						border-top-left-radius: 6px;
-						border-bottom-width: 0px;
-						background-image: linear-gradient(to bottom, #ffffff, #ec7d9c);
-						position: absolute;
-						bottom: 0px;"
-					:style="{left: (headFabX - (12 + 2) + 'px'),height: (headFabX == 0 ? 0 : 6) + 'px'}" 
-					ref="indicator"
-				>
-				</view>
-			</view>
-
 
 		</scroller>
 
@@ -130,9 +114,11 @@
 				headFabX: 0,
 				endFabX: 0,
 				recordCount: 0,
+				fabStyles: {},
+				fabBackgroundColor: '#1e1e1e'
 			}
 		},
-		created() {
+		created() {			
 			this.platform = screenInfo.system.platform
 			// 获取全局变量中的屏幕宽高
 			this.screenHeightPx = screenInfo.screenHeightPx
@@ -141,10 +127,23 @@
 
 			if (screenInfo.system.platform !== 'ios') {
 				this.realScreenWidth = this.screenWidthPx,
-					this.contentOffsetX = this.screenWidthPx
+				this.contentOffsetX = this.screenWidthPx
 			} else {
 				this.realScreenWidth = 750,
-					this.contentOffsetX = 750
+				this.contentOffsetX = 750
+			}
+			this.fabStyles = {
+				'height': '50px',
+				'position': 'fixed',
+				'justifyContent': 'space-around',
+				'alignItems': 'center',
+				'flexDirection': 'row',
+				'borderRadius': '30px',
+				'borderWidth': '3px',
+				'borderColor': '#ec7d9c',
+				'left': this.screenWidthPx * (1-0.618) *0.5 + 'px',
+				'bottom': screenInfo.system.safeAreaInsets.bottom + 'px',
+				'width': this.screenWidthPx * 0.618 + 'px'
 			}
 		},
 		mounted() {
@@ -162,22 +161,23 @@
 				
 				var endFabIndex = this.fabList.length - 1
 				
-				dom.getComponentRect(this.getEl(this.$refs.fab), (res) => {
+				dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani), (res) => {
 					var fabLeft = res.size.left
-					dom.getComponentRect(this.getEl(this.$refs[this.fabList[0].id]), ((res) => {
+					dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani.children[0]), ((res) => {
 						this.headFabX = res.size.left + res.size.width * 0.5 - fabLeft
-						dom.getComponentRect(this.getEl(this.$refs[this.fabList[endFabIndex].id]), ((res) => {
+						dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani.children[this.fabList.length-1]), ((res) => {
 							this.endFabX = res.size.left + res.size.width * 0.5 - fabLeft
 							this.bindTap()
 						}))
 					}))
 				})
 			}, 100)
+			
 		},
 		methods: {
 			bindTap: function() {
 				var indicator = this.getEl(this.$refs['indicator'])
-				var fab = this.getEl(this.$refs['fab'])
+				var fab = this.getEl(this.$refs.fab.$refs.ani)
 				var fabHeight = this.statusBarHeight * 0.618
 				var fabMaxTranslateY = fabHeight * 4
 				if (this.platform == 'ios') {
@@ -201,7 +201,7 @@
 				]
 
 				for (var i = 0; i < this.fabList.length; i++) {
-					let fabItem = this.getEl(this.$refs[this.fabList[i].id])
+					let fabItem = this.getEl(this.$refs.fab.$refs.ani.children[i])
 					let subExpression = (1 + i) * this.realScreenWidth
 					let expression =
 						`x == ${subExpression} ? 1 : (x < ${subExpression} ? max((x - ${i*this.realScreenWidth}) / ${this.realScreenWidth}, 0.2) : max(1 - ((x - ${subExpression}) / ${this.realScreenWidth}), 0.2))`
@@ -225,7 +225,8 @@
 			bindPan: function() {
 				// binding pan
 				if (screenInfo.system.platform == 'ios') {
-					var expression = `${this.contentOffsetX} - x * (750 / ${this.screenWidthPx})`
+					var maxDeltaX = this.screenWidthPx
+					var expression = `${this.contentOffsetX} - x * (750 / ${maxDeltaX})`
 				} else {
 					var expression = `${this.contentOffsetX} - x`
 				}
@@ -243,9 +244,15 @@
 							expression: expression
 						}
 					]
-				})
+				},
+				// ((e)=>{console.log(e,expression)})
+				)
 			},
 			getEl: function(e) {
+				// if(typeof(e) == 'undefined'){
+				// 	console.log(e)
+				// 	return
+				// }				
 				if (typeof(e[0]) == 'object') {
 					return e[0].ref
 				} else {
@@ -446,6 +453,9 @@
 			fabTap: function(e,index) {
 				this.$emit('fabClick',e)
 				var Element = this.$refs['page-'+e.target.id][0]
+				this.scrollToElement(Element)
+			},
+			scrollToElement: function(Element) {
 				dom.scrollToElement(Element, {
 					offset: 0,
 					animated: true
