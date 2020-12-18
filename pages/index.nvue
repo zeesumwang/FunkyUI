@@ -1,6 +1,19 @@
 <template>
 	
-	<fk-tab @pageChange="pageChange">
+	<fk-tab 
+		ref="main-tab" 
+		@pageChange="pageChange" 
+		:pageList="fabList"
+		:defaultPageId="'home'"
+		:hasHidePage="true"
+		:bindFabExpression="bindFabExpression" 
+		:bindFabProperty="bindFabProperty" 
+		:fabStyles="fabStyles"
+		:fabBackgroundColor="'#1e1e1e'"
+		:fabOpacity="0.96"
+		:fabBlurEffect="'dark'"
+		:fabElevation="10"		
+	>
 		<template v-slot:fab>
 			<view
 				@tap="fabTap($event,index)" 
@@ -11,13 +24,23 @@
 				:style="{opacity: index == 0 ? 1 : 0.2}"
 				style="padding: 15px;"
 			>
-				<!-- <image :src="item.url" style="width: 20px;height: 20px;"
+				<image :src="item.url" style="width: 20px;height: 20px;"
 				 :style="{borderRadius: item.id == 'user' ? '25px' : 0}">
-				</image> -->
-				<text style="color: #EBEBEB;">{{index}}</text>
-			</view>				
-			
-			
+				</image>
+			</view>			
+		</template>
+		
+		<template v-slot:indicator>
+			<view 
+				style="
+				height: 6px;
+				width: 24px;
+				border-top-right-radius: 6px;
+				border-top-left-radius: 6px;
+				border-bottom-width: 0px;
+				background-image: linear-gradient(to bottom, #ffffff, #ec7d9c);"
+			>						
+			</view>	
 		</template>
 		
 		<template v-slot:hidePage>
@@ -79,7 +102,7 @@
 
 <script>
 	
-	import screenInfo from "@/common/helper.js"
+	import screenInfo from "@/funky-ui/common/helper.js"
 	import testData from "@/test_data/data.js"
 	
 	import userPage from "@/pages/userPage/userPage.nvue"
@@ -113,7 +136,10 @@
 				screenWidthPx: 0,
 				statusBarHeight: 0,
 				isRefresh: false,
-				videoData:[]
+				videoData:[],
+				bindFabExpression: '',
+				bindFabProperty: '',
+				fabStyles: {}
 			}			
 		},
 		onPullDownRefresh() {
@@ -128,6 +154,29 @@
 				this.data.push(i)
 			}
 			this.videoData = testData.videoData
+			
+		},
+		created() {
+			var fabHeight = screenInfo.system.safeAreaInsets.bottom
+			var fabMaxTranslateY = fabHeight * 3
+			this.bindFabExpression = `${fabMaxTranslateY} * (x < ${screenInfo.realScreenWidth} ? (1 - x / ${screenInfo.realScreenWidth}) : 0)`
+			this.bindFabProperty = 'transform.translateY'
+			this.fabStyles = {
+				'height': '50px',
+				'position': 'fixed',
+				'justifyContent': 'space-around',
+				'alignItems': 'center',
+				'flexDirection': 'row',
+				'borderRadius': '30px',
+				'borderWidth': '3px',
+				'borderColor': '#ec7d9c',
+				'left': this.screenWidthPx * (1-0.618) *0.5 + 'px',
+				'bottom': screenInfo.system.safeAreaInsets.bottom + 'px',
+				'width': this.screenWidthPx * 0.618 + 'px'
+			}
+		},
+		mounted() {
+			console.log("父组件挂载")
 		},
 		methods: {
 			refreshing: function() {
@@ -138,7 +187,18 @@
 			},
 			pageChange: function(e) {
 				console.log(e)
-			}
+			},
+			fabTap: function(e,index) {
+				let pageId = 'page-'+e.target.id
+				this.$refs['main-tab'].scrollToPage(pageId)
+			},
+			getEl: function(e) {
+				if (typeof(e[0]) == 'object') {
+					return e[0].ref
+				} else {
+					return e.ref
+				}
+			},
 		}
 	};
 </script>

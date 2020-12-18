@@ -5,42 +5,34 @@
 			<fk-transition
 				ref="fab"
 				:show="true"
-				:elevation="10" 
-				:blurEffect="'dark'"
+				:elevation="fabElevation" 
+				:blurEffect="fabBlurEffect"
 				:styles="fabStyles"
 				:backgroundColor="fabBackgroundColor"
-				:opacity="0.98"
+				:opacity="fabOpacity"
 			>
 				
 				<slot name="fab"></slot>
 				<view
-					style="
-						width: 24px;
-						border-top-right-radius: 6px;
-						border-top-left-radius: 6px;
-						border-bottom-width: 0px;
-						background-image: linear-gradient(to bottom, #ffffff, #ec7d9c);
-						position: absolute;
-						bottom: 0px;"
-					:style="{left: (headFabX - (12 + 3) + 'px'),height: (headFabX == 0 ? 0 : 6) + 'px'}" 
+					style="position: absolute;bottom: 0px;float: left;"
+					:style="{left: (headFabX - (12 + 3) + 'px')}" 
 					ref="indicator"
 				>
+					<slot name="indicator"></slot>
 				</view>
 			</fk-transition>
 		</label>
 		
-		<scroller ref="scroller" @scroll="scroll" @horizontalpan="horizontalpan" :scrollable="false" :show-scrollbar="false"
+		<scroller ref="scroller" @scroll="scroll" @horizontalpan.stop="horizontalpan" :scrollable="false" :show-scrollbar="false"
 		 :scrollToBegin="false" :offset-accuracy="0.9" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
 		 style="flex-direction: row;">
 			
-			
-			
 			<view style="flex-direction: row;background-color: #0d0c0d;">
-				<view @touchstart="checkPage(0)" ref='page-hide' id='page-hide'>
+				<view v-if="hasHidePage" @touchstart="checkPage(0)" ref='page-hide' id='page-hide'>
 					<slot name="hidePage"></slot>
 				</view>
 				
-				<view v-for="(item,index) in fabList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + 1)"
+				<view v-for="(item,index) in pageList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + (hasHidePage ? 1 : 0))"
 				 :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
 					<slot :name="'mainPage'+index"></slot>
 				</view>
@@ -60,10 +52,10 @@
 </style>
 
 <script>
-	import BindingX from "weex-bindingx" //bindingX兼容H5端，可是uniapp.require无法引入
+	// import BindingX from "weex-bindingx" //bindingX兼容H5端，可是uniapp.require无法引入
 	// console.log(BindingX)
 	// #ifdef APP-NVUE
-	// const BindingX = uni.requireNativePlugin('bindingx');
+	const BindingX = uni.requireNativePlugin('bindingx');
 	const dom = uni.requireNativePlugin('dom') // 在APP端引入weex的dom组件
 	// #endif
 
@@ -72,28 +64,62 @@
 	export default {
 		name: 'fkTab',
 		props: {
-			fabList: {
+			pageList: {
 				type: Array,
 				default () {
-					return [{
-							id: 'home',
-							url: "/static/home.png"
-						},
-						{
-							id: 'search',
-							url: "/static/search.png"
-						},
-						{
-							id: 'message',
-							url: "/static/flash.png"
-						},
-						{
-							id: 'user',
-							url: "/static/logo.jpg"
-						}
-					]
+					return []
 				}
-			}
+			},
+			defaultPageId: {
+				type: String,
+				default: ""
+			},
+			hasHidePage: {
+				type: Boolean,
+				default: false
+			},
+			fabStyles: {
+				type: Object,
+				default () {
+					return {
+						'height': '50px',
+						'justifyContent': 'space-around',
+						'alignItems': 'center',
+						'flexDirection': 'row',
+						'width': '350px'
+					}
+				}
+			},
+			fabBackgroundColor: {
+				type: String,
+				default: '#ffffff'
+			},
+			fabOpacity: {
+				type: Number,
+				default: 0.98
+			},
+			fabElevation: {
+				type: Number,
+				default: 10
+			},
+			fabBlurEffect: {
+				type: String,
+				default: 'none'
+			},
+			bindProps: {
+				type: Object,
+				default () {
+					return []
+				}
+			},
+			bindFabProperty: {
+				type: String,
+				default: ''
+			},
+			bindFabExpression: {
+				type: String,
+				default: ''
+			},			
 		},
 		data() {
 			return {
@@ -114,8 +140,6 @@
 				headFabX: 0,
 				endFabX: 0,
 				recordCount: 0,
-				fabStyles: {},
-				fabBackgroundColor: '#1e1e1e'
 			}
 		},
 		created() {			
@@ -126,46 +150,46 @@
 			this.statusBarHeight = screenInfo.system.statusBarHeight
 
 			if (screenInfo.system.platform !== 'ios') {
-				this.realScreenWidth = this.screenWidthPx,
-				this.contentOffsetX = this.screenWidthPx
+				this.realScreenWidth = this.screenWidthPx
+				if(this.hasHidePage){
+					this.contentOffsetX = this.screenWidthPx
+				}
+				else{
+					this.contentOffsetX = 0
+				}
 			} else {
-				this.realScreenWidth = 750,
-				this.contentOffsetX = 750
+				this.realScreenWidth = 750
+				if(this.hasHidePage){
+					this.contentOffsetX = 750
+				}
+				else{
+					this.contentOffsetX = 0
+				}
 			}
-			this.fabStyles = {
-				'height': '50px',
-				'position': 'fixed',
-				'justifyContent': 'space-around',
-				'alignItems': 'center',
-				'flexDirection': 'row',
-				'borderRadius': '30px',
-				'borderWidth': '3px',
-				'borderColor': '#ec7d9c',
-				'left': this.screenWidthPx * (1-0.618) *0.5 + 'px',
-				'bottom': screenInfo.system.safeAreaInsets.bottom + 'px',
-				'width': this.screenWidthPx * 0.618 + 'px'
-			}
+			
 		},
 		mounted() {
 			setTimeout(() => {
-				var indexElement = this.$refs['page-home'][0]
-				
-				// #ifdef APP-NVUE
-				dom.scrollToElement(indexElement, {
-					offset: 0,
-					animated: true
-				})
-				// #endif
+				if(this.defaultPageId !== ""){
+					var indexElement = this.getEl(this.$refs['page-' + this.defaultPageId])
+					
+					// #ifdef APP-NVUE
+					dom.scrollToElement(indexElement, {
+						offset: 0,
+						animated: true
+					})
+					// #endif
+				}				
 				
 				this.swiper = this.getEl(this.$refs['scroller'])
 				
-				var endFabIndex = this.fabList.length - 1
+				var endFabIndex = this.pageList.length - 1
 				
 				dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani), (res) => {
 					var fabLeft = res.size.left
 					dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani.children[0]), ((res) => {
 						this.headFabX = res.size.left + res.size.width * 0.5 - fabLeft
-						dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani.children[this.fabList.length-1]), ((res) => {
+						dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani.children[this.pageList.length-1]), ((res) => {
 							this.endFabX = res.size.left + res.size.width * 0.5 - fabLeft
 							this.bindTap()
 						}))
@@ -176,35 +200,48 @@
 		},
 		methods: {
 			bindTap: function() {
-				var indicator = this.getEl(this.$refs['indicator'])
-				var fab = this.getEl(this.$refs.fab.$refs.ani)
-				var fabHeight = this.statusBarHeight * 0.618
-				var fabMaxTranslateY = fabHeight * 4
-				if (this.platform == 'ios') {
-					var indicatorMaxTranslateX = this.endFabX - this.headFabX
-				} else {
-					var indicatorMaxTranslateX = this.endFabX - this.headFabX
+				var props = []
+				
+				// 绑定传入的自定义表达式
+				for (var i = 0;i < this.bindProps.length; i++) {
+					props.push(this.bindProps[i])
 				}
+				
+				// 绑定fab整体
+				if(this.bindFabExpression !== '' && this.bindFabProperty !== ''){
+					var fab = this.getEl(this.$refs.fab.$refs.ani)
+					var bindFabProp = {
+							element: fab,
+							property: this.bindFabProperty,
+							expression: this.bindFabExpression
+						}
+					props.push(bindFabProp)
+				}
+				
+				// 根据是否有负一屏设置x的偏移
+				var variable = `x`
+				if(!this.hasHidePage) {
+					variable = `x + ${this.realScreenWidth}`
+				}
+				
+				// 绑定提示器
+				var indicator = this.getEl(this.$refs['indicator'])
+				var indicatorMaxTranslateX = this.endFabX - this.headFabX
 				var indicatorExpression =
-					`x > ${this.realScreenWidth} ? (x - ${this.realScreenWidth}) * ${indicatorMaxTranslateX / 3} / ${this.realScreenWidth} : 0`
+					`${variable} > ${this.realScreenWidth} ? (${variable} - ${this.realScreenWidth}) * ${indicatorMaxTranslateX / (this.pageList.length - 1)} / ${this.realScreenWidth} : 0`
 
-				var props = [{
-						element: fab,
-						property: 'transform.translateY',
-						expression: `${fabMaxTranslateY} * (x < ${this.realScreenWidth} ? (1 - x / ${this.realScreenWidth}) : 0)`
-					},
-					{
+				props.push({
 						element: indicator,
 						property: 'transform.translateX',
 						expression: indicatorExpression
-					}
-				]
-
-				for (var i = 0; i < this.fabList.length; i++) {
+					})
+				
+				// 绑定每一项的透明度
+				for (var i = 0; i < this.pageList.length; i++) {
 					let fabItem = this.getEl(this.$refs.fab.$refs.ani.children[i])
 					let subExpression = (1 + i) * this.realScreenWidth
 					let expression =
-						`x == ${subExpression} ? 1 : (x < ${subExpression} ? max((x - ${i*this.realScreenWidth}) / ${this.realScreenWidth}, 0.2) : max(1 - ((x - ${subExpression}) / ${this.realScreenWidth}), 0.2))`
+						`${variable} == ${subExpression} ? 1 : (${variable} < ${subExpression} ? max((${variable} - ${i*this.realScreenWidth}) / ${this.realScreenWidth}, 0.2) : max(1 - ((${variable} - ${subExpression}) / ${this.realScreenWidth}), 0.2))`
 					let prop = {
 						element: fabItem,
 						property: 'opacity',
@@ -248,11 +285,7 @@
 				// ((e)=>{console.log(e,expression)})
 				)
 			},
-			getEl: function(e) {
-				// if(typeof(e) == 'undefined'){
-				// 	console.log(e)
-				// 	return
-				// }				
+			getEl: function(e) {			
 				if (typeof(e[0]) == 'object') {
 					return e[0].ref
 				} else {
@@ -386,7 +419,7 @@
 						// console.log('加速下一屏', anmDuration, speed)
 						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 							if (e.state !== 'start') {
-								this.$emit('pageChange', Math.floor(this.contentOffsetX / this.realScreenWidth) - 1)
+								this.pageChange()
 							}
 						}))
 					} else if (deltaX < 0) {
@@ -395,7 +428,7 @@
 						// console.log('加速上一屏', anmDuration, speed)
 						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 							if (e.state !== 'start') {
-								this.$emit('pageChange', Math.floor(this.contentOffsetX / this.realScreenWidth) - 1)
+								this.pageChange()
 							}
 						}))
 					}
@@ -411,7 +444,7 @@
 								let anmDuration = this.getDuration(speed)
 								this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 									if (e.state !== 'start') {
-										this.$emit('pageChange', Math.floor(this.contentOffsetX / this.realScreenWidth) - 1)
+										this.pageChange()
 									}
 								}))
 							} else {
@@ -420,7 +453,7 @@
 								let anmDuration = this.getDuration(speed)
 								this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 									if (e.state !== 'start') {
-										this.$emit('pageChange', Math.floor(this.contentOffsetX / this.realScreenWidth) - 1)
+										this.pageChange()
 									}
 								}))
 							}
@@ -450,16 +483,20 @@
 				this.anmToken = token
 				return this.anmToken
 			},
-			fabTap: function(e,index) {
-				this.$emit('fabClick',e)
-				var Element = this.$refs['page-'+e.target.id][0]
-				this.scrollToElement(Element)
-			},
-			scrollToElement: function(Element) {
+			scrollToPage: function(pageId) {
+				var Element = this.getEl(this.$refs[pageId])
 				dom.scrollToElement(Element, {
 					offset: 0,
 					animated: true
 				})
+			},
+			pageChange: function() {
+				if(this.hasHidePage){
+					this.$emit('pageChange', Math.floor(this.contentOffsetX / this.realScreenWidth) - 1)
+				}
+				else{
+					this.$emit('pageChange', Math.floor(this.contentOffsetX / this.realScreenWidth))
+				}
 			}
 		}
 	}

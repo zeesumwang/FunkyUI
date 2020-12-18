@@ -65,14 +65,25 @@
 				
 			</view>			
 		</view>
-		<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
-		 @refreshing="refreshing">
-			<fk-cell style="justify-content: center;align-items: center;">
-				<view style="height: 250px;background-image: ;" :style="{width: screenWidthPx -10 + 'px'}">
-					<text style="color: #ebebeb">{{item}}</text>
+		<fk-tab :pageList="pageList">
+			<template v-slot:fab>
+				<view v-for="(item, index) in pageList" :key="item.id" :id="item.id" :ref="item.id">
+					<text>{{item.text}}</text>
 				</view>
-			</fk-cell>
-		</fk-list>
+			</template>
+			
+			<template v-slot:mainPage0>
+				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
+				 @refreshing="refreshing">
+					<fk-cell style="justify-content: center;align-items: center;">
+						<view style="height: 250px;background-image: ;" :style="{width: screenWidthPx -10 + 'px'}">
+							<text style="color: #514f50">{{item}}</text>
+						</view>
+					</fk-cell>
+				</fk-list>
+			</template>
+		</fk-tab>
+		
 	</view>
 </template>
 
@@ -85,7 +96,17 @@
 				screenHeightPx: 0,
 				screenWidthPx: 0,
 				statusBarHeight: 0,
-				isRefresh: false
+				isRefresh: false,
+				pageList: [
+					{
+						id: 'mine',
+						text: '我的'
+					},
+					{
+						id: 'liked',
+						text: '点赞'
+					}
+				]
 			}
 		},
 		created() {

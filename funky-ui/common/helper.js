@@ -2,10 +2,18 @@
 
 // 获取系统信息，设置初始设置屏幕
 var system = uni.getSystemInfoSync()
+
 // console.log(system)
 // #ifndef H5
 var screenHeightPx = system.windowHeight
 var screenWidthPx = system.windowWidth
+var realScreenWidth = 750
+if (system.platform !== 'ios') {
+	realScreenWidth = screenWidthPx
+}
+else{
+	realScreenWidth = 750
+}
 // #endif
 
 // #ifdef H5
@@ -46,6 +54,7 @@ export default {
 	// #endif
 	system,
 	screenHeightPx,
-	screenWidthPx
+	screenWidthPx,
+	realScreenWidth
 }
 
