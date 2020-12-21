@@ -1,7 +1,7 @@
 
 <template>
 	<view class="container">
-		<label>		
+		<label>	
 			<fk-transition
 				ref="fab"
 				:show="true"
@@ -23,7 +23,8 @@
 			</fk-transition>
 		</label>
 		
-		<scroller ref="scroller" @scroll="scroll" @horizontalpan.stop="horizontalpan" :scrollable="false" :show-scrollbar="false"
+		<label>	
+		<scroller ref="scroller" @scroll="scroll" @horizontalpan="horizontalpan" :scrollable="false" :show-scrollbar="false"
 		 :scrollToBegin="false" :offset-accuracy="0.9" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
 		 style="flex-direction: row;">
 			
@@ -39,7 +40,7 @@
 			</view>
 
 		</scroller>
-
+		</label>
 	</view>
 </template>
 
@@ -140,6 +141,7 @@
 				headFabX: 0,
 				endFabX: 0,
 				recordCount: 0,
+				currentPage: 0
 			}
 		},
 		created() {			
@@ -182,7 +184,7 @@
 				}				
 				
 				this.swiper = this.getEl(this.$refs['scroller'])
-				
+				// dom.getComponentRect(this.swiper,(res)=>{console.log(res)})
 				var endFabIndex = this.pageList.length - 1
 				
 				dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani), (res) => {
@@ -273,16 +275,20 @@
 					anchor: this.swiper
 				})
 				this.panToken = BindingX.bind({
-					eventType: 'pan',
-					anchor: this.swiper,
-					props: [{
-							element: this.swiper,
-							property: 'scroll.contentOffsetX',
-							expression: expression
-						}
-					]
-				},
-				// ((e)=>{console.log(e,expression)})
+						eventType: 'pan',
+						anchor: this.swiper,
+						props: [{
+								element: this.swiper,
+								property: 'scroll.contentOffsetX',
+								expression: expression
+							}
+						]
+					},
+					((e)=>{
+						if(e.state !== 'start'){
+							BindingX.unbind({token: this.panToken.token, eventType: 'pan'})
+						}						
+					})
 				)
 			},
 			getEl: function(e) {			
@@ -328,12 +334,17 @@
 				// console.log(this.startContentOffsetX)
 			},
 			horizontalpan: function(e) {
+				this.$emit('horizontalpan',e)
 				// console.log(e)
-				if (e.state == 'start') {
+				// e.stopPropagation() // 阻止冒泡无效
+				if(e.state == 'start') {
 					this.touchstart(e)
-					this.bindPan()
-				} else if (e.state == 'end') {
+				}
+				if(e.state == 'end') {
 					this.touchend(e)
+				}
+				if(e.state == 'move') {
+					this.panmove(e)
 				}
 			},
 			panmove: function(e) {
@@ -341,23 +352,38 @@
 					return
 				}
 				this.recordCount += 1
-				var deltaX = Math.abs(e.changedTouches[0].screenX - this.changedTouches[0].screenX)
-				var deltaY = Math.abs(e.changedTouches[0].screenY - this.changedTouches[0].screenY)
+				var vectorX = e.changedTouches[0].screenX - this.changedTouches[0].screenX
+				var vectorY = e.changedTouches[0].screenY - this.changedTouches[0].screenY
+				var deltaX = Math.abs(vectorX)
+				var deltaY = Math.abs(vectorY)
 
 				if (deltaX > deltaY) {
-					// console.log('横向触摸')
-					this.bindPan()
+					if(this.contentOffsetX < 2 && vectorX > 0) {
+						this.$emit('bindparent', {e: e,touch: this.changedTouches})
+						return				
+					}
+					else if((this.contentOffsetX == this.realScreenWidth * (this.pageList.length - 1)) && this.hasHidePage == false && vectorX < 0) {
+						this.$emit('bindparent', {e: e,touch: this.changedTouches})
+						return
+					}
+					else{
+						this.bindPan()
+					}					
 				}
 			},
 			touchstart: function(e) {
-				// console.log('触摸开始')
 				// 取消之前全部绑定，实现在timing过程中能够点击停止
 				if (screenInfo.system.platform == 'ios') {
-					BindingX.unbindAll()
+					BindingX.unbind({token:this.anmToken.token,eventType:'timing'})
+					BindingX.unbind({token:this.panToken.token,eventType:'pan'})
+					// BindingX.unbindAll()
 					// 再次绑定scroller的scroll事件
-					this.bindTap()
+					// this.bindTap()
 				} else {
-					BindingX.unbindAll()
+					BindingX.unbind({token:this.anmToken.token,eventType:'timing'})
+					BindingX.unbind({token:this.panToken.token,eventType:'pan'})
+					// BindingX.unbind()
+					// BindingX.unbindAll()
 					// 安卓端的unbindAll不会取消scroll事件的绑定，无需再次绑定
 				}
 
@@ -492,10 +518,12 @@
 			},
 			pageChange: function() {
 				if(this.hasHidePage){
-					this.$emit('pageChange', Math.floor(this.contentOffsetX / this.realScreenWidth) - 1)
+					this.currentPage = Math.floor(this.contentOffsetX / this.realScreenWidth) - 1
+					this.$emit('pageChange', this.currentPage)
 				}
 				else{
-					this.$emit('pageChange', Math.floor(this.contentOffsetX / this.realScreenWidth))
+					this.currentPage = Math.floor(this.contentOffsetX / this.realScreenWidth)
+					this.$emit('pageChange', this.currentPage)
 				}
 			}
 		}

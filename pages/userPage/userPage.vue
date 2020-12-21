@@ -65,9 +65,9 @@
 				
 			</view>			
 		</view>
-		<fk-tab :pageList="pageList">
+		<fk-tab :pageList="pageList" @bindparent="bindParent" @horizontalpan="horizontalpan">
 			<template v-slot:fab>
-				<view v-for="(item, index) in pageList" :key="item.id" :id="item.id" :ref="item.id">
+				<view v-for="(item, index) in pageList" :key="item.id" :id="item.id" :ref="item.id" :style="{opacity: index == 0 ? 1 : 0.2}">
 					<text>{{item.text}}</text>
 				</view>
 			</template>
@@ -76,8 +76,19 @@
 				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
 				 @refreshing="refreshing">
 					<fk-cell style="justify-content: center;align-items: center;">
-						<view style="height: 250px;background-image: ;" :style="{width: screenWidthPx -10 + 'px'}">
-							<text style="color: #514f50">{{item}}</text>
+						<view style="height: 250px;background-color: #007AFF;" :style="{width: screenWidthPx -10 + 'px'}">
+							<text style="color: #514f50">???</text>
+						</view>
+					</fk-cell>
+				</fk-list>
+			</template>
+			
+			<template v-slot:mainPage1>
+				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
+				 @refreshing="refreshing">
+					<fk-cell style="justify-content: center;align-items: center;">
+						<view style="height: 250px;background-color: #007AFF;" :style="{width: screenWidthPx -10 + 'px'}">
+							<text style="color: #514f50">???</text>
 						</view>
 					</fk-cell>
 				</fk-list>
@@ -121,6 +132,15 @@
 					this.isRefresh = false
 				}, 2000)
 			},
+			bindParent: function(e) {
+				// uni.$emit('bindparent')
+				// this.$parent.touchstart({changedTouches: e.touch})
+				// this.$parent.bindPan()
+				// console.log(this.$parent.swiper)
+			},
+			horizontalpan: function(e) {
+				// this.$parent.horizontalpan(e)
+			}
 		}
 	}
 </script>
