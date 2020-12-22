@@ -160,7 +160,8 @@
 				endFabX: 0,
 				recordCount: 0,
 				currentPage: 0,
-				isBindParent: false
+				isBindParent: false,
+				parentContentOffsetX: 0
 			}
 		},
 		created() {			
@@ -220,7 +221,12 @@
 			
 		},
 		methods: {
-			unbindAll: function() {
+			unbindAll: function(e) {
+				this.parentContentOffsetX = 0
+				if(e !== undefined) {
+					this.parentContentOffsetX = e
+				}
+				
 				// 取消之前全部绑定，实现在timing过程中能够点击停止
 				if (screenInfo.system.platform == 'ios') {
 					// BindingX.unbind({token:this.anmToken.token,eventType:'timing'})
@@ -297,6 +303,8 @@
 			},
 			bindPan: function(id) {
 				// binding pan
+				this.$emit('unbindparent')
+				this.isBindParent = false
 				var swiper = this.swiper
 				if(id !== undefined){
 					swiper = id
@@ -359,7 +367,7 @@
 				// console.log(this.contentOffsetX)
 			},
 			checkPage: function(index) {
-				this.$emit('unbindAll')
+				this.$emit('unbindAll',this.contentOffsetX)
 				this.unbindAll()
 				let touchPageContentOffset = Math.abs(index * this.realScreenWidth)
 				let scrollDistance = Math.abs(touchPageContentOffset - this.contentOffsetX)
@@ -376,7 +384,7 @@
 			},
 			horizontalpan: function(e) {
 				// console.log(e)
-				// e.stopPropagation() // 阻止冒泡，似乎无效
+				e.stopPropagation() // 阻止冒泡，似乎无效
 				if(e.state == 'start') {
 					this.touchstart(e)
 				}
@@ -391,6 +399,7 @@
 				if (this.recordCount > 0) {
 					return
 				}
+				
 				this.recordCount += 1
 				var vectorX = e.changedTouches[0].screenX - this.changedTouches[0].screenX
 				var vectorY = e.changedTouches[0].screenY - this.changedTouches[0].screenY
@@ -401,24 +410,28 @@
 					if(this.contentOffsetX < 2 && vectorX > 0) {
 						// console.log('绑定父组件')
 						this.isBindParent = true
-						this.$emit('bindparent', {changedTouches: this.changedTouches,subSwiper: this.swiper})
+						if(this.isBindParent == true) {
+							this.$emit('bindparent', {changedTouches: this.changedTouches,subSwiper: this.swiper})
+						}
+						
 						return				
 					}
 					else if((this.contentOffsetX == this.realScreenWidth * (this.pageList.length - 1)) && this.hasHidePage == false && vectorX < 0) {
 						// console.log('绑定父组件')
 						this.isBindParent = true
-						this.$emit('bindparent', {changedTouches: this.changedTouches,subSwiper: this.swiper})
+						if(this.isBindParent == true) {
+							this.$emit('bindparent', {changedTouches: this.changedTouches,subSwiper: this.swiper})
+						}
 						return
 					}
 					else{
-						this.isBindParent = false
 						this.bindPan()
 					}					
 				}
 			},
 			touchstart: function(e) {
 				this.unbindAll()
-
+				this.isBindParent = false
 				// 记录触摸开始位置和触摸指（支持多点触摸）
 				var identifier = e.changedTouches[0].identifier
 				var screenX = e.changedTouches[0].screenX
@@ -463,7 +476,10 @@
 						if(this.isBindParent) {
 							this.$emit('parentbindTiming',speed, deltaX, deltaY)
 						}
-						this.bindTiming(speed, deltaX, deltaY)
+						else {
+							this.bindTiming(speed, deltaX, deltaY)
+						}
+						
 						break
 					}
 				}
@@ -471,13 +487,13 @@
 			},
 			bindTiming: function(speed, deltaX, deltaY) {
 				// console.log(speed)
-				if (speed > 0.5 && (this.contentOffsetX % this.realScreenWidth) !== 0 && !this.isBindParent) {
+				if (speed > 0.7 && (this.contentOffsetX % this.realScreenWidth) !== 0 && !this.isBindParent) {
 
 					if (deltaX > 0) {
 						let changeBy = this.startContentOffsetX + this.realScreenWidth - this.contentOffsetX
 						let anmDuration = this.getDuration(speed)
 
-						// console.log('加速下一屏', anmDuration, speed)
+						// console.log('加速下一屏', anmDuration, speed, this.swiper)
 						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
 							if (e.state !== 'start') {
 								this.pageChange()
@@ -529,6 +545,7 @@
 				return this.anmToken
 			},
 			transition: function(duration, el, changeBy, callback) {
+				console.log(el)
 				let easingFunction = 'easeOutQuart'
 				var expression = `${easingFunction}(t,${this.contentOffsetX},${changeBy},${duration})`
 				this.anmToken = BindingX.bind({
