@@ -45,8 +45,8 @@ else{
 	var screenWidthPx = system.windowWidth
 }
 // #endif
-// console.log(system)
-console.log('屏幕宽高，单位px：', screenWidthPx, screenHeightPx)
+console.log(system)
+// console.log('屏幕宽高，单位px：', screenWidthPx, screenHeightPx)
 
 export default {
 	// #ifdef H5

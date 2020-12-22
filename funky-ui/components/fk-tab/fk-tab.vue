@@ -1,46 +1,56 @@
 
 <template>
 	<view class="container">
-		<label>	
-			<fk-transition
-				ref="fab"
-				:show="true"
-				:elevation="fabElevation" 
-				:blurEffect="fabBlurEffect"
-				:styles="fabStyles"
-				:backgroundColor="fabBackgroundColor"
-				:opacity="fabOpacity"
-			>
-				
-				<slot name="fab"></slot>
-				<view
-					style="position: absolute;bottom: 0px;float: left;"
-					:style="{left: (headFabX - (12 + 3) + 'px')}" 
-					ref="indicator"
-				>
-					<slot name="indicator"></slot>
-				</view>
-			</fk-transition>
-		</label>
-		
-		<label>	
-		<scroller ref="scroller" @scroll="scroll" @horizontalpan="horizontalpan" :scrollable="false" :show-scrollbar="false"
-		 :scrollToBegin="false" :offset-accuracy="0.9" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
-		 style="flex-direction: row;">
+		<fk-transition
+			ref="fab"
+			:show="true"
+			:elevation="fabElevation" 
+			:blurEffect="fabBlurEffect"
+			:styles="fabStyles"
+			:backgroundColor="fabBackgroundColor"
+			:opacity="fabOpacity"
+		>
 			
-			<view style="flex-direction: row;background-color: #0d0c0d;">
-				<view v-if="hasHidePage" @touchstart="checkPage(0)" ref='page-hide' id='page-hide'>
-					<slot name="hidePage"></slot>
-				</view>
-				
-				<view v-for="(item,index) in pageList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + (hasHidePage ? 1 : 0))"
-				 :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
-					<slot :name="'mainPage'+index"></slot>
-				</view>
+			<slot name="fab"></slot>
+			<view
+				style="position: absolute;bottom: 0px;float: left;"
+				:style="{left: (headFabX - (12 + 3) + 'px')}" 
+				ref="indicator"
+			>
+				<slot name="indicator"></slot>
 			</view>
-
+		</fk-transition>
+		
+		<scroller v-if="!touchMode" ref="scroller" @scroll="scroll" @horizontalpan="horizontalpan" :scrollable="false" :show-scrollbar="false"
+		 :scrollToBegin="false" :offset-accuracy="0" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
+		 style="flex-direction: row;background-color: #0d0c0d;">
+			
+			<view v-if="hasHidePage" @touchstart="checkPage(0)" ref='page-hide' id='page-hide'>
+				<slot name="hidePage"></slot>
+			</view>
+			
+			<view v-for="(item,index) in pageList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + (hasHidePage ? 1 : 0))"
+			 :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
+				<slot :name="'mainPage'+index"></slot>
+			</view>
+			
 		</scroller>
-		</label>
+		
+		<scroller v-if="touchMode" ref="scroller" @scroll="scroll" @touchstart="touchstart" @touchend="touchend" @touchmove="panmove" :scrollable="false" :show-scrollbar="false"
+		 :scrollToBegin="false" :offset-accuracy="0" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
+		 style="flex-direction: row;background-color: #0d0c0d;">
+			
+			<view v-if="hasHidePage" @touchstart="checkPage(0)" ref='page-hide' id='page-hide'>
+				<slot name="hidePage"></slot>
+			</view>
+			
+			<view v-for="(item,index) in pageList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + (hasHidePage ? 1 : 0))"
+			 :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
+				<slot :name="'mainPage'+index"></slot>
+			</view>
+			
+		</scroller>
+		
 	</view>
 </template>
 
@@ -71,6 +81,13 @@
 					return []
 				}
 			},
+			parentId: {
+				default: ''
+			},
+			touchMode: {
+				type: Boolean,
+				default: false
+			},
 			defaultPageId: {
 				type: String,
 				default: ""
@@ -87,7 +104,8 @@
 						'justifyContent': 'space-around',
 						'alignItems': 'center',
 						'flexDirection': 'row',
-						'width': '350px'
+						'width': '350px',
+						'position': 'relative'
 					}
 				}
 			},
@@ -141,7 +159,8 @@
 				headFabX: 0,
 				endFabX: 0,
 				recordCount: 0,
-				currentPage: 0
+				currentPage: 0,
+				isBindParent: false
 			}
 		},
 		created() {			
@@ -201,6 +220,21 @@
 			
 		},
 		methods: {
+			unbindAll: function() {
+				// 取消之前全部绑定，实现在timing过程中能够点击停止
+				if (screenInfo.system.platform == 'ios') {
+					// BindingX.unbind({token:this.anmToken.token,eventType:'timing'})
+					// BindingX.unbind({token:this.panToken.token,eventType:'pan'})
+					BindingX.unbindAll()
+					// 再次绑定scroller的scroll事件
+					this.bindTap()
+				} else {
+					// BindingX.unbind({token:this.anmToken.token,eventType:'timing'})
+					// BindingX.unbind({token:this.panToken.token,eventType:'pan'})
+					BindingX.unbindAll()
+					// 安卓端的unbindAll不会取消scroll事件的绑定，无需再次绑定
+				}
+			},
 			bindTap: function() {
 				var props = []
 				
@@ -261,26 +295,31 @@
 				}))
 
 			},
-			bindPan: function() {
+			bindPan: function(id) {
 				// binding pan
+				var swiper = this.swiper
+				if(id !== undefined){
+					swiper = id
+				}
+				var panExpression = ''
 				if (screenInfo.system.platform == 'ios') {
-					var maxDeltaX = this.screenWidthPx
-					var expression = `${this.contentOffsetX} - x * (750 / ${maxDeltaX})`
+					var maxDeltaX = this.screenWidthPx * 0.5
+					panExpression = `${this.contentOffsetX} - x * (750 / ${this.screenWidthPx})`
 				} else {
-					var expression = `${this.contentOffsetX} - x`
+					panExpression = `${this.contentOffsetX} - x`
 				}
 				// 准备绑定pan事件
 				BindingX.prepare({
 					eventType: 'pan',
-					anchor: this.swiper
+					anchor: swiper
 				})
 				this.panToken = BindingX.bind({
 						eventType: 'pan',
-						anchor: this.swiper,
+						anchor: swiper,
 						props: [{
 								element: this.swiper,
 								property: 'scroll.contentOffsetX',
-								expression: expression
+								expression: panExpression
 							}
 						]
 					},
@@ -305,9 +344,9 @@
 				} else if (speed > 2) {
 					anmDuration = 300
 				} else if (speed > 1 && speed < 2) {
-					anmDuration = 400
+					anmDuration = 350
 				} else {
-					anmDuration = 500
+					anmDuration = 450
 				}
 				return anmDuration
 			},
@@ -320,6 +359,8 @@
 				// console.log(this.contentOffsetX)
 			},
 			checkPage: function(index) {
+				this.$emit('unbindAll')
+				this.unbindAll()
 				let touchPageContentOffset = Math.abs(index * this.realScreenWidth)
 				let scrollDistance = Math.abs(touchPageContentOffset - this.contentOffsetX)
 				if (scrollDistance > 0) {
@@ -334,9 +375,8 @@
 				// console.log(this.startContentOffsetX)
 			},
 			horizontalpan: function(e) {
-				this.$emit('horizontalpan',e)
 				// console.log(e)
-				// e.stopPropagation() // 阻止冒泡无效
+				// e.stopPropagation() // 阻止冒泡，似乎无效
 				if(e.state == 'start') {
 					this.touchstart(e)
 				}
@@ -359,33 +399,25 @@
 
 				if (deltaX > deltaY) {
 					if(this.contentOffsetX < 2 && vectorX > 0) {
-						this.$emit('bindparent', {e: e,touch: this.changedTouches})
+						// console.log('绑定父组件')
+						this.isBindParent = true
+						this.$emit('bindparent', {changedTouches: this.changedTouches,subSwiper: this.swiper})
 						return				
 					}
 					else if((this.contentOffsetX == this.realScreenWidth * (this.pageList.length - 1)) && this.hasHidePage == false && vectorX < 0) {
-						this.$emit('bindparent', {e: e,touch: this.changedTouches})
+						// console.log('绑定父组件')
+						this.isBindParent = true
+						this.$emit('bindparent', {changedTouches: this.changedTouches,subSwiper: this.swiper})
 						return
 					}
 					else{
+						this.isBindParent = false
 						this.bindPan()
 					}					
 				}
 			},
 			touchstart: function(e) {
-				// 取消之前全部绑定，实现在timing过程中能够点击停止
-				if (screenInfo.system.platform == 'ios') {
-					BindingX.unbind({token:this.anmToken.token,eventType:'timing'})
-					BindingX.unbind({token:this.panToken.token,eventType:'pan'})
-					// BindingX.unbindAll()
-					// 再次绑定scroller的scroll事件
-					// this.bindTap()
-				} else {
-					BindingX.unbind({token:this.anmToken.token,eventType:'timing'})
-					BindingX.unbind({token:this.panToken.token,eventType:'pan'})
-					// BindingX.unbind()
-					// BindingX.unbindAll()
-					// 安卓端的unbindAll不会取消scroll事件的绑定，无需再次绑定
-				}
+				this.unbindAll()
 
 				// 记录触摸开始位置和触摸指（支持多点触摸）
 				var identifier = e.changedTouches[0].identifier
@@ -428,15 +460,18 @@
 						var speedY = Math.abs(deltaY) / duration
 						var speed = speedX
 
-						this.changePage(speed, deltaX, deltaY)
+						if(this.isBindParent) {
+							this.$emit('parentbindTiming',speed, deltaX, deltaY)
+						}
+						this.bindTiming(speed, deltaX, deltaY)
 						break
 					}
 				}
 				this.changedTouches = []
 			},
-			changePage: function(speed, deltaX, deltaY) {
+			bindTiming: function(speed, deltaX, deltaY) {
 				// console.log(speed)
-				if (speed > 0.5 && (this.contentOffsetX % this.realScreenWidth) !== 0) {
+				if (speed > 0.5 && (this.contentOffsetX % this.realScreenWidth) !== 0 && !this.isBindParent) {
 
 					if (deltaX > 0) {
 						let changeBy = this.startContentOffsetX + this.realScreenWidth - this.contentOffsetX
@@ -491,11 +526,12 @@
 						}
 					}
 				}
+				return this.anmToken
 			},
 			transition: function(duration, el, changeBy, callback) {
 				let easingFunction = 'easeOutQuart'
 				var expression = `${easingFunction}(t,${this.contentOffsetX},${changeBy},${duration})`
-				let token = BindingX.bind({
+				this.anmToken = BindingX.bind({
 					eventType: 'timing',
 					exitExpression: {
 						origin: `t>${duration}`
@@ -506,7 +542,6 @@
 						expression: expression
 					}]
 				}, callback)
-				this.anmToken = token
 				return this.anmToken
 			},
 			scrollToPage: function(pageId) {
@@ -515,6 +550,7 @@
 					offset: 0,
 					animated: true
 				})
+				setTimeout(()=>{this.pageChange()},400)				
 			},
 			pageChange: function() {
 				if(this.hasHidePage){

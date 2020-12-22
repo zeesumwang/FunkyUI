@@ -65,7 +65,7 @@
 				
 			</view>			
 		</view>
-		<fk-tab :pageList="pageList" @bindparent="bindParent" @horizontalpan="horizontalpan">
+		<fk-tab ref="subTab" :pageList="pageList" @bindparent="bindparent" @parentbindTiming="parentbindTiming">
 			<template v-slot:fab>
 				<view v-for="(item, index) in pageList" :key="item.id" :id="item.id" :ref="item.id" :style="{opacity: index == 0 ? 1 : 0.2}">
 					<text>{{item.text}}</text>
@@ -132,14 +132,15 @@
 					this.isRefresh = false
 				}, 2000)
 			},
-			bindParent: function(e) {
-				// uni.$emit('bindparent')
-				// this.$parent.touchstart({changedTouches: e.touch})
-				// this.$parent.bindPan()
-				// console.log(this.$parent.swiper)
+			bindparent: function(e) {
+				console.log("bindParent")
+				this.$parent.bindPan(e.subSwiper)
 			},
-			horizontalpan: function(e) {
-				// this.$parent.horizontalpan(e)
+			parentbindTiming: function(speed, deltaX, deltaY) {	
+				this.$parent.bindTiming(speed, deltaX, deltaY)
+			},
+			unbindSubTab: function() {
+				this.$refs.subTab.unbindAll()
 			}
 		}
 	}
