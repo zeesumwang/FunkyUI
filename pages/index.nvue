@@ -4,7 +4,7 @@
 		<fk-tab 
 			ref="main-tab" 
 			@pageChange="pageChange" 
-			@unbindAll="unbindSubTab"
+			@unbindSubTabTiming="unbindSubTabTiming"
 			:pageList="fabList"
 			:defaultPageId="'home'"
 			:hasHidePage="true"
@@ -157,12 +157,11 @@
 			this.videoData = testData.videoData
 		},
 		created() {
-			var fabHeight = 0
 			if(screenInfo.system.platform == 'ios') {
-				fabHeight = screenInfo.system.safeAreaInsets.bottom
+				var fabHeight = screenInfo.system.safeAreaInsets.bottom
 			}
 			else{
-				fabHeight = this.statusBarHeight
+				var fabHeight = this.statusBarHeight
 			}
 			var fabMaxTranslateY = fabHeight * 3
 			this.bindFabExpression = `${fabMaxTranslateY} * (x < ${screenInfo.realScreenWidth} ? (1 - x / ${screenInfo.realScreenWidth}) : 0)`
@@ -204,9 +203,9 @@
 					return e.ref
 				}
 			},
-			unbindSubTab: function(e) {
-				this.$refs.msgPage.unbindSubTab(e)
-				this.$refs.userPage.unbindSubTab(e)
+			unbindSubTabTiming: function(parentContentOffsetX) {
+				this.$refs.msgPage.unbindSubTabTiming(parentContentOffsetX)
+				this.$refs.userPage.unbindSubTabTiming(parentContentOffsetX)
 			}
 		}
 	};

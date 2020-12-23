@@ -65,7 +65,7 @@
 				
 			</view>			
 		</view>
-		<fk-tab ref="subTab" :pageList="pageList" @bindparent="bindparent" @unbindparent="unbindparent" @parentbindTiming="parentbindTiming">
+		<fk-tab ref="subTab" :pageList="pageList" @bindParentScroll="bindParentScroll" @bindParentTiming="bindParentTiming" @unbindParentTiming="unbindParentTiming">
 			<template v-slot:fab>
 				<view v-for="(item, index) in pageList" :key="item.id" :id="item.id" :ref="item.id" :style="{opacity: index == 0 ? 1 : 0.2}">
 					<text>{{item.text}}</text>
@@ -126,27 +126,66 @@
 			this.statusBarHeight = screenInfo.system.statusBarHeight
 		},
 		methods: {
+			deepClone: function(target) {
+			    // 定义一个变量
+			    let result;
+			    // 如果当前需要深拷贝的是一个对象的话
+			    if (typeof target === 'object') {
+			    // 如果是一个数组的话
+			        if (Array.isArray(target)) {
+			            result = []; // 将result赋值为一个数组，并且执行遍历
+			            for (let i in target) {
+			                // 递归克隆数组中的每一项
+			                result.push(this.deepClone(target[i]))
+			            }
+			         // 判断如果当前的值是null的话；直接赋值为null
+			        } else if(target===null) {
+			            result = null;
+			         // 判断如果当前的值是一个RegExp对象的话，直接赋值    
+			        } else if(target.constructor===RegExp){
+			            result = target;
+			        }else {
+			         // 否则是普通对象，直接for in循环，递归赋值对象的所有值
+			            result = {};
+			            for (let i in target) {
+			                result[i] = this.deepClone(target[i]);
+			            }
+			        }
+			     // 如果不是对象的话，就是基本数据类型，那么直接赋值
+			    } else {
+			        result = target;
+			    }
+			     // 返回最终结果
+			    return result;
+			},
 			refreshing: function() {
 				this.isRefresh = true
 				setTimeout(() => {
 					this.isRefresh = false
 				}, 2000)
 			},
-			bindparent: function(e) {
-				// console.log("bindParent")
+			bindParentScroll: function(e) {
+				// console.log("bindParentScroll")
 				this.$parent.bindPan(e.subSwiper)
+				if(screenInfo.system.platform === 'ios') {
+					// this.$parent.bindTap(e.subSwiper)
+				}				
 			},
-			unbindparent: function() {
-				console.log("unbindParent")
-				// this.$parent.bindTiming(0, deltaX, 0)
-				this.$parent.changedTouches = []
-			},
-			parentbindTiming: function(speed, deltaX, deltaY) {	
-				// console.log("bindparentbindTiming")
+			bindParentTiming: function(speed, deltaX, deltaY) {	
+				console.log("bindbindParentTiming")
+				// console.log(this.$parent.anmToken)
 				this.$parent.bindTiming(speed, deltaX, deltaY)
+				// console.log(this.$parent.anmToken)
 			},
-			unbindSubTab: function(e) {
-				this.$refs.subTab.unbindAll(e)
+			unbindParentTiming: function() {	
+				console.log("unbindbindParentTiming")
+				this.$parent.unbindTiming()
+			},
+			unbindSubTabTiming: function(parentContentOffsetX) {
+				// console.log("unbindSubTabTiming")
+				this.$refs.subTab.unbindPan()
+				this.$refs.subTab.unbindTiming()
+				this.$refs.subTab.setParentContentOffsetX(parentContentOffsetX)
 				this.$refs.subTab.isBindParent = true
 			}
 		}

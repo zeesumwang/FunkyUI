@@ -25,26 +25,26 @@
 		 :scrollToBegin="false" :offset-accuracy="0" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
 		 style="flex-direction: row;background-color: #0d0c0d;">
 			
-			<view v-if="hasHidePage" @touchstart="checkPage(0)" ref='page-hide' id='page-hide'>
+			<view v-if="hasHidePage" @touchstart.stop="checkPage($event,0)" ref='page-hide' id='page-hide'>
 				<slot name="hidePage"></slot>
 			</view>
 			
-			<view v-for="(item,index) in pageList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + (hasHidePage ? 1 : 0))"
+			<view v-for="(item,index) in pageList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart.stop="checkPage($event,index + (hasHidePage ? 1 : 0))"
 			 :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
 				<slot :name="'mainPage'+index"></slot>
 			</view>
 			
 		</scroller>
 		
-		<scroller v-if="touchMode" ref="scroller" @scroll="scroll" @touchstart="touchstart" @touchend="touchend" @touchmove="panmove" :scrollable="false" :show-scrollbar="false"
+		<scroller v-if="touchMode" ref="scroller" @scroll="scroll" @touchstart.stop="touchstart" @touchend="touchend" @touchmove="panmove" :scrollable="false" :show-scrollbar="false"
 		 :scrollToBegin="false" :offset-accuracy="0" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
 		 style="flex-direction: row;background-color: #0d0c0d;">
 			
-			<view v-if="hasHidePage" @touchstart="checkPage(0)" ref='page-hide' id='page-hide'>
+			<view v-if="hasHidePage" @touchstart.stop="checkPage($event,0)" ref='page-hide' id='page-hide'>
 				<slot name="hidePage"></slot>
 			</view>
 			
-			<view v-for="(item,index) in pageList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage(index + (hasHidePage ? 1 : 0))"
+			<view v-for="(item,index) in pageList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart.stop="checkPage($event,index + (hasHidePage ? 1 : 0))"
 			 :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
 				<slot :name="'mainPage'+index"></slot>
 			</view>
@@ -138,7 +138,11 @@
 			bindFabExpression: {
 				type: String,
 				default: ''
-			},			
+			},
+			easingFunction: {
+				type: String,
+				default: 'easeOutQuart'
+			}
 		},
 		data() {
 			return {
@@ -154,7 +158,7 @@
 				contentOffsetX: 0,
 				panToken: 0,
 				scrollToken: 0,
-				anmToken: 0,
+				anmToken: {},
 				isRefresh: false,
 				headFabX: 0,
 				endFabX: 0,
@@ -171,7 +175,7 @@
 			this.screenWidthPx = screenInfo.screenWidthPx
 			this.statusBarHeight = screenInfo.system.statusBarHeight
 
-			if (screenInfo.system.platform !== 'ios') {
+			if (this.platform !== 'ios') {
 				this.realScreenWidth = this.screenWidthPx
 				if(this.hasHidePage){
 					this.contentOffsetX = this.screenWidthPx
@@ -221,24 +225,100 @@
 			
 		},
 		methods: {
-			unbindAll: function(e) {
-				this.parentContentOffsetX = 0
+			getEl: function(e) {
+				if (typeof(e[0]) == 'object') {
+					return e[0].ref
+				} else {
+					return e.ref
+				}
+			},
+			getDuration: function(speed) {
+				let anmDuration = 0
+				if (speed > 3) {
+					anmDuration = 200
+				} else if (speed > 2) {
+					anmDuration = 300
+				} else if (speed > 1 && speed < 2) {
+					anmDuration = 400
+				} else {
+					anmDuration = 500
+				}
+				return anmDuration
+			},
+			scroll: function(e) {
+				if (this.platform == 'ios') {
+					this.contentOffsetX = Math.ceil(Math.abs(e.contentOffset.x)) * (750 / this.screenWidthPx)
+				} else {
+					this.contentOffsetX = Math.ceil(Math.abs(e.contentOffset.x))
+				}
+				// console.log(this.contentOffsetX)
+			},
+			checkPage: function(e,index) {
+				// this.unbindTiming()
+				e.stopPropagation() // 阻止冒泡，似乎无效
+				
+				let touchPageContentOffset = Math.abs(index * this.realScreenWidth)
+				let scrollDistance = Math.abs(touchPageContentOffset - this.contentOffsetX)
+				if (scrollDistance > 0) {
+					if (this.contentOffsetX % this.realScreenWidth > this.realScreenWidth * 0.5) {
+						this.startContentOffsetX = (Math.floor(this.contentOffsetX / this.realScreenWidth) + 1) * this.realScreenWidth
+					} else {
+						this.startContentOffsetX = Math.floor(this.contentOffsetX / this.realScreenWidth) * this.realScreenWidth
+					}
+				} else {
+					this.startContentOffsetX = touchPageContentOffset
+				}
+				// console.log(this.startContentOffsetX)
+			},
+			setParentContentOffsetX: function(e) {
 				if(e !== undefined) {
 					this.parentContentOffsetX = e
 				}
-				
+			},
+			scrollToPage: function(pageId) {
+				var Element = this.getEl(this.$refs[pageId])
+				dom.scrollToElement(Element, {
+					offset: 0,
+					animated: true
+				})
+				setTimeout(()=>{this.pageChange()},400)				
+			},
+			pageChange: function() {
+				if(this.hasHidePage){
+					this.currentPage = Math.floor(this.contentOffsetX / this.realScreenWidth) - 1
+					this.$emit('pageChange', this.currentPage)
+				}
+				else{
+					this.currentPage = Math.floor(this.contentOffsetX / this.realScreenWidth)
+					this.$emit('pageChange', this.currentPage)
+				}
+			},
+			unbindPan: function() {
+				BindingX.unbind({token:this.panToken.token,eventType:'pan'})
+			},
+			unbindTiming: function(token) {
 				// 取消之前全部绑定，实现在timing过程中能够点击停止
-				if (screenInfo.system.platform == 'ios') {
-					// BindingX.unbind({token:this.anmToken.token,eventType:'timing'})
+				if(token !== undefined) {
+					this.anmToken = token
+				}
+				// console.log(this.anmToken)
+				if(this.anmToken.token == undefined) {
+					return
+				}
+				
+				if (this.platform == 'ios') {
+					BindingX.unbind({token:this.anmToken.token,eventType:'timing'})
 					// BindingX.unbind({token:this.panToken.token,eventType:'pan'})
-					BindingX.unbindAll()
+					// BindingX.unbindAll()
 					// 再次绑定scroller的scroll事件
-					this.bindTap()
+					// this.bindTap()
 				} else {
 					// BindingX.unbind({token:this.anmToken.token,eventType:'timing'})
+					// console.log('unbindTiming')
 					// BindingX.unbind({token:this.panToken.token,eventType:'pan'})
 					BindingX.unbindAll()
-					// 安卓端的unbindAll不会取消scroll事件的绑定，无需再次绑定
+					// this.bindTap()
+					// 安卓端的unbindAll()不会取消scroll事件的绑定，无需再次绑定
 				}
 			},
 			bindTap: function() {
@@ -303,14 +383,14 @@
 			},
 			bindPan: function(id) {
 				// binding pan
-				this.$emit('unbindparent')
+				this.parentContentOffsetX = 0
 				this.isBindParent = false
 				var swiper = this.swiper
 				if(id !== undefined){
 					swiper = id
 				}
 				var panExpression = ''
-				if (screenInfo.system.platform == 'ios') {
+				if (this.platform == 'ios') {
 					var maxDeltaX = this.screenWidthPx * 0.5
 					panExpression = `${this.contentOffsetX} - x * (750 / ${this.screenWidthPx})`
 				} else {
@@ -338,53 +418,9 @@
 					})
 				)
 			},
-			getEl: function(e) {			
-				if (typeof(e[0]) == 'object') {
-					return e[0].ref
-				} else {
-					return e.ref
-				}
-			},
-			getDuration: function(speed) {
-				let anmDuration = 0
-				if (speed > 3) {
-					anmDuration = 200
-				} else if (speed > 2) {
-					anmDuration = 300
-				} else if (speed > 1 && speed < 2) {
-					anmDuration = 350
-				} else {
-					anmDuration = 450
-				}
-				return anmDuration
-			},
-			scroll: function(e) {
-				if (screenInfo.system.platform == 'ios') {
-					this.contentOffsetX = Math.ceil(Math.abs(e.contentOffset.x)) * (750 / this.screenWidthPx)
-				} else {
-					this.contentOffsetX = Math.ceil(Math.abs(e.contentOffset.x))
-				}
-				// console.log(this.contentOffsetX)
-			},
-			checkPage: function(index) {
-				this.$emit('unbindAll',this.contentOffsetX)
-				this.unbindAll()
-				let touchPageContentOffset = Math.abs(index * this.realScreenWidth)
-				let scrollDistance = Math.abs(touchPageContentOffset - this.contentOffsetX)
-				if (scrollDistance > 0) {
-					if (this.contentOffsetX % this.realScreenWidth > this.realScreenWidth * 0.5) {
-						this.startContentOffsetX = (Math.floor(this.contentOffsetX / this.realScreenWidth) + 1) * this.realScreenWidth
-					} else {
-						this.startContentOffsetX = Math.floor(this.contentOffsetX / this.realScreenWidth) * this.realScreenWidth
-					}
-				} else {
-					this.startContentOffsetX = touchPageContentOffset
-				}
-				// console.log(this.startContentOffsetX)
-			},
 			horizontalpan: function(e) {
 				// console.log(e)
-				e.stopPropagation() // 阻止冒泡，似乎无效
+				// e.stopPropagation() // 阻止冒泡，似乎无效
 				if(e.state == 'start') {
 					this.touchstart(e)
 				}
@@ -411,26 +447,42 @@
 						// console.log('绑定父组件')
 						this.isBindParent = true
 						if(this.isBindParent == true) {
-							this.$emit('bindparent', {changedTouches: this.changedTouches,subSwiper: this.swiper})
+							this.$emit('bindParentScroll', {subSwiper: this.swiper})
 						}
-						
 						return				
 					}
 					else if((this.contentOffsetX == this.realScreenWidth * (this.pageList.length - 1)) && this.hasHidePage == false && vectorX < 0) {
 						// console.log('绑定父组件')
 						this.isBindParent = true
 						if(this.isBindParent == true) {
-							this.$emit('bindparent', {changedTouches: this.changedTouches,subSwiper: this.swiper})
+							this.$emit('bindParentScroll', {subSwiper: this.swiper})
+						}
+						return
+					}
+					else if(this.parentContentOffsetX % this.realScreenWidth !== 0) {
+						// console.log('绑定父组件')
+						
+						this.isBindParent = true
+						if(this.isBindParent == true) {
+							this.$emit('bindParentScroll', {subSwiper: this.swiper})
 						}
 						return
 					}
 					else{
+						// console.log(this.parentContentOffsetX % this.realScreenWidth)
 						this.bindPan()
 					}					
 				}
 			},
 			touchstart: function(e) {
-				this.unbindAll()
+				this.unbindTiming()
+				this.$emit('unbindParentTiming')
+				
+				this.parentContentOffsetX = 0
+				
+				if(this.contentOffsetX % this.realScreenWidth !== 0) {
+					this.$emit('unbindSubTabTiming',this.contentOffsetX)
+				}
 				this.isBindParent = false
 				// 记录触摸开始位置和触摸指（支持多点触摸）
 				var identifier = e.changedTouches[0].identifier
@@ -474,7 +526,7 @@
 						var speed = speedX
 
 						if(this.isBindParent) {
-							this.$emit('parentbindTiming',speed, deltaX, deltaY)
+							this.$emit('bindParentTiming',speed, deltaX, deltaY)
 						}
 						else {
 							this.bindTiming(speed, deltaX, deltaY)
@@ -485,7 +537,9 @@
 				}
 				this.changedTouches = []
 			},
+			
 			bindTiming: function(speed, deltaX, deltaY) {
+				this.anmToken = {}
 				// console.log(speed)
 				if (speed > 0.7 && (this.contentOffsetX % this.realScreenWidth) !== 0 && !this.isBindParent) {
 
@@ -542,12 +596,14 @@
 						}
 					}
 				}
-				return this.anmToken
 			},
 			transition: function(duration, el, changeBy, callback) {
-				console.log(el)
-				let easingFunction = 'easeOutQuart'
-				var expression = `${easingFunction}(t,${this.contentOffsetX},${changeBy},${duration})`
+				var cubicBezierControl = ''
+				if(this.easingFunction == 'cubicBezier') {
+					cubicBezierControl = ',' + '.382,.618,0,1'
+				}
+				
+				var expression = `${this.easingFunction}(t,${this.contentOffsetX},${changeBy},${duration}${cubicBezierControl})`
 				this.anmToken = BindingX.bind({
 					eventType: 'timing',
 					exitExpression: {
@@ -559,25 +615,7 @@
 						expression: expression
 					}]
 				}, callback)
-				return this.anmToken
-			},
-			scrollToPage: function(pageId) {
-				var Element = this.getEl(this.$refs[pageId])
-				dom.scrollToElement(Element, {
-					offset: 0,
-					animated: true
-				})
-				setTimeout(()=>{this.pageChange()},400)				
-			},
-			pageChange: function() {
-				if(this.hasHidePage){
-					this.currentPage = Math.floor(this.contentOffsetX / this.realScreenWidth) - 1
-					this.$emit('pageChange', this.currentPage)
-				}
-				else{
-					this.currentPage = Math.floor(this.contentOffsetX / this.realScreenWidth)
-					this.$emit('pageChange', this.currentPage)
-				}
+				// console.log(this.anmToken)
 			}
 		}
 	}
