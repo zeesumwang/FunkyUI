@@ -583,7 +583,7 @@
 				}
 			},
 			verticalpan: function(e) {
-				// e.stopPropagation()
+				return
 			}
 		}
 	}

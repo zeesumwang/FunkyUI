@@ -1,6 +1,7 @@
 
 <template>
 	<view class="container">
+		<slot name="header"></slot>
 		<fk-transition
 			ref="fab"
 			:show="true"
@@ -13,8 +14,8 @@
 			
 			<slot name="fab"></slot>
 			<view
-				style="position: absolute;bottom: 0px;float: left;"
-				:style="{left: (headFabX - (12 + 3) + 'px')}" 
+				style="position: absolute;bottom: 0px;"
+				:style="{left: (headFabX - indicatorBias + 'px'),opacity: isBindTab ? 1 : 0}" 
 				ref="indicator"
 			>
 				<slot name="indicator"></slot>
@@ -22,23 +23,22 @@
 		</fk-transition>
 		
 		<scroller v-if="!touchMode" ref="scroller" @scroll="scroll" @horizontalpan="horizontalpan" :scrollable="false" :show-scrollbar="false"
-		 :scrollToBegin="false" :offset-accuracy="0" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
-		 style="flex-direction: row;background-color: #0d0c0d;">
+		 :scrollToBegin="false" :offset-accuracy="0" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: height + 'px',width: width + 'px',backgroundColor: backgroundColor}"
+		 style="flex-direction: row;">
 			
-			<view v-if="hasHidePage" @touchstart.stop="checkPage($event,0)" ref='page-hide' id='page-hide'>
+			<view v-if="hasHidePage" @touchstart="checkPage($event,0)" ref='page-hide' id='page-hide'>
 				<slot name="hidePage"></slot>
 			</view>
 			
-			<view v-for="(item,index) in pageList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart.stop="checkPage($event,index + (hasHidePage ? 1 : 0))"
-			 :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}">
+			<view v-for="(item,index) in pageList" :ref="'page-'+item.id" :id="'page-'+item.id" :key="index" @touchstart="checkPage($event,index + (hasHidePage ? 1 : 0))">
 				<slot :name="'mainPage'+index"></slot>
 			</view>
 			
 		</scroller>
 		
-		<scroller v-if="touchMode" ref="scroller" @scroll="scroll" @touchstart.stop="touchstart" @touchend="touchend" @touchmove="panmove" :scrollable="false" :show-scrollbar="false"
-		 :scrollToBegin="false" :offset-accuracy="0" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}"
-		 style="flex-direction: row;background-color: #0d0c0d;">
+		<!-- <scroller v-if="touchMode" ref="scroller" @scroll="scroll" @touchstart.stop="touchstart" @touchend="touchend" @touchmove="panmove" :scrollable="false" :show-scrollbar="false"
+		 :scrollToBegin="false" :offset-accuracy="0" :scroll-direction="'horizontal'" :pagingEnabled="false" :style="{height: height + 'px',width: width + 'px'}"
+		 style="flex-direction: row;">
 			
 			<view v-if="hasHidePage" @touchstart.stop="checkPage($event,0)" ref='page-hide' id='page-hide'>
 				<slot name="hidePage"></slot>
@@ -49,14 +49,13 @@
 				<slot :name="'mainPage'+index"></slot>
 			</view>
 			
-		</scroller>
+		</scroller> -->
 		
 	</view>
 </template>
 
 <style>
 	.container {
-		flex: 1;
 		justify-content: center;
 		align-items: center;
 	}
@@ -100,7 +99,6 @@
 				type: Object,
 				default () {
 					return {
-						'height': '50px',
 						'justifyContent': 'space-around',
 						'alignItems': 'center',
 						'flexDirection': 'row',
@@ -108,6 +106,10 @@
 						'position': 'relative'
 					}
 				}
+			},
+			backgroundColor: {
+				type: String,
+				default: '#ffffff'
 			},
 			fabBackgroundColor: {
 				type: String,
@@ -125,6 +127,10 @@
 				type: String,
 				default: 'none'
 			},
+			indicatorBias: {
+				type: Number,
+				default: 0
+			},
 			bindProps: {
 				type: Object,
 				default () {
@@ -141,11 +147,20 @@
 			},
 			easingFunction: {
 				type: String,
-				default: 'easeOutQuart'
+				default: 'cubicBezier'
+			},
+			height: {
+				type: Number,
+				default: 350
+			},
+			width: {
+				type: Number,
+				default: 350
 			}
 		},
 		data() {
 			return {
+				isBindTab: false,
 				platform: '',
 				screenHeightPx: 0,
 				screenWidthPx: 0,
@@ -195,21 +210,18 @@
 			
 		},
 		mounted() {
-			setTimeout(() => {
-				if(this.defaultPageId !== ""){
-					var indexElement = this.getEl(this.$refs['page-' + this.defaultPageId])
-					
-					// #ifdef APP-NVUE
-					dom.scrollToElement(indexElement, {
-						offset: 0,
-						animated: true
-					})
-					// #endif
-				}				
+			if(this.defaultPageId !== ""){
+				var indexElement = this.getEl(this.$refs['page-' + this.defaultPageId])
 				
+				// #ifdef APP-NVUE
+				dom.scrollToElement(indexElement, {
+					offset: 0,
+					animated: false
+				})
+				// #endif
+			}				
+			setTimeout(() => {				
 				this.swiper = this.getEl(this.$refs['scroller'])
-				// dom.getComponentRect(this.swiper,(res)=>{console.log(res)})
-				var endFabIndex = this.pageList.length - 1
 				
 				dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani), (res) => {
 					var fabLeft = res.size.left
@@ -223,6 +235,9 @@
 				})
 			}, 100)
 			
+		},
+		updated() {
+			// console.log('updated')
 		},
 		methods: {
 			getEl: function(e) {
@@ -255,7 +270,7 @@
 			},
 			checkPage: function(e,index) {
 				// this.unbindTiming()
-				e.stopPropagation() // 阻止冒泡，似乎无效
+				// e.stopPropagation() // 阻止冒泡，似乎无效
 				
 				let touchPageContentOffset = Math.abs(index * this.realScreenWidth)
 				let scrollDistance = Math.abs(touchPageContentOffset - this.contentOffsetX)
@@ -322,6 +337,7 @@
 				}
 			},
 			bindTap: function() {
+				this.isBindTab = true
 				var props = []
 				
 				// 绑定传入的自定义表达式
@@ -349,6 +365,7 @@
 				// 绑定提示器
 				var indicator = this.getEl(this.$refs['indicator'])
 				var indicatorMaxTranslateX = this.endFabX - this.headFabX
+				// console.log(indicatorMaxTranslateX)
 				var indicatorExpression =
 					`${variable} > ${this.realScreenWidth} ? (${variable} - ${this.realScreenWidth}) * ${indicatorMaxTranslateX / (this.pageList.length - 1)} / ${this.realScreenWidth} : 0`
 
@@ -600,7 +617,7 @@
 			transition: function(duration, el, changeBy, callback) {
 				var cubicBezierControl = ''
 				if(this.easingFunction == 'cubicBezier') {
-					cubicBezierControl = ',' + '.382,.618,0,1'
+					cubicBezierControl = ',' + '.38,.38,.0,1'
 				}
 				
 				var expression = `${this.easingFunction}(t,${this.contentOffsetX},${changeBy},${duration}${cubicBezierControl})`

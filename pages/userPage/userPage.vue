@@ -1,7 +1,9 @@
 <template>
-	<view style="align-items: center;">
+		
+	<view style="align-items: center;flex: 1" :style="{width: screenWidthPx + 'px', height: screenHeightPx + 'px'}">
+		
 		<view :style="{height: statusBarHeight + 'px'}"></view>
-		<view style="height: 280px;border-radius: 5px;filter: blur(3px);" :style="{width: screenWidthPx -40 + 'px'}">
+		<view style="height: 280px;" :style="{width: screenWidthPx -40 + 'px'}">
 			<view style="position: absolute;bottom: 0px;flex-direction: column;" :style="{width: screenWidthPx -40 + 'px'}">
 				<view style="flex-direction: row;justify-content: space-between;" :style="{width: screenWidthPx -40 + 'px'}">
 					<image src="/static/logo.jpg" class="logo">
@@ -65,19 +67,37 @@
 				
 			</view>			
 		</view>
-		<fk-tab ref="subTab" :pageList="pageList" @bindParentScroll="bindParentScroll" @bindParentTiming="bindParentTiming" @unbindParentTiming="unbindParentTiming">
+		
+		<fk-tab ref="subTab" :indicatorBias="16" :backgroundColor="'#0b0b0b'" :fabBackgroundColor="'#0b0b0b'" :height="screenHeightPx - statusBarHeight - 280 - 32 - 3" :width="screenWidthPx" :pageList="pageList" @bindParentScroll="bindParentScroll" @bindParentTiming="bindParentTiming" @unbindParentTiming="unbindParentTiming">
+			
+			<template v-slot:header>
+				
+			</template>
+			
 			<template v-slot:fab>
-				<view v-for="(item, index) in pageList" :key="item.id" :id="item.id" :ref="item.id" :style="{opacity: index == 0 ? 1 : 0.2}">
-					<text>{{item.text}}</text>
+				<view v-for="(item, index) in pageList" :key="item.id" :id="item.id" :ref="item.id" :style="{opacity: index == 0 ? 1 : 0.2}" 
+					style="justify-content: center;align-items: center;height: 32px;width: 100px;">
+					<text style="color: #EBEBEB;font-size: 16px;">{{item.text}}</text>
 				</view>
+			</template>
+			
+			<template v-slot:indicator>
+				<view 
+					style="
+					height: 3px;
+					width: 32px;
+					border-radius: 3px;
+					background-image: linear-gradient(to bottom, #ec7d9c, #ec7d9c);"
+				>						
+				</view>	
 			</template>
 			
 			<template v-slot:mainPage0>
 				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
 				 @refreshing="refreshing">
 					<fk-cell style="justify-content: center;align-items: center;">
-						<view style="height: 250px;background-color: #007AFF;" :style="{width: screenWidthPx -10 + 'px'}">
-							<text style="color: #514f50">???</text>
+						<view style="height: 250px;justify-content: center;align-items: center;" :style="{width: screenWidthPx -10 + 'px'}">
+							<text style="color: #EBEBEB">???</text>
 						</view>
 					</fk-cell>
 				</fk-list>
@@ -87,8 +107,8 @@
 				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
 				 @refreshing="refreshing">
 					<fk-cell style="justify-content: center;align-items: center;">
-						<view style="height: 250px;background-color: #007AFF;" :style="{width: screenWidthPx -10 + 'px'}">
-							<text style="color: #514f50">???</text>
+						<view style="height: 250px;justify-content: center;align-items: center;" :style="{width: screenWidthPx -10 + 'px'}">
+							<text style="color: #EBEBEB">???</text>
 						</view>
 					</fk-cell>
 				</fk-list>
@@ -115,9 +135,9 @@
 					},
 					{
 						id: 'liked',
-						text: '点赞'
+						text: '收藏'
 					}
-				]
+				]				
 			}
 		},
 		created() {
@@ -167,18 +187,18 @@
 			bindParentScroll: function(e) {
 				// console.log("bindParentScroll")
 				this.$parent.bindPan(e.subSwiper)
-				if(screenInfo.system.platform === 'ios') {
+				// if(screenInfo.system.platform === 'ios') {
 					// this.$parent.bindTap(e.subSwiper)
-				}				
+				// }				
 			},
 			bindParentTiming: function(speed, deltaX, deltaY) {	
-				console.log("bindbindParentTiming")
+				// console.log("bindbindParentTiming")
 				// console.log(this.$parent.anmToken)
 				this.$parent.bindTiming(speed, deltaX, deltaY)
 				// console.log(this.$parent.anmToken)
 			},
 			unbindParentTiming: function() {	
-				console.log("unbindbindParentTiming")
+				// console.log("unbindbindParentTiming")
 				this.$parent.unbindTiming()
 			},
 			unbindSubTabTiming: function(parentContentOffsetX) {
@@ -187,6 +207,9 @@
 				this.$refs.subTab.unbindTiming()
 				this.$refs.subTab.setParentContentOffsetX(parentContentOffsetX)
 				this.$refs.subTab.isBindParent = true
+			},
+			horizontalpan: function(e) {
+				return			
 			}
 		}
 	}

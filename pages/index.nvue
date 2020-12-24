@@ -12,9 +12,13 @@
 			:bindFabProperty="bindFabProperty" 
 			:fabStyles="fabStyles"
 			:fabBackgroundColor="'#1e1e1e'"
+			:backgroundColor="'#0b0b0b'"
 			:fabOpacity="0.96"
 			:fabBlurEffect="'dark'"
 			:fabElevation="10"
+			:height="screenHeightPx"
+			:width="screenWidthPx"
+			:indicatorBias="15"
 		>
 			<template v-slot:fab>
 				<view
@@ -52,16 +56,7 @@
 			</template>
 			
 			<template v-slot:mainPage0>
-				<view :style="{height: statusBarHeight + 'px'}"></view>
-				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
-				 @refreshing="refreshing">
-					<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
-						<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #252626;"
-						 :style="{width: screenWidthPx -10 + 'px'}">
-							<text style="color: #ebebeb">{{item}}</text>
-						</view>
-					</fk-cell>
-				</fk-list>
+				<jg></jg>
 			</template>
 			
 			<template v-slot:mainPage1>
@@ -107,10 +102,12 @@
 	import testData from "@/test_data/data.js"
 	
 	import userPage from "@/pages/userPage/userPage"
+	import jg from "@/pages/jg/jg"
 	
 	export default {
 		components: {
-			userPage
+			userPage,
+			jg
 		},
 		data() {
 			return {
