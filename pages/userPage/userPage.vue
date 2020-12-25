@@ -77,6 +77,7 @@
 			:width="screenWidthPx" 
 			:pageList="pageList" 
 			:touchMode="true"
+			:defaultPageId="'mine'"
 			@stopPropagation="stopPropagation"
 			@bindParentScroll="bindParentScroll" 
 			@bindParentTiming="bindParentTiming" 

@@ -36,7 +36,7 @@
 			:style="{height: height + 'px',width: width + 'px',backgroundColor: backgroundColor}"
 			style="flex-direction: row;">
 			
-			
+			<view style="width: 100px;height: 100px;"></view>
 			
 			<view v-if="hasHidePage" @touchstart="checkPageStart($event,0)" ref='page-hide' id='page-hide'>
 				<slot name="hidePage"></slot>
@@ -53,6 +53,7 @@
 				<slot :name="'mainPage'+index"></slot>
 			</view>
 			
+			<view style="width: 100px;height: 100px;"></view>
 		</scroller>
 		
 		<!-- <scroller v-if="touchMode" ref="scroller" @scroll="scroll" @horizontalpan="horizontalpanTouchMode" @touchstart="touchstart" :scrollable="false" :show-scrollbar="false"
@@ -206,7 +207,9 @@
 				parentContentOffsetX: 0,
 				lastUnbindAnmToken: '',
 				stopPropagation: false,
-				isHorizontalpan: false
+				isHorizontalpan: false,
+				scrollerBias: 0,
+				pageCount: 0
 			}
 		},
 		created() {			
@@ -233,7 +236,13 @@
 					this.contentOffsetX = 0
 				}
 			}
-			
+			this.scrollerBias = 100/this.screenWidthPx * this.realScreenWidth
+			if(this.hasHidePage == true) {
+				this.pageCount = this.pageList.length + 1
+			}
+			else{
+				this.pageCount = this.pageList.length
+			}
 		},
 		mounted() {
 			if(this.defaultPageId !== ""){
@@ -292,6 +301,7 @@
 				} else {
 					this.contentOffsetX = Math.ceil(Math.abs(e.contentOffset.x))
 				}
+				
 				// console.log(this.contentOffsetX)
 			},			
 			setParentContentOffsetX: function(e) {
@@ -309,11 +319,11 @@
 			},
 			pageChange: function() {
 				if(this.hasHidePage){
-					this.currentPage = Math.floor(this.contentOffsetX / this.realScreenWidth) - 1
+					this.currentPage = Math.floor((this.contentOffsetX - this.scrollerBias) / this.realScreenWidth) - 1
 					this.$emit('pageChange', this.currentPage)
 				}
 				else{
-					this.currentPage = Math.floor(this.contentOffsetX / this.realScreenWidth)
+					this.currentPage = Math.floor((this.contentOffsetX - this.scrollerBias) / this.realScreenWidth)
 					this.$emit('pageChange', this.currentPage)
 				}
 			},
@@ -367,9 +377,9 @@
 				}
 				
 				// 根据是否有负一屏设置x的偏移
-				var variable = `x`
+				var variable = `x - ${this.scrollerBias}`
 				if(!this.hasHidePage) {
-					variable = `x + ${this.realScreenWidth}`
+					variable = `x - ${this.scrollerBias} + ${this.realScreenWidth}`
 				}
 				
 				// 绑定提示器
@@ -410,18 +420,21 @@
 			},
 			bindPan: function(id) {
 				// binding pan
+				console.log('bindingPan')
 				this.parentContentOffsetX = 0
 				this.isBindParent = false
 				var swiper = this.swiper
 				if(id !== undefined){
 					swiper = id
 				}
+				console.log(this.pageCount,this.realScreenWidth * this.pageCount + this.scrollerBias,this.contentOffsetX)
 				var panExpression = ''
+				var bounceBiasExp = `${this.contentOffsetX} >= ${this.scrollerBias} && ${this.contentOffsetX} <= ${this.scrollerBias} + ${this.realScreenWidth} * ${this.pageCount}`
 				if (this.platform == 'ios') {
 					var maxDeltaX = this.screenWidthPx * 0.5
-					panExpression = `${this.contentOffsetX} - x * (750 / ${this.screenWidthPx})`
+					panExpression = `${bounceBiasExp} ? (${this.contentOffsetX} - x * (750 / ${this.screenWidthPx})) : ${this.contentOffsetX} - 0`
 				} else {
-					panExpression = `${this.contentOffsetX} - x`
+					panExpression = `${bounceBiasExp} ? (${this.contentOffsetX} - x) : ${this.contentOffsetX} - 0`
 				}
 				// 准备绑定pan事件
 				BindingX.prepare({
@@ -474,20 +487,21 @@
 				this.stopPropagation = false
 				this.parentContentOffsetX = 0
 				
-				if(this.contentOffsetX % this.realScreenWidth !== 0) {
-					this.$emit('setParentContentOffsetX',this.contentOffsetX)
+				if((this.contentOffsetX - this.scrollerBias) % this.realScreenWidth !== 0) {
+					this.$emit('setParentContentOffsetX',this.contentOffsetX - this.scrollerBias)
 				}
 				let touchPageContentOffset = Math.abs(index * this.realScreenWidth)
 				let scrollDistance = Math.abs(touchPageContentOffset - this.contentOffsetX)
 				if (scrollDistance > 0) {
-					if (this.contentOffsetX % this.realScreenWidth > this.realScreenWidth * 0.5) {
-						this.startContentOffsetX = (Math.floor(this.contentOffsetX / this.realScreenWidth) + 1) * this.realScreenWidth
+					if ((this.contentOffsetX - this.scrollerBias) % this.realScreenWidth > this.realScreenWidth * 0.5) {
+						this.startContentOffsetX = (Math.floor((this.contentOffsetX - this.scrollerBias) / this.realScreenWidth) + 1) * this.realScreenWidth
 					} else {
-						this.startContentOffsetX = Math.floor(this.contentOffsetX / this.realScreenWidth) * this.realScreenWidth
+						this.startContentOffsetX = Math.floor((this.contentOffsetX - this.scrollerBias) / this.realScreenWidth) * this.realScreenWidth
 					}
 				} else {
 					this.startContentOffsetX = touchPageContentOffset
 				}
+				this.startContentOffsetX += this.scrollerBias
 				// console.log(this.startContentOffsetX)
 			},
 			checkPageCancel: function(e) {
@@ -556,7 +570,7 @@
 				var deltaY = Math.abs(vectorY)
 			
 				if (deltaX > deltaY) {
-					if(this.contentOffsetX < 2 && vectorX > 0) {
+					if(this.contentOffsetX <= this.scrollerBias + 2 && vectorX > 0) {
 						// console.log('绑定父组件')
 						this.isBindParent = true
 						if(this.isBindParent == true) {
@@ -564,7 +578,7 @@
 						}
 						return				
 					}
-					else if((this.contentOffsetX == this.realScreenWidth * (this.pageList.length - 1)) && this.hasHidePage == false && vectorX < 0) {
+					else if((this.contentOffsetX >= this.realScreenWidth * this.pageCount + this.scrollerBias - 2) && vectorX < 0) {
 						// console.log('绑定父组件')
 						this.isBindParent = true
 						if(this.isBindParent == true) {
@@ -620,8 +634,10 @@
 			bindTiming: function(speed, deltaX, deltaY) {
 				this.anmToken = {}
 				// console.log(speed)
-				if (speed > 0.5 && (this.contentOffsetX % this.realScreenWidth) !== 0 && !this.isBindParent) {
-
+				var isBounce = (this.contentOffsetX <= this.scrollerBias || this.contentOffsetX >= this.realScreenWidth * this.pageCount + this.scrollerBias)
+				console.log(isBounce)
+				if (speed > 0.5 && ((this.contentOffsetX - this.scrollerBias) % this.realScreenWidth) !== 0 && !this.isBindParent && !isBounce) {
+					
 					if (deltaX > 0) {
 						let changeBy = this.startContentOffsetX + this.realScreenWidth - this.contentOffsetX
 						let anmDuration = this.getDuration(speed)
@@ -632,7 +648,8 @@
 								this.pageChange()
 							}
 						}))
-					} else if (deltaX < 0) {
+					} 
+					else if (deltaX < 0) {
 						let changeBy = -(this.contentOffsetX - (this.startContentOffsetX - this.realScreenWidth))
 						let anmDuration = this.getDuration(speed)
 						// console.log('加速上一屏', anmDuration, speed)
@@ -645,35 +662,35 @@
 				} else {
 					var deltaX = this.contentOffsetX - this.startContentOffsetX
 
-					var contentWidth = this.realScreenWidth * 4
-					if (this.contentOffsetX >= 0 && this.contentOffsetX <= contentWidth) {
-						if (Math.abs(deltaX) > this.realScreenWidth * 0.5) {
-							if (deltaX > 0) {
-								// console.log('下一屏')
-								let changeBy = this.startContentOffsetX + this.realScreenWidth - this.contentOffsetX
-								let anmDuration = this.getDuration(speed)
-								this.transition(anmDuration, this.swiper, changeBy, ((e) => {
-									if (e.state !== 'start') {
-										this.pageChange()
-									}
-								}))
-							} else {
-								// console.log('上一屏')
-								let changeBy = -(this.contentOffsetX - (this.startContentOffsetX - this.realScreenWidth))
-								let anmDuration = this.getDuration(speed)
-								this.transition(anmDuration, this.swiper, changeBy, ((e) => {
-									if (e.state !== 'start') {
-										this.pageChange()
-									}
-								}))
-							}
-						} else {
-							// console.log('回弹')
-							let changeBy = -deltaX
+					var contentWidth = this.realScreenWidth * this.pageCount
+					
+					if (Math.abs(deltaX) > this.realScreenWidth * 0.5) {
+						if (deltaX > 0) {
+							// console.log('下一屏')
+							let changeBy = this.startContentOffsetX + this.realScreenWidth - this.contentOffsetX
 							let anmDuration = this.getDuration(speed)
-							this.transition(300, this.swiper, changeBy, ((e) => {}))
+							this.transition(anmDuration, this.swiper, changeBy, ((e) => {
+								if (e.state !== 'start') {
+									this.pageChange()
+								}
+							}))
+						} else {
+							// console.log('上一屏')
+							let changeBy = -(this.contentOffsetX - (this.startContentOffsetX - this.realScreenWidth))
+							let anmDuration = this.getDuration(speed)
+							this.transition(anmDuration, this.swiper, changeBy, ((e) => {
+								if (e.state !== 'start') {
+									this.pageChange()
+								}
+							}))
 						}
+					} else {
+						// console.log('回弹')
+						let changeBy = -deltaX
+						let anmDuration = this.getDuration(speed)
+						this.transition(300, this.swiper, changeBy, ((e) => {}))
 					}
+					
 				}
 			},
 			transition: function(duration, el, changeBy, callback) {

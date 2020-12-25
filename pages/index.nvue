@@ -161,7 +161,7 @@
 			else{
 				var fabHeight = this.statusBarHeight
 			}
-			var fabMaxTranslateY = fabHeight * 3
+			var fabMaxTranslateY = fabHeight * 4
 			this.bindFabExpression = `${fabMaxTranslateY} * (x < ${screenInfo.realScreenWidth} ? (1 - x / ${screenInfo.realScreenWidth}) : 0)`
 			this.bindFabProperty = 'transform.translateY'
 			this.fabStyles = {
@@ -188,7 +188,7 @@
 				}, 2000)
 			},
 			pageChange: function(e) {
-				// console.log(e)
+				console.log(e)
 			},
 			fabTap: function(e,index) {
 				let pageId = 'page-'+e.target.id
