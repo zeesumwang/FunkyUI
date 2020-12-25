@@ -180,7 +180,11 @@
 			width: {
 				type: Number,
 				default: 350
-			}
+			},
+			bounceMode: {
+				type: Boolean,
+				default: false
+			}			
 		},
 		data() {
 			return {
@@ -385,9 +389,10 @@
 				// 绑定提示器
 				var indicator = this.getEl(this.$refs['indicator'])
 				var indicatorMaxTranslateX = this.endFabX - this.headFabX
+				var indicatorMinTranslateX = -1 * indicatorMaxTranslateX / (this.pageList.length - 1) * (this.scrollerBias / this.screenWidthPx)
 				// console.log(indicatorMaxTranslateX)
 				var indicatorExpression =
-					`${variable} > ${this.realScreenWidth} ? (${variable} - ${this.realScreenWidth}) * ${indicatorMaxTranslateX / (this.pageList.length - 1)} / ${this.realScreenWidth} : 0`
+					`${variable} > ${this.realScreenWidth - this.scrollerBias} ? (${variable} - ${this.realScreenWidth}) * ${indicatorMaxTranslateX / (this.pageList.length - 1)} / ${this.realScreenWidth} : ${indicatorMinTranslateX}`
 
 				props.push({
 						element: indicator,
@@ -420,21 +425,21 @@
 			},
 			bindPan: function(id) {
 				// binding pan
-				console.log('bindingPan')
+				// console.log('bindingPan')
 				this.parentContentOffsetX = 0
 				this.isBindParent = false
 				var swiper = this.swiper
 				if(id !== undefined){
 					swiper = id
 				}
-				console.log(this.pageCount,this.realScreenWidth * this.pageCount + this.scrollerBias,this.contentOffsetX)
+				// console.log(this.pageCount,this.realScreenWidth * (this.pageCount - 1) + this.scrollerBias,this.contentOffsetX)
 				var panExpression = ''
-				var bounceBiasExp = `${this.contentOffsetX} >= ${this.scrollerBias} && ${this.contentOffsetX} <= ${this.scrollerBias} + ${this.realScreenWidth} * ${this.pageCount}`
+				var bounceBiasExp = `${this.contentOffsetX} >= ${this.scrollerBias} && ${this.contentOffsetX} <= ${this.scrollerBias} + ${this.realScreenWidth * (this.pageCount - 1)}`
 				if (this.platform == 'ios') {
 					var maxDeltaX = this.screenWidthPx * 0.5
 					panExpression = `${bounceBiasExp} ? (${this.contentOffsetX} - x * (750 / ${this.screenWidthPx})) : ${this.contentOffsetX} - 0`
 				} else {
-					panExpression = `${bounceBiasExp} ? (${this.contentOffsetX} - x) : ${this.contentOffsetX} - 0`
+					panExpression = `${bounceBiasExp} ? (${this.contentOffsetX} - x) : ${this.contentOffsetX} - x`
 				}
 				// 准备绑定pan事件
 				BindingX.prepare({
@@ -570,35 +575,40 @@
 				var deltaY = Math.abs(vectorY)
 			
 				if (deltaX > deltaY) {
-					if(this.contentOffsetX <= this.scrollerBias + 2 && vectorX > 0) {
-						// console.log('绑定父组件')
-						this.isBindParent = true
-						if(this.isBindParent == true) {
-							this.$emit('bindParentScroll', {subSwiper: this.swiper})
-						}
-						return				
-					}
-					else if((this.contentOffsetX >= this.realScreenWidth * this.pageCount + this.scrollerBias - 2) && vectorX < 0) {
-						// console.log('绑定父组件')
-						this.isBindParent = true
-						if(this.isBindParent == true) {
-							this.$emit('bindParentScroll', {subSwiper: this.swiper})
-						}
-						return
-					}
-					else if(this.parentContentOffsetX % this.realScreenWidth !== 0) {
-						// console.log('绑定父组件')
-						
-						this.isBindParent = true
-						if(this.isBindParent == true) {
-							this.$emit('bindParentScroll', {subSwiper: this.swiper})
-						}
-						return
+					if(this.bounceMode) {
+						this.bindPan()
 					}
 					else{
-						// console.log(this.parentContentOffsetX % this.realScreenWidth)
-						this.bindPan()
-					}					
+						if(this.contentOffsetX <= this.scrollerBias + 2 && vectorX > 0) {
+							// console.log('绑定父组件')
+							this.isBindParent = true
+							if(this.isBindParent == true) {
+								this.$emit('bindParentScroll', {subSwiper: this.swiper})
+							}
+							return				
+						}
+						else if((this.contentOffsetX >= this.realScreenWidth * (this.pageCount - 1) + this.scrollerBias - 2) && vectorX < 0) {
+							// console.log('绑定父组件')
+							this.isBindParent = true
+							if(this.isBindParent == true) {
+								this.$emit('bindParentScroll', {subSwiper: this.swiper})
+							}
+							return
+						}
+						else if(this.parentContentOffsetX % this.realScreenWidth !== 0) {
+							// console.log('绑定父组件')
+							
+							this.isBindParent = true
+							if(this.isBindParent == true) {
+								this.$emit('bindParentScroll', {subSwiper: this.swiper})
+							}
+							return
+						}
+						else{
+							// console.log(this.parentContentOffsetX % this.realScreenWidth)
+							this.bindPan()
+						}
+					}
 				}
 			},
 			touchend: function(e) {
@@ -634,8 +644,8 @@
 			bindTiming: function(speed, deltaX, deltaY) {
 				this.anmToken = {}
 				// console.log(speed)
-				var isBounce = (this.contentOffsetX <= this.scrollerBias || this.contentOffsetX >= this.realScreenWidth * this.pageCount + this.scrollerBias)
-				console.log(isBounce)
+				var isBounce = (this.contentOffsetX <= this.scrollerBias || this.contentOffsetX >= this.realScreenWidth * (this.pageCount - 1) + this.scrollerBias)
+				// console.log(isBounce)
 				if (speed > 0.5 && ((this.contentOffsetX - this.scrollerBias) % this.realScreenWidth) !== 0 && !this.isBindParent && !isBounce) {
 					
 					if (deltaX > 0) {

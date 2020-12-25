@@ -20,6 +20,7 @@
 			:width="screenWidthPx"
 			:indicatorBias="15"
 			:touchMode="true"
+			:bounceMode="true"
 		>
 			<template v-slot:fab>
 				<view
@@ -188,7 +189,7 @@
 				}, 2000)
 			},
 			pageChange: function(e) {
-				console.log(e)
+				// console.log(e)
 			},
 			fabTap: function(e,index) {
 				let pageId = 'page-'+e.target.id
