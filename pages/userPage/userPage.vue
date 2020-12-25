@@ -68,7 +68,20 @@
 			</view>			
 		</view>
 		
-		<fk-tab ref="subTab" :indicatorBias="16" :backgroundColor="'#0b0b0b'" :fabBackgroundColor="'#0b0b0b'" :height="screenHeightPx - statusBarHeight - 280 - 32 - 3" :width="screenWidthPx" :pageList="pageList" @bindParentScroll="bindParentScroll" @bindParentTiming="bindParentTiming" @unbindParentTiming="unbindParentTiming">
+		<fk-tab 
+			ref="subTab" 
+			:indicatorBias="16" 
+			:backgroundColor="'#0b0b0b'" 
+			:fabBackgroundColor="'#0b0b0b'" 
+			:height="screenHeightPx - statusBarHeight - 280 - 32 - 3" 
+			:width="screenWidthPx" 
+			:pageList="pageList" 
+			:touchMode="true"
+			@stopPropagation="stopPropagation"
+			@bindParentScroll="bindParentScroll" 
+			@bindParentTiming="bindParentTiming" 
+			@unbindParentTiming="unbindParentTiming"
+			@recoverParentTiming="recoverParentTiming">
 			
 			<template v-slot:header>
 				
@@ -199,17 +212,23 @@
 			},
 			unbindParentTiming: function() {	
 				// console.log("unbindbindParentTiming")
-				this.$parent.unbindTiming()
+				// console.log(screenInfo.system.platform)
+				this.$parent.unbindTiming()				
 			},
-			unbindSubTabTiming: function(parentContentOffsetX) {
-				// console.log("unbindSubTabTiming")
-				this.$refs.subTab.unbindPan()
-				this.$refs.subTab.unbindTiming()
-				this.$refs.subTab.setParentContentOffsetX(parentContentOffsetX)
-				this.$refs.subTab.isBindParent = true
+			recoverParentTiming: function(e) {
+				this.$parent.isHorizontalpan = false
+				this.$parent.checkPageEnd(e)
 			},
-			horizontalpan: function(e) {
-				return			
+			setParentContentOffsetX: function(parentContentOffsetX) {
+				// console.log("setParentContentOffsetX")
+				// this.$refs.subTab.unbindPan()
+				// this.$refs.subTab.unbindTiming()
+				// this.$refs.subTab.isBindParent = true
+				this.$refs.subTab.setParentContentOffsetX(parentContentOffsetX)				
+			},
+			stopPropagation: function(e) {
+				// console.log('stopPropagation')
+				this.$parent.stopPropagation = true
 			}
 		}
 	}

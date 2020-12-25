@@ -8,7 +8,7 @@
 			"style": {
 				"navigationStyle":"custom",
 				"backgroundColor": "#0d0d0d",
-				"disableScroll": true
+				"disableScroll": false
 			}
 		}
         ,{
@@ -18,8 +18,7 @@
 				"navigationStyle":"custom",
                 "backgroundColor": "#0d0d0d",
 				"enablePullDownRefresh": false				
-            }
-            
+            }            
         }
         ,{
             "path" : "pages/login/login",
@@ -27,9 +26,18 @@
             {
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
-            }
-            
+            }            
         }
+		,{
+		    "path" : "pages/jg/jgInfo",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "站点信息",
+				"navigationBarBackgroundColor":"#0d0d0d",
+				"backgroundColor": "#0d0d0d",
+		        "enablePullDownRefresh": true
+		    }            
+		}
     ],
 	"globalStyle": {
 		"navigationBarTitleText": "FunkyUI",

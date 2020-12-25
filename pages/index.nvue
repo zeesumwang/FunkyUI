@@ -4,7 +4,7 @@
 		<fk-tab 
 			ref="main-tab" 
 			@pageChange="pageChange" 
-			@unbindSubTabTiming="unbindSubTabTiming"
+			@setParentContentOffsetX="setParentContentOffsetX"
 			:pageList="fabList"
 			:defaultPageId="'home'"
 			:hasHidePage="true"
@@ -19,6 +19,7 @@
 			:height="screenHeightPx"
 			:width="screenWidthPx"
 			:indicatorBias="15"
+			:touchMode="true"
 		>
 			<template v-slot:fab>
 				<view
@@ -200,9 +201,9 @@
 					return e.ref
 				}
 			},
-			unbindSubTabTiming: function(parentContentOffsetX) {
-				this.$refs.msgPage.unbindSubTabTiming(parentContentOffsetX)
-				this.$refs.userPage.unbindSubTabTiming(parentContentOffsetX)
+			setParentContentOffsetX: function(parentContentOffsetX) {
+				this.$refs.msgPage.setParentContentOffsetX(parentContentOffsetX)
+				this.$refs.userPage.setParentContentOffsetX(parentContentOffsetX)
 			}
 		}
 	};

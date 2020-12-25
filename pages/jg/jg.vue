@@ -48,17 +48,14 @@
 				}, 2000)
 			},
 			getStationInfo: function(stationId) {
-				console.log(stationId)
+				uni.navigateTo({
+					url: `jg/jgInfo?stationId=${stationId}`,
+					complete: (e) => {
+						// console.log(e)
+					}
+				})
 				uni.showLoading({
 					title: "获取站点信息" + stationId
-				})
-				uni.request({
-					url: "http://60.164.242.118:8090/hikvision/video/listStationPreviewUrlForHLS?stationId=" + stationId,
-					success: (res) => {
-						this.stationInfo = res.data.data
-						console.log(this.stationInfo)
-						uni.hideLoading()
-					}
 				})
 			}
 		}
