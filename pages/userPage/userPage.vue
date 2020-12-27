@@ -72,12 +72,14 @@
 			ref="subTab" 
 			:indicatorBias="16" 
 			:backgroundColor="'#0b0b0b'" 
-			:fabBackgroundColor="'#0b0b0b'" 
+			:fabBackgroundColor="'#0b0b0b'"
+			:fabElevation="0"
 			:height="screenHeightPx - statusBarHeight - 280 - 32 - 3" 
 			:width="screenWidthPx" 
 			:pageList="pageList" 
 			:touchMode="true"
 			:defaultPageId="'mine'"
+			:easingFunction="'easeOutBack'"
 			@stopPropagation="stopPropagation"
 			@bindParentScroll="bindParentScroll" 
 			@bindParentTiming="bindParentTiming" 
@@ -107,8 +109,18 @@
 			</template>
 			
 			<template v-slot:mainPage0>
-				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
+				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight - 280" :hasRefresh="true" :isRefresh="isRefresh"
 				 @refreshing="refreshing">
+					<fk-cell style="justify-content: center;align-items: center;">
+						<view style="height: 250px;justify-content: center;align-items: center;" :style="{width: screenWidthPx -10 + 'px'}">
+							<text style="color: #EBEBEB">???</text>
+						</view>
+					</fk-cell>
+					<fk-cell style="justify-content: center;align-items: center;">
+						<view style="height: 250px;justify-content: center;align-items: center;" :style="{width: screenWidthPx -10 + 'px'}">
+							<text style="color: #EBEBEB">???</text>
+						</view>
+					</fk-cell>
 					<fk-cell style="justify-content: center;align-items: center;">
 						<view style="height: 250px;justify-content: center;align-items: center;" :style="{width: screenWidthPx -10 + 'px'}">
 							<text style="color: #EBEBEB">???</text>
@@ -118,8 +130,18 @@
 			</template>
 			
 			<template v-slot:mainPage1>
-				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
+				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight - 280" :hasRefresh="true" :isRefresh="isRefresh"
 				 @refreshing="refreshing">
+					<fk-cell style="justify-content: center;align-items: center;">
+						<view style="height: 250px;justify-content: center;align-items: center;" :style="{width: screenWidthPx -10 + 'px'}">
+							<text style="color: #EBEBEB">???</text>
+						</view>
+					</fk-cell>
+					<fk-cell style="justify-content: center;align-items: center;">
+						<view style="height: 250px;justify-content: center;align-items: center;" :style="{width: screenWidthPx -10 + 'px'}">
+							<text style="color: #EBEBEB">???</text>
+						</view>
+					</fk-cell>
 					<fk-cell style="justify-content: center;align-items: center;">
 						<view style="height: 250px;justify-content: center;align-items: center;" :style="{width: screenWidthPx -10 + 'px'}">
 							<text style="color: #EBEBEB">???</text>
@@ -160,38 +182,6 @@
 			this.statusBarHeight = screenInfo.system.statusBarHeight
 		},
 		methods: {
-			deepClone: function(target) {
-			    // 定义一个变量
-			    let result;
-			    // 如果当前需要深拷贝的是一个对象的话
-			    if (typeof target === 'object') {
-			    // 如果是一个数组的话
-			        if (Array.isArray(target)) {
-			            result = []; // 将result赋值为一个数组，并且执行遍历
-			            for (let i in target) {
-			                // 递归克隆数组中的每一项
-			                result.push(this.deepClone(target[i]))
-			            }
-			         // 判断如果当前的值是null的话；直接赋值为null
-			        } else if(target===null) {
-			            result = null;
-			         // 判断如果当前的值是一个RegExp对象的话，直接赋值    
-			        } else if(target.constructor===RegExp){
-			            result = target;
-			        }else {
-			         // 否则是普通对象，直接for in循环，递归赋值对象的所有值
-			            result = {};
-			            for (let i in target) {
-			                result[i] = this.deepClone(target[i]);
-			            }
-			        }
-			     // 如果不是对象的话，就是基本数据类型，那么直接赋值
-			    } else {
-			        result = target;
-			    }
-			     // 返回最终结果
-			    return result;
-			},
 			refreshing: function() {
 				this.isRefresh = true
 				setTimeout(() => {
@@ -201,19 +191,13 @@
 			bindParentScroll: function(e) {
 				// console.log("bindParentScroll")
 				this.$parent.bindPan(e.subSwiper)
-				// if(screenInfo.system.platform === 'ios') {
-					// this.$parent.bindTap(e.subSwiper)
-				// }				
 			},
 			bindParentTiming: function(speed, deltaX, deltaY) {	
 				// console.log("bindbindParentTiming")
-				// console.log(this.$parent.anmToken)
 				this.$parent.bindTiming(speed, deltaX, deltaY)
-				// console.log(this.$parent.anmToken)
 			},
 			unbindParentTiming: function() {	
 				// console.log("unbindbindParentTiming")
-				// console.log(screenInfo.system.platform)
 				this.$parent.unbindTiming()				
 			},
 			recoverParentTiming: function(e) {
@@ -222,9 +206,6 @@
 			},
 			setParentContentOffsetX: function(parentContentOffsetX) {
 				// console.log("setParentContentOffsetX")
-				// this.$refs.subTab.unbindPan()
-				// this.$refs.subTab.unbindTiming()
-				// this.$refs.subTab.isBindParent = true
 				this.$refs.subTab.setParentContentOffsetX(parentContentOffsetX)				
 			},
 			stopPropagation: function(e) {

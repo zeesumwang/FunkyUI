@@ -75,13 +75,12 @@
 			:style="{'height': height + 'px','width': width + 'px'}" 
 			:show-scrollbar="showScrollbar" 
 			:bounce="!bounce"
-			:scrollable="true"
+			:scrollable="scrollable"
 			:loadmoreoffset="50"
 			:offset-accuracy="15"
 			:alwaysScrollableVertical="true"
 			@scroll="scroll"
 			@loadmore="loadmore"
-			@verticalpan="verticalpan"
 		>
 			<refresh v-if="hasRefresh" ref="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="isRefresh ? 'show' : 'hide'">
 				<view 
@@ -109,7 +108,7 @@
 			:style="{'height': height + 'px','width': width + 'px'}" 
 			:show-scrollbar="showScrollbar" 
 			:bounce="bounce"
-			:scrollable="true"
+			:scrollable="scrollable"
 			:loadmoreoffset="50"
 			:offset-accuracy="15"
 			:alwaysScrollableVertical="true"
@@ -244,6 +243,10 @@
 						'release': '正在刷新..'
 					}
 				}
+			},
+			scrollable: {
+				type: Object,
+				default: true
 			}
 		},
 		data() {
@@ -583,7 +586,7 @@
 				}
 			},
 			verticalpan: function(e) {
-				return
+				e.stopPropagation()
 			}
 		}
 	}
