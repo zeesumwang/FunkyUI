@@ -26,8 +26,9 @@
 			v-if="touchMode" 
 			ref="scroller" 
 			@scroll="scroll" 
-			@horizontalpan="horizontalpan" 			
-			@verticalpan="verticalpan"
+			@horizontalpan="horizontalpan"
+			@touchmove="scrollerTouchMove"
+			@touchend="scrollerTouchEnd"
 			:scrollable="false" 
 			:show-scrollbar="false"
 			:scrollToBegin="false" 
@@ -47,7 +48,7 @@
 				v-for="(item,index) in pageList" 
 				:ref="'page-'+item.id" 
 				:id="'page-'+item.id" 
-				:key="index" 				
+				:key="index"
 				@touchstart="checkPageStart($event,index + (hasHidePage ? 1 : 0))"
 				@touchcancel="checkPageCancel"
 				@touchend="checkPageEnd">
@@ -199,6 +200,7 @@
 				lastUnbindAnmToken: '',
 				stopPropagation: false,
 				isHorizontalpan: false,
+				isRebindTouch: false,
 				scrollerBias: 0,
 				pageCount: 0
 			}
@@ -213,7 +215,7 @@
 			isAttachBiasRight: function() {
 				return (this.contentOffsetX >= this.contentWidth - 2)
 			},
-			isNotParentBindEnding: function() {
+			isParentScrolling: function() {
 				return this.parentContentOffsetX % this.realScreenWidth !== 0
 			},
 			PageBias: function() {
@@ -312,12 +314,10 @@
 				} else {
 					this.contentOffsetX = Math.ceil(Math.abs(e.contentOffset.x))
 				}
-				
-				// console.log(this.contentOffsetX)
 			},			
-			setParentContentOffsetX: function(e) {
-				if(e !== undefined) {
-					this.parentContentOffsetX = e
+			setParentContentOffsetX: function(parentContentOffsetX) {
+				if(parentContentOffsetX !== undefined) {
+					this.parentContentOffsetX = parentContentOffsetX
 				}
 			},
 			scrollToPage: function(pageId) {
@@ -438,6 +438,7 @@
 				// binding pan
 				// console.log('bindingPan')
 				if(this.isBindPan) {
+					console.log('alreadyBindPan')
 					return
 				}
 				this.isBindPan = true
@@ -479,72 +480,96 @@
 						}						
 					})
 				)
-			},
-			horizontalpan: function(e) {
-				// console.log('horizontalpan',e)
-				e.stopPropagation() // 阻止冒泡，该API无效，在ios中偶尔会冒泡到父组件，在Android中一直会冒泡，所以要自行实现阻止冒泡
-				// console.log(e.type,e.state,this.swiper)
-				if(e.state == 'start') {
-					// console.log(e.type,'start',this.swiper)
-					// console.log(this.stopPropagation)
-					this.isHorizontalpan = true
-					this.touchstart(e)
-				}
-				if(e.state == 'move') {
-					this.touchmove(e)
-				}
-				if(e.state == 'end') {
-					this.touchend(e)
-				}	
-			},		
+			},					
 			checkPageStart: function(e,index) {
-				e.stopPropagation() 
-				// console.log('pageTouch')
+				// e.stopPropagation() 			
 				
-				if(this.touchMode) {
-					this.isHorizontalpan = false
-					this.unbindTiming()
-					this.$emit('unbindParentTiming')
-					this.isBindParent = false
-				}
+				this.unbindTiming()
+				this.$emit('unbindParentTiming')
+				this.isBindParent = false
+				
 				this.stopPropagation = false
 				this.parentContentOffsetX = 0
 				
 				if(this.PageBias !== 0) {
 					this.$emit('setParentContentOffsetX',this.contentOffsetX - this.scrollerBias)
 				}
-				let touchPageContentOffset = Math.abs(index * this.realScreenWidth)
-				let scrollDistance = Math.abs(touchPageContentOffset - this.contentOffsetX)
-				if (scrollDistance > 0) {
-					if (this.PageBias > this.realScreenWidth * 0.5) {
-						this.startContentOffsetX = (Math.floor((this.contentOffsetX - this.scrollerBias) / this.realScreenWidth) + 1) * this.realScreenWidth
-					} else {
-						this.startContentOffsetX = Math.floor((this.contentOffsetX - this.scrollerBias) / this.realScreenWidth) * this.realScreenWidth
-					}
-				} else {
-					this.startContentOffsetX = touchPageContentOffset
+				
+				if(this.PageBias !== 0) {
+					this.isRebindTouch = true
+					e.type = 'scrollerTouchStart'
+					this.touchstart(e)
 				}
+				
+				let touchPageContentOffset = Math.abs(index * this.realScreenWidth)
+				// let scrollDistance = Math.abs(touchPageContentOffset - this.contentOffsetX)
+				// if (scrollDistance > 0) {
+				// 	if (this.PageBias > this.realScreenWidth * 0.5) {
+				// 		this.startContentOffsetX = (Math.floor((this.contentOffsetX - this.scrollerBias) / this.realScreenWidth) + 1) * this.realScreenWidth
+				// 	} else {
+				// 		this.startContentOffsetX = Math.floor((this.contentOffsetX - this.scrollerBias) / this.realScreenWidth) * this.realScreenWidth
+				// 	}
+				// } else {
+				// 	this.startContentOffsetX = touchPageContentOffset
+				// }
 				this.startContentOffsetX = touchPageContentOffset
 				this.startContentOffsetX += this.scrollerBias
-				// console.log(this.startContentOffsetX)
 			},
-			checkPageCancel: function(e) {
-				// return
-				// console.log('checkPageCancel',e)
-			},		
+			scrollerTouchMove: function(e) {
+				if(this.isRebindTouch) {
+					e.type = 'scrollerTouchMove'
+					this.touchmove(e)
+				}
+				else {
+					return
+				}				
+			},
+			scrollerTouchEnd: function(e) {				
+				if(this.isRebindTouch) {
+					this.isRebindTouch = false
+					e.type = 'scrollerTouchEnd'
+					this.touchend(e)
+				}
+				else {
+					return
+				}				
+			},
+			horizontalpan: function(e) {
+				// e.stopPropagation() // 阻止冒泡，该API对horizontalpan无效，在ios中偶尔会冒泡到父组件，在Android中一直会冒泡，所以要自行实现阻止冒泡
+				
+				if(this.isRebindTouch) {
+					return
+				}
+				
+				if(e.state == 'start') {
+					this.isHorizontalpan = true
+					e.type = 'horizontalPanStart'
+					this.touchstart(e)
+				}
+				if(e.state == 'move') {
+					if(!this.isHorizontalpan){
+						return
+					}
+					e.type = 'horizontalPanMove'
+					this.touchmove(e)
+				}
+				if(e.state == 'end') {
+					if(!this.isHorizontalpan){
+						return
+					}
+					this.isHorizontalpan = false
+					e.type = 'horizontalPanEnd'
+					this.touchend(e)
+				}	
+			},
 			touchstart: function(e) {
+				console.log(e.type,this.swiper)
 				this.recordCount = 0
 				this.changedTouches = []
 				this.isBindPan = false
 				this.$emit('stopPropagation')
 				if(this.stopPropagation){
 					return
-				}
-				// console.log('scrollerTouchStart',this.swiper,e)
-				if(!this.touchMode) {
-					this.unbindTiming()
-					this.$emit('unbindParentTiming')
-					this.isBindParent = false
 				}
 				
 				// 记录触摸开始位置和触摸指（支持多点触摸）
@@ -580,6 +605,7 @@
 				if (this.recordCount > 0) {
 					return
 				}
+				console.log(e.type,this.swiper)
 				
 				this.recordCount += 1
 				var vectorX = e.changedTouches[0].screenX - this.changedTouches[0].screenX
@@ -594,7 +620,7 @@
 					}
 					else{
 						// console.log(vectorX,this.isAttachBiasLeft,this.contentOffsetX <= this.scrollerBias + 2, this.contentOffsetX)
-						if ((this.isAttachBiasLeft && vectorX > 0) || (this.isAttachBiasRight && vectorX < 0) || this.isNotParentBindEnding) {
+						if ((this.isAttachBiasLeft && vectorX > 0) || (this.isAttachBiasRight && vectorX < 0) || this.isParentScrolling) {
 							// console.log('绑定父组件')
 							this.isBindParent = true
 							if (this.isBindParent == true) {
@@ -609,7 +635,6 @@
 							return				
 						}
 						else{
-							// console.log(this.isAttachBiasLeft, this.isAttachBiasRight, this.isNotParentBindEnding)
 							this.bindPan()
 						}
 					}
@@ -622,9 +647,8 @@
 				if(this.stopPropagation){
 					return
 				}
-				if(!this.isHorizontalpan){
-					return
-				}
+				
+				console.log(e.type,this.swiper)
 				
 				var identifier = e.changedTouches[0].identifier
 				var screenX = e.changedTouches[0].screenX
