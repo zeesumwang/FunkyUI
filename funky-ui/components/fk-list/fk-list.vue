@@ -81,6 +81,7 @@
 			:alwaysScrollableVertical="true"
 			@scroll="scroll"
 			@loadmore="loadmore"
+			@verticalpan="verticalpan"
 		>
 			<refresh v-if="hasRefresh" ref="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="isRefresh ? 'show' : 'hide'">
 				<view 

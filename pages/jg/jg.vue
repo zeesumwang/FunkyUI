@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<view :style="{height: statusBarHeight + 'px'}"></view>
-		<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh"
+		<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :isRefresh="isRefresh" :scrollable="listScrollable"
 		 @refreshing="refreshing">
 			<fk-cell v-for="(item, index) in stations" :key="index" style="justify-content: center;align-items: center;">
 				<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #252626;"
@@ -18,6 +18,12 @@
 	import screenInfo from "@/funky-ui/common/helper.js"
 	
 	export default {
+		props: {
+			listScrollable: {
+				type: Boolean,
+				default: false
+			}
+		},
 		data() {
 			return {
 				screenHeightPx: 0,

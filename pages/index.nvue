@@ -5,6 +5,8 @@
 			ref="main-tab" 
 			@pageChange="pageChange" 
 			@setParentContentOffsetX="setParentContentOffsetX"
+			@scrollstart="listScrollable = false"
+			@scrollend="listScrollable = true"
 			:pageList="fabList"
 			:defaultPageId="'home'"
 			:hasHidePage="true"
@@ -58,12 +60,12 @@
 			</template>
 			
 			<template v-slot:mainPage0>
-				<jg></jg>
+				<jg :listScrollable="listScrollable"></jg>
 			</template>
 			
 			<template v-slot:mainPage1>
 				<view :style="{height: statusBarHeight + 'px'}"></view>
-				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :scrollable="true" :isRefresh="isRefresh"
+				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :scrollable="listScrollable" :isRefresh="isRefresh"
 				 @refreshing="refreshing">
 					<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
 						<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #252626;"
@@ -75,11 +77,12 @@
 			</template>
 			
 			<template v-slot:mainPage2>
-				<userPage ref="msgPage"></userPage>
+				<userPage ref="msgPage" :listScrollable="listScrollable"></userPage>
 			</template>
 			
 			<template v-slot:mainPage3>
-				<userPage ref="userPage"></userPage>
+				<!-- <userPage ref="userPage" :listScrollable="listScrollable"></userPage> -->
+				<jg :listScrollable="listScrollable"></jg>
 			</template>
 		</fk-tab>
 		<!-- <swiper ref="swiper" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}" style="position: absolute;">
@@ -139,7 +142,8 @@
 				videoData:[],
 				bindFabExpression: '',
 				bindFabProperty: '',
-				fabStyles: {}
+				fabStyles: {},
+				listScrollable: false
 			}			
 		},
 		onPullDownRefresh() {
@@ -204,7 +208,7 @@
 			},
 			setParentContentOffsetX: function(parentContentOffsetX) {
 				this.$refs.msgPage.setParentContentOffsetX(parentContentOffsetX)
-				this.$refs.userPage.setParentContentOffsetX(parentContentOffsetX)
+				// this.$refs.userPage.setParentContentOffsetX(parentContentOffsetX)
 			}
 		}
 	};

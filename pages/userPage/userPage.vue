@@ -109,7 +109,7 @@
 			</template>
 			
 			<template v-slot:mainPage0>
-				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight - 280" :hasRefresh="true" :isRefresh="isRefresh"
+				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight - 280" :hasRefresh="true" :isRefresh="isRefresh" :scrollable="listScrollable"
 				 @refreshing="refreshing">
 					<fk-cell style="justify-content: center;align-items: center;">
 						<view style="height: 250px;justify-content: center;align-items: center;" :style="{width: screenWidthPx -10 + 'px'}">
@@ -130,7 +130,7 @@
 			</template>
 			
 			<template v-slot:mainPage1>
-				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight - 280" :hasRefresh="true" :isRefresh="isRefresh"
+				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight - 280" :hasRefresh="true" :isRefresh="isRefresh" :scrollable="listScrollable"
 				 @refreshing="refreshing">
 					<fk-cell style="justify-content: center;align-items: center;">
 						<view style="height: 250px;justify-content: center;align-items: center;" :style="{width: screenWidthPx -10 + 'px'}">
@@ -158,6 +158,12 @@
 	import screenInfo from "@/funky-ui/common/helper.js"
 
 	export default {
+		props: {
+			listScrollable: {
+				type: Boolean,
+				default: false
+			}
+		},
 		data() {
 			return {
 				screenHeightPx: 0,
@@ -187,9 +193,10 @@
 				setTimeout(() => {
 					this.isRefresh = false
 				}, 2000)
-			},
+			},			
 			bindParentScroll: function(e) {
 				// console.log("bindParentScroll")
+				this.$parent.isBindPan = false
 				this.$parent.bindPan(e.subSwiper)
 			},
 			bindParentTiming: function(speed, deltaX, deltaY) {	
@@ -199,10 +206,6 @@
 			unbindParentTiming: function() {	
 				// console.log("unbindbindParentTiming")
 				this.$parent.unbindTiming()				
-			},
-			recoverParentTiming: function(e) {
-				this.$parent.isHorizontalpan = false
-				this.$parent.checkPageEnd(e)
 			},
 			setParentContentOffsetX: function(parentContentOffsetX) {
 				// console.log("setParentContentOffsetX")
