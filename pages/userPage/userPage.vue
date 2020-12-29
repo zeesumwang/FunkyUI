@@ -80,6 +80,7 @@
 			:touchMode="true"
 			:defaultPageId="'mine'"
 			:easingFunction="'easeOutBack'"
+			@resetStopPropagation="resetStopPropagation"
 			@stopPropagation="stopPropagation"
 			@bindParentScroll="bindParentScroll" 
 			@bindParentTiming="bindParentTiming" 
@@ -212,8 +213,12 @@
 				this.$refs.subTab.setParentContentOffsetX(parentContentOffsetX)				
 			},
 			stopPropagation: function(e) {
-				// console.log('stopPropagation')
+				console.log('stopPropagation')
 				this.$parent.stopPropagation = true
+			},
+			resetStopPropagation: function(e) {
+				console.log('resetStopPropagation')
+				this.$parent.stopPropagation = false
 			}
 		}
 	}

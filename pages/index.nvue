@@ -4,9 +4,9 @@
 		<fk-tab 
 			ref="main-tab" 
 			@pageChange="pageChange" 
-			@setParentContentOffsetX="setParentContentOffsetX"
 			@scrollstart="listScrollable = false"
 			@scrollend="listScrollable = true"
+			@scroll="scroll"
 			:pageList="fabList"
 			:defaultPageId="'home'"
 			:hasHidePage="true"
@@ -209,6 +209,9 @@
 			setParentContentOffsetX: function(parentContentOffsetX) {
 				this.$refs.msgPage.setParentContentOffsetX(parentContentOffsetX)
 				// this.$refs.userPage.setParentContentOffsetX(parentContentOffsetX)
+			},
+			scroll: function(e) {
+				this.$refs.msgPage.setParentContentOffsetX(e.contentOffsetX)
 			}
 		}
 	};

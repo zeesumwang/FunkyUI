@@ -49,9 +49,7 @@
 				:ref="'page-'+item.id" 
 				:id="'page-'+item.id" 
 				:key="index"
-				@touchstart="checkPageStart($event,index + (hasHidePage ? 1 : 0))"
-				@touchcancel="checkPageCancel"
-				@touchend="checkPageEnd">
+				@touchstart="checkPageStart($event,index + (hasHidePage ? 1 : 0))">
 				<slot :name="'mainPage'+index"></slot>
 			</view>
 			
@@ -196,6 +194,7 @@
 				recordCount: 0,
 				currentPage: 0,
 				isBindParent: false,
+				bindParentMode: '',
 				parentContentOffsetX: 0,
 				lastUnbindAnmToken: '',
 				stopPropagation: false,
@@ -255,18 +254,17 @@
 			}
 		},
 		mounted() {
-			setTimeout(() => {
-				if(this.defaultPageId !== ""){
-					var indexElement = this.getEl(this.$refs['page-' + this.defaultPageId])
-					
-					// #ifdef APP-NVUE
-					dom.scrollToElement(indexElement, {
-						offset: 0,
-						animated: false
-					})
-					// #endif
-				}	
-			},100)
+			
+			if(this.defaultPageId !== ""){
+				var indexElement = this.getEl(this.$refs['page-' + this.defaultPageId])
+				
+				// #ifdef APP-NVUE
+				dom.scrollToElement(indexElement, {
+					offset: 0,
+					animated: false
+				})
+				// #endif
+			}			
 						
 			setTimeout(() => {				
 				this.swiper = this.getEl(this.$refs['scroller'])
@@ -314,6 +312,7 @@
 				} else {
 					this.contentOffsetX = Math.ceil(Math.abs(e.contentOffset.x))
 				}
+				this.$emit('scroll', {'ref': this.swiper,'contentOffsetX': this.contentOffsetX - this.scrollerBias})
 			},			
 			setParentContentOffsetX: function(parentContentOffsetX) {
 				if(parentContentOffsetX !== undefined) {
@@ -360,14 +359,12 @@
 					// console.log('unbindTiming',this.anmToken.token,this.swiper)
 					// BindingX.unbind({token:this.panToken.token,eventType:'pan'})
 					// BindingX.unbindAll()
-					// 再次绑定scroller的scroll事件
-					// this.bindTap()
+					// this.bindTap() // 再次绑定scroller的scroll事件
 				} else {
 					BindingX.unbind({token:this.anmToken.token,eventType:'timing'})
 					// console.log('unbindTiming',this.anmToken.token,this.swiper)
 					// BindingX.unbind({token:this.panToken.token,eventType:'pan'})
 					// BindingX.unbindAll()
-					// this.bindTap()
 					// 安卓端的unbindAll()不会取消scroll事件的绑定，无需再次绑定
 				}
 			},
@@ -434,22 +431,22 @@
 				}))
 
 			},
-			bindPan: function(id) {
-				// binding pan
-				// console.log('bindingPan')
+			bindPan: function(ref) {
+				// binding pan				
 				if(this.isBindPan) {
 					console.log('alreadyBindPan')
 					return
 				}
-				this.isBindPan = true
-				this.$emit('scrollstart')
-				this.parentContentOffsetX = 0
-				this.isBindParent = false
+				
 				var swiper = this.swiper
-				if(id !== undefined){
-					swiper = id
+				if(ref !== undefined){
+					swiper = ref
 				}
-				// console.log(this.pageCount,this.contentWidth,this.contentOffsetX)
+				
+				let scrollstartEvent = {'detail':'bindingPan','anchor':swiper,'target':this.swiper}
+				this.$emit('scrollstart',scrollstartEvent)
+				this.isBindPan = true
+				console.log('bindingPan',scrollstartEvent)
 				var panExpression = ''
 				var bounceBiasExp = `${this.contentOffsetX} >= ${this.scrollerBias} && ${this.contentOffsetX} <= ${this.contentWidth}`
 				if (this.platform == 'ios') {
@@ -477,43 +474,42 @@
 						if(e.state !== 'start'){
 							BindingX.unbind({token: this.panToken.token, eventType: 'pan'})
 							this.isBindPan = false
-						}						
+						}
 					})
 				)
 			},					
 			checkPageStart: function(e,index) {
-				// e.stopPropagation() 			
+				e.stopPropagation()
 				
 				this.unbindTiming()
-				this.$emit('unbindParentTiming')
+				
+				this.$emit('stopPropagation')
+				// if(this.stopPropagation) {
+				// 	return
+				// }
+				console.log('pageTouch',this.swiper)
+				
 				this.isBindParent = false
 				
-				this.stopPropagation = false
-				this.parentContentOffsetX = 0
+				let touchPageContentOffset = Math.abs(index * this.realScreenWidth)
+				this.startContentOffsetX = touchPageContentOffset
+				this.startContentOffsetX += this.scrollerBias
 				
-				if(this.PageBias !== 0) {
-					this.$emit('setParentContentOffsetX',this.contentOffsetX - this.scrollerBias)
+				if(this.isParentScrolling) {
+					e.subSwiper = this.swiper
+					console.log('bindParentScroll--touch')
+					this.$emit('unbindParentTiming')
+					this.$emit('bindParentScroll',e)
+					this.isBindParent = true
+					this.bindParentMode = 'touch'
+					return
 				}
 				
-				if(this.PageBias !== 0) {
+				if(this.PageBias !== 0 && !this.isParentScrolling) {
 					this.isRebindTouch = true
 					e.type = 'scrollerTouchStart'
 					this.touchstart(e)
 				}
-				
-				let touchPageContentOffset = Math.abs(index * this.realScreenWidth)
-				// let scrollDistance = Math.abs(touchPageContentOffset - this.contentOffsetX)
-				// if (scrollDistance > 0) {
-				// 	if (this.PageBias > this.realScreenWidth * 0.5) {
-				// 		this.startContentOffsetX = (Math.floor((this.contentOffsetX - this.scrollerBias) / this.realScreenWidth) + 1) * this.realScreenWidth
-				// 	} else {
-				// 		this.startContentOffsetX = Math.floor((this.contentOffsetX - this.scrollerBias) / this.realScreenWidth) * this.realScreenWidth
-				// 	}
-				// } else {
-				// 	this.startContentOffsetX = touchPageContentOffset
-				// }
-				this.startContentOffsetX = touchPageContentOffset
-				this.startContentOffsetX += this.scrollerBias
 			},
 			scrollerTouchMove: function(e) {
 				if(this.isRebindTouch) {
@@ -537,12 +533,11 @@
 			horizontalpan: function(e) {
 				// e.stopPropagation() // 阻止冒泡，该API对horizontalpan无效，在ios中偶尔会冒泡到父组件，在Android中一直会冒泡，所以要自行实现阻止冒泡
 				
-				if(this.isRebindTouch) {
+				if(this.isRebindTouch || (this.isParentScrolling && !this.isBindParent)) {
 					return
 				}
 				
 				if(e.state == 'start') {
-					this.isHorizontalpan = true
 					e.type = 'horizontalPanStart'
 					this.touchstart(e)
 				}
@@ -556,22 +551,21 @@
 				if(e.state == 'end') {
 					if(!this.isHorizontalpan){
 						return
-					}
-					this.isHorizontalpan = false
+					}					
 					e.type = 'horizontalPanEnd'
 					this.touchend(e)
 				}	
 			},
 			touchstart: function(e) {
-				console.log(e.type,this.swiper)
-				this.recordCount = 0
-				this.changedTouches = []
-				this.isBindPan = false
-				this.$emit('stopPropagation')
-				if(this.stopPropagation){
+				if(this.stopPropagation) {
 					return
 				}
 				
+				this.isHorizontalpan = true
+				this.recordCount = 0
+				this.changedTouches = []
+				
+				console.log(e.type,this.swiper,this.stopPropagation)
 				// 记录触摸开始位置和触摸指（支持多点触摸）
 				var identifier = e.changedTouches[0].identifier
 				var screenX = e.changedTouches[0].screenX
@@ -605,7 +599,7 @@
 				if (this.recordCount > 0) {
 					return
 				}
-				console.log(e.type,this.swiper)
+				console.log(e.type,this.swiper,this.stopPropagation)
 				
 				this.recordCount += 1
 				var vectorX = e.changedTouches[0].screenX - this.changedTouches[0].screenX
@@ -621,18 +615,16 @@
 					else{
 						// console.log(vectorX,this.isAttachBiasLeft,this.contentOffsetX <= this.scrollerBias + 2, this.contentOffsetX)
 						if ((this.isAttachBiasLeft && vectorX > 0) || (this.isAttachBiasRight && vectorX < 0) || this.isParentScrolling) {
-							// console.log('绑定父组件')
-							this.isBindParent = true
-							if (this.isBindParent == true) {
-								e.subSwiper = this.swiper
-								if (!this.bounceMode && (this.contentOffsetX + 2 < this.scrollerBias || this.contentOffsetX > this.contentWidth + 2)) {
-									this.bindPan()
-								}
-								else {
-									this.$emit('bindParentScroll', e)
-								}
+							e.subSwiper = this.swiper
+							if (!this.bounceMode && (this.contentOffsetX + 2 < this.scrollerBias || this.contentOffsetX - 2 > this.contentWidth)) {								
+								this.bindPan()
 							}
-							return				
+							else {
+								console.log('bindParentScroll--pan')
+								this.$emit('bindParentScroll', e)
+								this.isBindParent = true
+								this.bindParentMode = 'pan'
+							}
 						}
 						else{
 							this.bindPan()
@@ -647,8 +639,9 @@
 				if(this.stopPropagation){
 					return
 				}
-				
-				console.log(e.type,this.swiper)
+				this.isBindPan = false
+				this.isHorizontalpan = false
+				console.log(e.type,this.swiper,this.stopPropagation)
 				
 				var identifier = e.changedTouches[0].identifier
 				var screenX = e.changedTouches[0].screenX
@@ -674,6 +667,7 @@
 					}
 				}
 				this.changedTouches = []
+				this.$emit('resetStopPropagation')
 			},			
 			bindTiming: function(speed, deltaX, deltaY) {
 				this.anmToken = {} //  重置anmToken

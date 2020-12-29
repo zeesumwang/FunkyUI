@@ -8,7 +8,7 @@
 			"style": {
 				"navigationStyle":"custom",
 				"backgroundColor": "#0d0d0d",
-				"disableScroll": true
+				"disableScroll": false
 			}
 		}
         ,{
