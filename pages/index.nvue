@@ -1,72 +1,40 @@
 <template>
 	<view>
-	
-		<fk-tab 
-			ref="main-tab" 
-			@pageChange="pageChange" 
-			@scrollstart="listScrollable = false"
-			@scrollend="listScrollable = true"
-			@scroll="scroll"
-			:pageList="fabList"
-			:defaultPageId="'home'"
-			:hasHidePage="true"
-			:bindFabExpression="bindFabExpression" 
-			:bindFabProperty="bindFabProperty" 
-			:fabStyles="fabStyles"
-			:fabBackgroundColor="'#1e1e1e'"
-			:backgroundColor="'#0b0b0b'"
-			:fabOpacity="0.96"
-			:fabBlurEffect="'dark'"
-			:fabElevation="10"
-			:height="screenHeightPx"
-			:width="screenWidthPx"
-			:indicatorBias="15"
-			:touchMode="true"
-			:bounceMode="true"
-		>
+
+		<fk-tab ref="main-tab" @pageChange="pageChange" @scroll="scroll" @lockTouch="listScrollable = false" @unlockTouch="listScrollable = true"
+		 :pageList="fabList" :defaultPageId="'home'" :easingFunction="'easeOutExpo'" :hasHidePage="true" :bindFabExpression="bindFabExpression"
+		 :bindFabProperty="bindFabProperty" :fabStyles="fabStyles" :fabBackgroundColor="'#1e1e1e'" :backgroundColor="'#0b0b0b'"
+		 :fabOpacity="0.96" :fabBlurEffect="'dark'" :fabElevation="10" :height="screenHeightPx" :width="screenWidthPx"
+		 :indicatorBias="15" :bounceMode="true">
 			<template v-slot:fab>
-				<view
-					@tap="fabTap($event,index)" 
-					v-for="(item, index) in fabList" 
-					:key="item.id" 
-					:id="item.id" 
-					:ref="item.id" 
-					:style="{opacity: index == 0 ? 1 : 0.2}"
-					style="padding: 15px;"
-				>
-					<image :src="item.url" style="width: 20px;height: 20px;"
-					 :style="{borderRadius: item.id == 'user' ? '25px' : 0}">
+				<view @tap="fabTap($event,index)" v-for="(item, index) in fabList" :key="item.id" :id="item.id" :ref="item.id"
+				 :style="{opacity: index == 0 ? 1 : 0.2}" style="padding: 15px;">
+					<image :src="item.url" style="width: 20px;height: 20px;" :style="{borderRadius: item.id == 'user' ? '25px' : 0}">
 					</image>
-				</view>			
+				</view>
 			</template>
-			
+
 			<template v-slot:indicator>
-				<view 
-					style="
+				<view style="
 					height: 6px;
 					width: 24px;
 					border-top-right-radius: 6px;
 					border-top-left-radius: 6px;
 					border-bottom-width: 0px;
-					background-image: linear-gradient(to bottom, #ffffff, #ec7d9c);"
-				>						
-				</view>	
+					background-image: linear-gradient(to bottom, #ffffff, #ec7d9c);">
+				</view>
 			</template>
-			
+
 			<template v-slot:hidePage>
 				<fk-video-list :videoData="videoData" :isPlay="currentPage==-1" @videoChange="videoChange">
-					
+
 				</fk-video-list>
 			</template>
-			
+
 			<template v-slot:mainPage0>
-				<jg :listScrollable="listScrollable"></jg>
-			</template>
-			
-			<template v-slot:mainPage1>
 				<view :style="{height: statusBarHeight + 'px'}"></view>
-				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :scrollable="listScrollable" :isRefresh="isRefresh"
-				 @refreshing="refreshing">
+				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :scrollable="listScrollable"
+				 :isRefresh="isRefresh" @refreshing="refreshing">
 					<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
 						<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #252626;"
 						 :style="{width: screenWidthPx -10 + 'px'}">
@@ -75,82 +43,108 @@
 					</fk-cell>
 				</fk-list>
 			</template>
-			
-			<template v-slot:mainPage2>
-				<userPage ref="msgPage" :listScrollable="listScrollable"></userPage>
+
+			<template v-slot:mainPage1>
+				<view :style="{height: statusBarHeight + 'px'}"></view>
+				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :scrollable="listScrollable"
+				 :isRefresh="isRefresh" @refreshing="refreshing">
+					<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
+						<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #252626;"
+						 :style="{width: screenWidthPx -10 + 'px'}">
+							<text style="color: #ebebeb">{{item}}</text>
+						</view>
+					</fk-cell>
+				</fk-list>
 			</template>
-			
+
+			<template v-slot:mainPage2>
+				<view :style="{height: statusBarHeight + 'px'}"></view>
+				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :scrollable="listScrollable"
+				 :isRefresh="isRefresh" @refreshing="refreshing">
+					<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
+						<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #252626;"
+						 :style="{width: screenWidthPx -10 + 'px'}">
+							<text style="color: #ebebeb">{{item}}</text>
+						</view>
+					</fk-cell>
+				</fk-list>
+			</template>
+
 			<template v-slot:mainPage3>
-				<!-- <userPage ref="userPage" :listScrollable="listScrollable"></userPage> -->
-				<jg :listScrollable="listScrollable"></jg>
+				<userPage ref="userPage" :listScrollable="listScrollable" :parentContentOffsetX="contentOffsetX"></userPage>
+
 			</template>
 		</fk-tab>
-		<!-- <swiper ref="swiper" :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}" style="position: absolute;">
-			<swiper-item>
-				<view :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}" style="background-color: #8F9CFF;justify-content: center;align-items: center;">
-					<text>???</text>
-				</view>						
-			</swiper-item>
-			<swiper-item>
-				<view :style="{height: screenHeightPx + 'px',width: screenWidthPx + 'px'}" style="background-color: #8F9CFF;justify-content: center;align-items: center;">
-					<text>???</text>
-				</view>						
-			</swiper-item>
-		</swiper> -->
+
+		<view
+			ref="devButton" 
+			@touchstart="bindDevButtonPan"
+			elevation="15px"
+			style="position: fixed;bottom: 100px;width: 50px;height: 50px;border-width: 3px;border-color: #FFFFFF;background-color: #ec7d9c; border-radius: 25px;justify-content: center;align-items: center;">
+			<text style="color: #FFFFFF;font-size: 16px;font-weight: bold;">Dev</text>
+		</view>
 	</view>
-	
+
 </template>
 
 <script>
-	
 	import screenInfo from "@/funky-ui/common/helper.js"
 	import testData from "@/test_data/data.js"
-	
+
 	import userPage from "@/pages/userPage/userPage"
-	import jg from "@/pages/jg/jg"
-	
+
+	// #ifdef APP-NVUE
+	const BindingX = uni.requireNativePlugin('bindingx');
+	const dom = uni.requireNativePlugin('dom') // 在APP端引入weex的dom组件
+	// #endif
+
 	export default {
 		components: {
-			userPage,
-			jg
+			userPage
 		},
 		data() {
 			return {
-				fabList: [
-						{
-							id: 'home',
-							url: "/static/home.png"
-						},
-						{
-							id: 'search',
-							url: "/static/search.png"
-						},
-						{
-							id: 'message',
-							url: "/static/flash.png"
-						},
-						{
-							id: 'user',
-							url: "/static/logo.jpg"
-						}
-					],
+				fabList: [{
+						id: 'home',
+						url: "/static/home.png"
+					},
+					{
+						id: 'search',
+						url: "/static/search.png"
+					},
+					{
+						id: 'message',
+						url: "/static/flash.png"
+					},
+					{
+						id: 'user',
+						url: "/static/logo.jpg"
+					}
+				],
 				data: [],
 				screenHeightPx: 0,
 				screenWidthPx: 0,
 				statusBarHeight: 0,
 				isRefresh: false,
-				videoData:[],
+				videoData: [],
 				bindFabExpression: '',
 				bindFabProperty: '',
 				fabStyles: {},
-				listScrollable: false
-			}			
+				listScrollable: true,
+				contentOffsetX: 0,
+				devButtonDeltaY: 0,
+				devButtonDeltaX: 0,
+				devButton: '',
+				bottom: 100
+			}
 		},
 		onPullDownRefresh() {
 			console.log("页面下拉刷新!")
-			setTimeout(()=>{uni.stopPullDownRefresh},2000)
+			setTimeout(() => {
+				uni.stopPullDownRefresh
+			}, 2000)
 		},
-		onLoad() {			
+		onLoad() {
 			this.screenHeightPx = screenInfo.screenHeightPx
 			this.screenWidthPx = screenInfo.screenWidthPx
 			this.statusBarHeight = screenInfo.system.statusBarHeight
@@ -159,15 +153,18 @@
 			}
 			this.videoData = testData.videoData
 		},
+		onReady() {
+			this.devButton = this.getEl(this.$refs.devButton)
+		},
 		created() {
-			if(screenInfo.system.platform == 'ios') {
+			if (screenInfo.system.platform == 'ios') {
 				var fabHeight = screenInfo.system.safeAreaInsets.bottom
-			}
-			else{
+			} else {
 				var fabHeight = this.statusBarHeight
 			}
 			var fabMaxTranslateY = fabHeight * 4
-			this.bindFabExpression = `${fabMaxTranslateY} * (x < ${screenInfo.realScreenWidth} ? (1 - x / ${screenInfo.realScreenWidth}) : 0)`
+			this.bindFabExpression =
+				`${fabMaxTranslateY} * (x < ${screenInfo.realScreenWidth} ? (1 - x / ${screenInfo.realScreenWidth}) : 0)`
 			this.bindFabProperty = 'transform.translateY'
 			this.fabStyles = {
 				'height': '50px',
@@ -175,16 +172,15 @@
 				'justifyContent': 'space-around',
 				'alignItems': 'center',
 				'flexDirection': 'row',
-				'borderRadius': '30px',
+				'borderRadius': '25px',
 				'borderWidth': '3px',
 				'borderColor': '#ec7d9c',
-				'left': this.screenWidthPx * (1-0.618) *0.5 + 'px',
+				'left': this.screenWidthPx * (1 - 0.618) * 0.5 + 'px',
 				'bottom': fabHeight + 'px',
 				'width': this.screenWidthPx * 0.618 + 'px'
 			}
 		},
-		mounted() {
-		},
+		mounted() {},
 		methods: {
 			refreshing: function() {
 				this.isRefresh = true
@@ -195,8 +191,11 @@
 			pageChange: function(e) {
 				// console.log(e)
 			},
-			fabTap: function(e,index) {
-				let pageId = 'page-'+e.target.id
+			scroll: function(e) {
+				this.contentOffsetX = e.contentOffsetX
+			},
+			fabTap: function(e, index) {
+				let pageId = 'page-' + e.target.id
 				this.$refs['main-tab'].scrollToPage(pageId)
 			},
 			getEl: function(e) {
@@ -206,12 +205,61 @@
 					return e.ref
 				}
 			},
-			setParentContentOffsetX: function(parentContentOffsetX) {
-				this.$refs.msgPage.setParentContentOffsetX(parentContentOffsetX)
-				// this.$refs.userPage.setParentContentOffsetX(parentContentOffsetX)
+			bindDevButtonPan: function(e) {
+				var panToken = BindingX.bind({
+						eventType: 'pan',
+						anchor: this.devButton,
+						props: [
+							{
+								element: this.devButton,
+								property: 'transform.translateX',
+								expression: `x + (${this.devButtonDeltaX})`
+							},
+							{
+								element: this.devButton,
+								property: 'transform.translateY',
+								expression: `y + (${this.devButtonDeltaY})`
+							}
+						]
+					},
+					((e) => {
+						// pan有start/end/cancel 3个状态
+						if (e.state !== 'start') {
+							// console.log('解除绑定')
+							BindingX.unbind({token: e.token,eventType: 'pan'})
+							this.devButtonDeltaY += e.deltaY
+							this.devButtonDeltaX += e.deltaX
+							// this.bindDevButtonTiming()
+						}
+					})
+				)
 			},
-			scroll: function(e) {
-				this.$refs.msgPage.setParentContentOffsetX(e.contentOffsetX)
+			bindDevButtonTiming: function() {
+				let changeByX = Math.abs(this.devButtonDeltaX)
+				let changeByY = Math.abs(this.devButtonDeltaY)
+				var expressionX = `easeOutBack(t,${20},${-changeByX},200)`
+				var expressionY = `easeOutBack(t,${640},${0},200)`
+				console.log('bindTiming',this.devButtonDeltaX,this.devButtonDeltaY)
+				
+				BindingX.bind(
+					{
+						eventType: 'timing',
+						exitExpression: 't>200',
+						props: [
+							{
+								element: this.devButton,
+								property: 'transform.translateX',
+								expression: expressionX
+							},
+							{
+								element: this.devButton,
+								property: 'transform.translateY',
+								expression: expressionY
+							}
+						]
+					}
+				)
+				// dom.getComponentRect(this.devButton, (res) => {})
 			}
 		}
 	};

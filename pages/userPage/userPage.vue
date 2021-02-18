@@ -76,10 +76,10 @@
 			:fabElevation="0"
 			:height="screenHeightPx - statusBarHeight - 280 - 32 - 3" 
 			:width="screenWidthPx" 
-			:pageList="pageList" 
-			:touchMode="true"
+			:pageList="pageList"
+			:bounceMode="true"
 			:defaultPageId="'mine'"
-			:easingFunction="'easeOutBack'"
+			:parentContentOffsetX="parentContentOffsetX"
 			@resetStopPropagation="resetStopPropagation"
 			@stopPropagation="stopPropagation"
 			@bindParentScroll="bindParentScroll" 
@@ -94,7 +94,7 @@
 			<template v-slot:fab>
 				<view v-for="(item, index) in pageList" :key="item.id" :id="item.id" :ref="item.id" :style="{opacity: index == 0 ? 1 : 0.2}" 
 					style="justify-content: center;align-items: center;height: 32px;width: 100px;">
-					<text style="color: #EBEBEB;font-size: 16px;">{{item.text}}</text>
+					<text style="color: #EBEBEB;font-size: 16px;font-weight: bold">{{item.text}}</text>
 				</view>
 			</template>
 			
@@ -163,6 +163,10 @@
 			listScrollable: {
 				type: Boolean,
 				default: false
+			},
+			parentContentOffsetX: {
+				type: Number,
+				default: 0
 			}
 		},
 		data() {
@@ -194,30 +198,13 @@
 				setTimeout(() => {
 					this.isRefresh = false
 				}, 2000)
-			},			
-			bindParentScroll: function(e) {
-				// console.log("bindParentScroll")
-				this.$parent.isBindPan = false
-				this.$parent.bindPan(e.subSwiper)
-			},
-			bindParentTiming: function(speed, deltaX, deltaY) {	
-				// console.log("bindbindParentTiming")
-				this.$parent.bindTiming(speed, deltaX, deltaY)
-			},
-			unbindParentTiming: function() {	
-				// console.log("unbindbindParentTiming")
-				this.$parent.unbindTiming()				
-			},
-			setParentContentOffsetX: function(parentContentOffsetX) {
-				// console.log("setParentContentOffsetX")
-				this.$refs.subTab.setParentContentOffsetX(parentContentOffsetX)				
 			},
 			stopPropagation: function(e) {
-				console.log('stopPropagation')
+				// console.log('stopPropagation')
 				this.$parent.stopPropagation = true
 			},
 			resetStopPropagation: function(e) {
-				console.log('resetStopPropagation')
+				// console.log('resetStopPropagation')
 				this.$parent.stopPropagation = false
 			}
 		}

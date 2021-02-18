@@ -55,6 +55,8 @@ export default {
 	system,
 	screenHeightPx,
 	screenWidthPx,
+	// #ifdef APP-PLUS
 	realScreenWidth
+	// #endif	
 }
 

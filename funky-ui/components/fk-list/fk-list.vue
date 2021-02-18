@@ -246,7 +246,7 @@
 				}
 			},
 			scrollable: {
-				type: Object,
+				type: Boolean,
 				default: true
 			}
 		},

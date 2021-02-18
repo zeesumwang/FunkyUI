@@ -1,6 +1,11 @@
 
 <template>
-	<view class="container">
+	<view class="container" 
+		@touchstart="scrollerTouchStart"
+		@touchmove="scrollerTouchMove"
+		@touchend="scrollerTouchEnd"
+		@touchcancel="scrollerTouchCancel">
+		
 		<slot name="header"></slot>
 		<fk-transition
 			ref="fab"
@@ -23,12 +28,10 @@
 		</fk-transition>
 		
 		<scroller 
-			v-if="touchMode" 
 			ref="scroller" 
 			@scroll="scroll" 
 			@horizontalpan="horizontalpan"
-			@touchmove="scrollerTouchMove"
-			@touchend="scrollerTouchEnd"
+			
 			:scrollable="false" 
 			:show-scrollbar="false"
 			:scrollToBegin="false" 
@@ -38,9 +41,9 @@
 			:style="{height: height + 'px',width: width + 'px',backgroundColor: backgroundColor}"
 			style="flex-direction: row;">
 			
-			<view style="width: 100px;height: 100px;"></view>
+			<view :style="{width: bounceBias + 'px'}"></view>
 			
-			<view v-if="hasHidePage" @touchstart="checkPageStart($event,0)" ref='page-hide' id='page-hide'>
+			<view v-if="hasHidePage" ref='page-hide' id='page-hide'>
 				<slot name="hidePage"></slot>
 			</view>
 			
@@ -49,13 +52,19 @@
 				:ref="'page-'+item.id" 
 				:id="'page-'+item.id" 
 				:key="index"
-				@touchstart="checkPageStart($event,index + (hasHidePage ? 1 : 0))">
+			>
 				<slot :name="'mainPage'+index"></slot>
 			</view>
 			
-			<view style="width: 100px;height: 100px;"></view>
+			<view :style="{width: bounceBias + 'px'}"></view>
 		</scroller>
 		
+		<!-- <view style="position: absolute;left: 10px;top: 10px;">
+			<text style="color: #DD524D;">{{touches}}</text>
+			<text style="color: #DD524D;">{{start}}</text>
+			<text style="color: #DD524D;">{{end}}</text>
+			<text style="color: #DD524D;">{{moveX}}</text>
+		</view> -->
 	</view>
 </template>
 
@@ -88,10 +97,6 @@
 			parentId: {
 				default: ''
 			},
-			touchMode: {
-				type: Boolean,
-				default: true
-			},
 			defaultPageId: {
 				type: String,
 				default: ""
@@ -107,7 +112,7 @@
 						'justifyContent': 'space-around',
 						'alignItems': 'center',
 						'flexDirection': 'row',
-						'width': '350px',
+						'width': '260px',
 						'position': 'relative'
 					}
 				}
@@ -137,7 +142,7 @@
 				default: 0
 			},
 			bindProps: {
-				type: Object,
+				type: Array,
 				default () {
 					return []
 				}
@@ -152,7 +157,7 @@
 			},
 			easingFunction: {
 				type: String,
-				default: 'easeOutBack'
+				default: 'easeOutExpo'
 			},
 			cubicBezierControl: {
 				type: String,
@@ -169,12 +174,28 @@
 			bounceMode: {
 				type: Boolean,
 				default: false
-			}			
+			},
+			anmDurationGradient: {
+				type: Array,
+				default() {
+					return [700,600,500,400]
+				}
+			},
+			bounceBias: {
+				type: Number,
+				default: 0
+			},
+			parentContentOffsetX: {
+				type: Number,
+				default: 0
+			}
 		},
 		data() {
 			return {
 				isBindTab: false,
 				isBindPan: false,
+				isBindTiming: false,
+				isTouchStart: false,
 				platform: '',
 				screenHeightPx: 0,
 				screenWidthPx: 0,
@@ -195,7 +216,6 @@
 				currentPage: 0,
 				isBindParent: false,
 				bindParentMode: '',
-				parentContentOffsetX: 0,
 				lastUnbindAnmToken: '',
 				stopPropagation: false,
 				isHorizontalpan: false,
@@ -245,7 +265,7 @@
 					this.contentOffsetX = 0
 				}
 			}
-			this.scrollerBias = 100/this.screenWidthPx * this.realScreenWidth
+			this.scrollerBias = this.bounceBias / this.screenWidthPx * this.realScreenWidth
 			if(this.hasHidePage == true) {
 				this.pageCount = this.pageList.length + 1
 			}
@@ -261,7 +281,7 @@
 				// #ifdef APP-NVUE
 				dom.scrollToElement(indexElement, {
 					offset: 0,
-					animated: false
+					animated: true
 				})
 				// #endif
 			}			
@@ -294,15 +314,15 @@
 				}
 			},
 			getDuration: function(speed) {
-				let anmDuration = 600
+				let anmDuration = 0
 				if (speed > 3) {
-					anmDuration = 300
+					anmDuration = this.anmDurationGradient[3]
 				} else if (speed > 2) {
-					anmDuration = 400
+					anmDuration = this.anmDurationGradient[2]
 				} else if (speed > 1 && speed <= 2) {
-					anmDuration = 500
+					anmDuration = this.anmDurationGradient[1]
 				} else {
-					anmDuration = 600
+					anmDuration = this.anmDurationGradient[0]
 				}
 				return anmDuration
 			},
@@ -313,11 +333,6 @@
 					this.contentOffsetX = Math.ceil(Math.abs(e.contentOffset.x))
 				}
 				this.$emit('scroll', {'ref': this.swiper,'contentOffsetX': this.contentOffsetX - this.scrollerBias})
-			},			
-			setParentContentOffsetX: function(parentContentOffsetX) {
-				if(parentContentOffsetX !== undefined) {
-					this.parentContentOffsetX = parentContentOffsetX
-				}
 			},
 			scrollToPage: function(pageId) {
 				var Element = this.getEl(this.$refs[pageId])
@@ -339,34 +354,28 @@
 				}
 			},
 			bindTimingFinshed: function() {
+				this.isBindTiming = false
 				this.$emit('scrollend')
 			},
 			unbindPan: function() {
 				BindingX.unbind({token:this.panToken.token,eventType:'pan'})
 			},
 			unbindTiming: function(token) {
-				// 取消之前全部绑定，实现在timing过程中能够点击停止
+				// 取消之前动画绑定，实现在timing过程中能够点击停止
+				
 				if(token !== undefined) {
 					this.anmToken = token
 				}
-				// console.log(this.anmToken)
 				if(this.anmToken.token == undefined) {
 					return
 				}
-				
+				// console.log("unbindTiming",this.swiper,this.anmToken)
 				if (this.platform == 'ios') {
 					BindingX.unbind({token:this.anmToken.token,eventType:'timing'})
-					// console.log('unbindTiming',this.anmToken.token,this.swiper)
-					// BindingX.unbind({token:this.panToken.token,eventType:'pan'})
-					// BindingX.unbindAll()
-					// this.bindTap() // 再次绑定scroller的scroll事件
 				} else {
 					BindingX.unbind({token:this.anmToken.token,eventType:'timing'})
-					// console.log('unbindTiming',this.anmToken.token,this.swiper)
-					// BindingX.unbind({token:this.panToken.token,eventType:'pan'})
-					// BindingX.unbindAll()
-					// 安卓端的unbindAll()不会取消scroll事件的绑定，无需再次绑定
 				}
+				this.anmToken = {}
 			},
 			bindTap: function() {
 				this.isBindTab = true
@@ -434,7 +443,7 @@
 			bindPan: function(ref) {
 				// binding pan				
 				if(this.isBindPan) {
-					console.log('alreadyBindPan')
+					// console.log('alreadyBindPan')
 					return
 				}
 				
@@ -446,7 +455,7 @@
 				let scrollstartEvent = {'detail':'bindingPan','anchor':swiper,'target':this.swiper}
 				this.$emit('scrollstart',scrollstartEvent)
 				this.isBindPan = true
-				console.log('bindingPan',scrollstartEvent)
+				// console.log('bindingPan',scrollstartEvent)
 				var panExpression = ''
 				var bounceBiasExp = `${this.contentOffsetX} >= ${this.scrollerBias} && ${this.contentOffsetX} <= ${this.contentWidth}`
 				if (this.platform == 'ios') {
@@ -456,10 +465,10 @@
 					panExpression = `${bounceBiasExp} ? (${this.contentOffsetX} - x) : ${this.contentOffsetX} - x`
 				}
 				// 准备绑定pan事件
-				BindingX.prepare({
-					eventType: 'pan',
-					anchor: swiper
-				})
+				// BindingX.prepare({
+				// 	eventType: 'pan',
+				// 	anchor: swiper
+				// })
 				this.panToken = BindingX.bind({
 						eventType: 'pan',
 						anchor: swiper,
@@ -477,71 +486,181 @@
 						}
 					})
 				)
-			},					
-			checkPageStart: function(e,index) {
+			},			
+			bindTiming: function(speed, deltaX, deltaY) {
+				// console.log('bindTiming',this.swiper,this.anmToken)
+				this.isBindTiming = true
+				this.anmToken = {} //  重置anmToken
+				var isBounce = (this.contentOffsetX <= this.scrollerBias || this.contentOffsetX >= this.contentWidth)
+				var changeBy = 0
+				
+				if (deltaX > 0){
+					// console.log('左滑')
+					if(this.PageBias > this.realScreenWidth / 2 && !isBounce) {
+						// console.log('下一屏')
+						let changeBy = this.realScreenWidth - this.PageBias
+						let anmDuration = this.getDuration(speed)
+						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
+							if (e.state !== 'start') {
+								this.pageChange()
+							}
+						}))
+					}
+					else if (speed > 0.5 && this.PageBias !== 0 && !isBounce){
+						let anmDuration = this.getDuration(speed)
+						let changeBy = this.realScreenWidth - this.PageBias
+						// console.log('加速下一屏')
+						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
+							if (e.state !== 'start') {
+								this.pageChange()
+							}
+						}))
+					}
+					else {
+						// console.log('回弹')
+						let changeBy = - this.PageBias
+						this.transition(300, this.swiper, changeBy, ((e) => {
+							this.bindTimingFinshed()
+						}))
+					}
+				}  
+				else{
+					// console.log('右滑')
+					if(this.PageBias < this.realScreenWidth / 2) {
+						if (isBounce) {
+							// console.log('回弹')
+						}
+						else {
+							// console.log('上一屏')
+						}
+						
+						let changeBy = - this.PageBias
+						let anmDuration = this.getDuration(speed)
+						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
+							if (e.state !== 'start') {
+								this.pageChange()
+							}
+						}))
+					}
+					else if (speed > 0.5 && this.PageBias !== 0){
+						let anmDuration = this.getDuration(speed)
+						let changeBy = - this.PageBias
+						// console.log('加速上一屏')						
+						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
+							if (e.state !== 'start') {
+								this.pageChange()
+							}
+						}))
+					}
+					else {
+						// console.log('回弹')
+						let changeBy = this.realScreenWidth - this.PageBias
+						this.transition(300, this.swiper, changeBy, ((e) => {
+							this.bindTimingFinshed()
+						}))
+					}
+				}
+			},
+			transition: function(duration, el, changeBy, callback) {
+				var cubicBezierControl = ''
+				if(this.easingFunction == 'cubicBezier') {
+					cubicBezierControl += ','
+					cubicBezierControl += this.cubicBezierControl 
+				}
+				
+				var expression = `${this.easingFunction}(t,${this.contentOffsetX},${changeBy},${duration}${cubicBezierControl})`
+				this.anmToken = BindingX.bind({
+					eventType: 'timing',
+					exitExpression: {
+						origin: `t>${duration}`
+					},
+					props: [{
+						element: el,
+						property: 'scroll.contentOffsetX',
+						expression: expression
+					}]
+				}, callback)
+				// console.log(this.anmToken)
+			},
+			scrollerTouchStart: function(e) {
 				e.stopPropagation()
-				
-				this.unbindTiming()
-				
-				this.$emit('stopPropagation')
-				// if(this.stopPropagation) {
-				// 	return
-				// }
-				console.log('pageTouch',this.swiper)
-				
-				this.isBindParent = false
-				
-				let touchPageContentOffset = Math.abs(index * this.realScreenWidth)
-				this.startContentOffsetX = touchPageContentOffset
-				this.startContentOffsetX += this.scrollerBias
-				
-				if(this.isParentScrolling) {
-					e.subSwiper = this.swiper
-					console.log('bindParentScroll--touch')
-					this.$emit('unbindParentTiming')
-					this.$emit('bindParentScroll',e)
-					this.isBindParent = true
-					this.bindParentMode = 'touch'
+				if(e.timeStamp) {
+					e.timestamp = e.timeStamp
+				}
+				else{
 					return
 				}
 				
-				if(this.PageBias !== 0 && !this.isParentScrolling) {
+				this.$emit('stopPropagation')
+				if(this.stopPropagation) {
+					return
+				}
+				this.isTouchStart = true
+				// console.log('viewTouchStart',this.swiper,this.isRebindTouch,this.PageBias,this.parentContentOffsetX,e)
+				this.unbindTiming()
+				
+				if(this.PageBias !== 0 && !this.isRebindTouch) {
+					this.$emit('lockTouch')
 					this.isRebindTouch = true
 					e.type = 'scrollerTouchStart'
 					this.touchstart(e)
 				}
+				if(this.PageBias == 0) {
+					this.$emit('unlockTouch')
+				}
 			},
 			scrollerTouchMove: function(e) {
+				e.stopPropagation()
 				if(this.isRebindTouch) {
 					e.type = 'scrollerTouchMove'
+					if(e.timeStamp) {
+						e.timestamp = e.timeStamp
+					}
 					this.touchmove(e)
 				}
 				else {
 					return
 				}				
 			},
-			scrollerTouchEnd: function(e) {				
+			scrollerTouchEnd: function(e) {
+				e.stopPropagation()
+				if(this.stopPropagation) {
+					return
+				}
+				if(this.isTouchStart == false) {
+					return
+				}
+				
+				// console.log('viewTouchEnd',this.swiper,this.isTouchStart)
 				if(this.isRebindTouch) {
 					this.isRebindTouch = false
 					e.type = 'scrollerTouchEnd'
+					if(e.timeStamp) {
+						e.timestamp = e.timeStamp
+					}					
 					this.touchend(e)
 				}
-				else {
-					return
-				}				
+				this.$emit('resetStopPropagation')
+				this.isTouchStart = false
+			},
+			scrollerTouchCancel: function(e) {
+				this.scrollerTouchEnd(e)
 			},
 			horizontalpan: function(e) {
-				// e.stopPropagation() // 阻止冒泡，该API对horizontalpan无效，在ios中偶尔会冒泡到父组件，在Android中一直会冒泡，所以要自行实现阻止冒泡
-				
-				if(this.isRebindTouch || (this.isParentScrolling && !this.isBindParent)) {
+				e.stopPropagation()
+				if(this.isRebindTouch) {
 					return
 				}
 				
 				if(e.state == 'start') {
+					if(this.stopPropagation) {
+						return
+					}
 					e.type = 'horizontalPanStart'
+					this.isHorizontalpan = true
 					this.touchstart(e)
 				}
-				if(e.state == 'move') {
+				if(e.state == 'move') { 
 					if(!this.isHorizontalpan){
 						return
 					}
@@ -551,9 +670,10 @@
 				if(e.state == 'end') {
 					if(!this.isHorizontalpan){
 						return
-					}					
+					}
 					e.type = 'horizontalPanEnd'
 					this.touchend(e)
+					this.isHorizontalpan = false
 				}	
 			},
 			touchstart: function(e) {
@@ -561,11 +681,9 @@
 					return
 				}
 				
-				this.isHorizontalpan = true
 				this.recordCount = 0
 				this.changedTouches = []
-				
-				console.log(e.type,this.swiper,this.stopPropagation)
+				// console.log(e.type,this.swiper,this.stopPropagation)
 				// 记录触摸开始位置和触摸指（支持多点触摸）
 				var identifier = e.changedTouches[0].identifier
 				var screenX = e.changedTouches[0].screenX
@@ -593,13 +711,13 @@
 				}
 			},
 			touchmove: function(e) {
-				if(this.stopPropagation){
+				if(this.stopPropagation) {
 					return
 				}
 				if (this.recordCount > 0) {
 					return
 				}
-				console.log(e.type,this.swiper,this.stopPropagation)
+				// console.log(e.type,this.swiper,this.stopPropagation)
 				
 				this.recordCount += 1
 				var vectorX = e.changedTouches[0].screenX - this.changedTouches[0].screenX
@@ -620,7 +738,7 @@
 								this.bindPan()
 							}
 							else {
-								console.log('bindParentScroll--pan')
+								// console.log('bindParentScroll--pan')
 								this.$emit('bindParentScroll', e)
 								this.isBindParent = true
 								this.bindParentMode = 'pan'
@@ -636,12 +754,13 @@
 				}
 			},
 			touchend: function(e) {
-				if(this.stopPropagation){
+				if(this.stopPropagation) {
 					return
 				}
+				
 				this.isBindPan = false
-				this.isHorizontalpan = false
-				console.log(e.type,this.swiper,this.stopPropagation)
+				
+				// console.log(e.type,this.swiper,this.stopPropagation)
 				
 				var identifier = e.changedTouches[0].identifier
 				var screenX = e.changedTouches[0].screenX
@@ -651,7 +770,7 @@
 						var duration = e.timestamp - this.changedTouches[i].timestamp
 						var deltaX = -(screenX - this.changedTouches[i].screenX)
 						var deltaY = -(screenY - this.changedTouches[i].screenY)
-
+						
 						var speedX = Math.abs(deltaX) / duration
 						var speedY = Math.abs(deltaY) / duration
 						var speed = speedX
@@ -660,111 +779,14 @@
 							this.$emit('bindParentTiming',speed, deltaX, deltaY)
 						}
 						else {
+							// console.log(speed, deltaX, duration,e)
 							this.bindTiming(speed, deltaX, deltaY)
 						}
 						
 						break
 					}
 				}
-				this.changedTouches = []
-				this.$emit('resetStopPropagation')
-			},			
-			bindTiming: function(speed, deltaX, deltaY) {
-				this.anmToken = {} //  重置anmToken
-				var isBounce = (this.contentOffsetX <= this.scrollerBias || this.contentOffsetX >= this.contentWidth)
-				var changeBy = 0
-				
-				if (deltaX > 0) {
-					changeBy = this.startContentOffsetX + this.realScreenWidth - this.contentOffsetX
-				}
-				else {
-					changeBy = -(this.contentOffsetX - (this.startContentOffsetX - this.realScreenWidth))
-				}				
-				
-				if (speed > 0.5 && (this.PageBias) !== 0 && !this.isBindParent && !isBounce) {
-					let anmDuration = this.getDuration(speed)
-					if (deltaX > 0) {
-						if (changeBy + this.contentOffsetX > this.contentWidth) {
-							changeBy = this.contentWidth - this.contentOffsetX
-							anmDuration = 200
-						}
-						
-						// console.log('加速下一屏', anmDuration, speed, this.swiper,this.contentOffsetX,changeBy)
-						
-						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
-							if (e.state !== 'start') {
-								this.pageChange()
-							}
-						}))
-					} 
-					else {
-						if (changeBy + this.contentOffsetX + 2 < this.scrollerBias) {
-							changeBy = -1 * (this.contentOffsetX - this.scrollerBias)
-							anmDuration = 200
-						}
-						
-						// console.log('加速上一屏', anmDuration, speed, this.swiper,this.contentOffsetX,changeBy)
-						
-						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
-							if (e.state !== 'start') {
-								this.pageChange()
-							}
-						}))
-					}
-				} 
-				else {
-					var deltaX = this.contentOffsetX - this.startContentOffsetX
-					
-					if (Math.abs(deltaX) > this.realScreenWidth * 0.5) {
-						if (deltaX > 0) {
-							// console.log('下一屏')
-							let changeBy = this.startContentOffsetX + this.realScreenWidth - this.contentOffsetX
-							let anmDuration = this.getDuration(speed)
-							this.transition(anmDuration, this.swiper, changeBy, ((e) => {
-								if (e.state !== 'start') {
-									this.pageChange()
-								}
-							}))
-						} else {
-							// console.log('上一屏')
-							let changeBy = -(this.contentOffsetX - (this.startContentOffsetX - this.realScreenWidth))
-							let anmDuration = this.getDuration(speed)
-							this.transition(anmDuration, this.swiper, changeBy, ((e) => {
-								if (e.state !== 'start') {
-									this.pageChange()
-								}
-							}))
-						}
-					} else {
-						// console.log('回弹')
-						let changeBy = -deltaX
-						this.transition(300, this.swiper, changeBy, ((e) => {
-							this.bindTimingFinshed()
-						}))
-					}
-					
-				}
-			},
-			transition: function(duration, el, changeBy, callback) {
-				var cubicBezierControl = ''
-				if(this.easingFunction == 'cubicBezier') {
-					cubicBezierControl += ','
-					cubicBezierControl += this.cubicBezierControl 
-				}
-				
-				var expression = `${this.easingFunction}(t,${this.contentOffsetX},${changeBy},${duration}${cubicBezierControl})`
-				this.anmToken = BindingX.bind({
-					eventType: 'timing',
-					exitExpression: {
-						origin: `t>${duration}`
-					},
-					props: [{
-						element: el,
-						property: 'scroll.contentOffsetX',
-						expression: expression
-					}]
-				}, callback)
-				// console.log(this.anmToken)
+				this.changedTouches = []				
 			}
 		}
 	}
