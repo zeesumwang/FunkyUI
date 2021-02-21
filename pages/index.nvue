@@ -2,9 +2,9 @@
 	<view>
 
 		<fk-tab ref="main-tab" @pageChange="pageChange" @scroll="scroll" @lockTouch="listScrollable = false" @unlockTouch="listScrollable = true"
-		 :pageList="fabList" :defaultPageId="'home'" :easingFunction="'easeOutExpo'" :hasHidePage="true" :bindFabExpression="bindFabExpression"
+		 :pageList="fabList" :defaultPageId="'home'" :easingFunction="easingFunction" :hasHidePage="true" :bindFabExpression="bindFabExpression"
 		 :bindFabProperty="bindFabProperty" :fabStyles="fabStyles" :fabBackgroundColor="'#1e1e1e'" :backgroundColor="'#0b0b0b'"
-		 :fabOpacity="0.96" :fabBlurEffect="'dark'" :fabElevation="10" :height="screenHeightPx" :width="screenWidthPx"
+		 :fabOpacity="0.96" :fabBlurEffect="'dark'" :fabElevation="15" :height="screenHeightPx" :width="screenWidthPx"
 		 :indicatorBias="15" :bounceMode="true">
 			<template v-slot:fab>
 				<view @tap="fabTap($event,index)" v-for="(item, index) in fabList" :key="item.id" :id="item.id" :ref="item.id"
@@ -26,9 +26,19 @@
 			</template>
 
 			<template v-slot:hidePage>
-				<fk-video-list :videoData="videoData" :isPlay="currentPage==-1" @videoChange="videoChange">
+				<!-- <fk-video-list :videoData="videoData" :isPlay="currentPage==-1" @videoChange="videoChange">
 
-				</fk-video-list>
+				</fk-video-list> -->
+				<view :style="{height: statusBarHeight + 'px'}"></view>
+				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :scrollable="listScrollable"
+				 :isRefresh="isRefresh" @refreshing="refreshing">
+					<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
+						<view style="height: 220px;border-radius: 4px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #6e7070;"
+						 :style="{width: screenWidthPx + 'px'}">
+							<text style="color: #ebebeb">{{item}}</text>
+						</view>
+					</fk-cell>
+				</fk-list>
 			</template>
 
 			<template v-slot:mainPage0>
@@ -36,12 +46,13 @@
 				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :scrollable="listScrollable"
 				 :isRefresh="isRefresh" @refreshing="refreshing">
 					<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
-						<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #252626;"
-						 :style="{width: screenWidthPx -10 + 'px'}">
+						<view style="height: 220px;border-radius: 4px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #1a181a;"
+						 :style="{width: screenWidthPx + 'px'}">
 							<text style="color: #ebebeb">{{item}}</text>
 						</view>
 					</fk-cell>
 				</fk-list>
+					
 			</template>
 
 			<template v-slot:mainPage1>
@@ -49,8 +60,8 @@
 				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :scrollable="listScrollable"
 				 :isRefresh="isRefresh" @refreshing="refreshing">
 					<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
-						<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #252626;"
-						 :style="{width: screenWidthPx -10 + 'px'}">
+						<view style="height: 220px;border-radius: 4px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #1a181a;"
+						 :style="{width: screenWidthPx + 'px'}">
 							<text style="color: #ebebeb">{{item}}</text>
 						</view>
 					</fk-cell>
@@ -58,20 +69,12 @@
 			</template>
 
 			<template v-slot:mainPage2>
-				<view :style="{height: statusBarHeight + 'px'}"></view>
-				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :scrollable="listScrollable"
-				 :isRefresh="isRefresh" @refreshing="refreshing">
-					<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
-						<view style="height: 220px;border-radius: 10px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #252626;"
-						 :style="{width: screenWidthPx -10 + 'px'}">
-							<text style="color: #ebebeb">{{item}}</text>
-						</view>
-					</fk-cell>
-				</fk-list>
+				<userPage :easingFunction="easingFunction"></userPage>
+				
 			</template>
 
 			<template v-slot:mainPage3>
-				<userPage ref="userPage" :listScrollable="listScrollable" :parentContentOffsetX="contentOffsetX"></userPage>
+				<userPage :easingFunction="easingFunction"></userPage>
 
 			</template>
 		</fk-tab>
@@ -81,7 +84,7 @@
 			@touchstart="bindDevButtonPan"
 			elevation="15px"
 			style="position: fixed;bottom: 100px;width: 50px;height: 50px;border-width: 3px;border-color: #FFFFFF;background-color: #ec7d9c; border-radius: 25px;justify-content: center;align-items: center;">
-			<text style="color: #FFFFFF;font-size: 16px;font-weight: bold;">Dev</text>
+			<text style="color: #FFFFFF;font-size: 15px;font-weight: bold;">Funky</text>
 		</view>
 	</view>
 
@@ -132,10 +135,14 @@
 				fabStyles: {},
 				listScrollable: true,
 				contentOffsetX: 0,
+				
+				easingFunction: 'easeOutQuint',
+				
 				devButtonDeltaY: 0,
 				devButtonDeltaX: 0,
 				devButton: '',
-				bottom: 100
+				isBindingTime: false,
+				bottom: 100,
 			}
 		},
 		onPullDownRefresh() {
@@ -162,7 +169,7 @@
 			} else {
 				var fabHeight = this.statusBarHeight
 			}
-			var fabMaxTranslateY = fabHeight * 4
+			var fabMaxTranslateY = fabHeight * 3
 			this.bindFabExpression =
 				`${fabMaxTranslateY} * (x < ${screenInfo.realScreenWidth} ? (1 - x / ${screenInfo.realScreenWidth}) : 0)`
 			this.bindFabProperty = 'transform.translateY'
@@ -206,7 +213,10 @@
 				}
 			},
 			bindDevButtonPan: function(e) {
-				var panToken = BindingX.bind({
+				if(this.isBindingTime) {
+					return
+				}
+				BindingX.bind({
 						eventType: 'pan',
 						anchor: this.devButton,
 						props: [
@@ -229,35 +239,33 @@
 							BindingX.unbind({token: e.token,eventType: 'pan'})
 							this.devButtonDeltaY += e.deltaY
 							this.devButtonDeltaX += e.deltaX
-							// this.bindDevButtonTiming()
+							this.bindDevButtonTiming()
 						}
 					})
 				)
 			},
 			bindDevButtonTiming: function() {
-				let changeByX = Math.abs(this.devButtonDeltaX)
-				let changeByY = Math.abs(this.devButtonDeltaY)
-				var expressionX = `easeOutBack(t,${20},${-changeByX},200)`
-				var expressionY = `easeOutBack(t,${640},${0},200)`
-				console.log('bindTiming',this.devButtonDeltaX,this.devButtonDeltaY)
+				let changeByX = this.devButtonDeltaX
+				var expressionX = `easeOutBack(t,${changeByX},${-changeByX},500)`
 				
-				BindingX.bind(
-					{
+				this.isBindingTime = true
+				BindingX.bind({
 						eventType: 'timing',
-						exitExpression: 't>200',
+						exitExpression: 't>500',
 						props: [
 							{
 								element: this.devButton,
 								property: 'transform.translateX',
 								expression: expressionX
-							},
-							{
-								element: this.devButton,
-								property: 'transform.translateY',
-								expression: expressionY
 							}
 						]
-					}
+					},
+					((e) => {
+						if(e.state !== 'start') {
+							this.devButtonDeltaX = 0
+							this.isBindingTime = false
+						}
+					})
 				)
 				// dom.getComponentRect(this.devButton, (res) => {})
 			}

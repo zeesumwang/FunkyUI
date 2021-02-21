@@ -74,7 +74,7 @@
 			ref="list"
 			:style="{'height': height + 'px','width': width + 'px'}" 
 			:show-scrollbar="showScrollbar" 
-			:bounce="!bounce"
+			:bounce="bounce"
 			:scrollable="scrollable"
 			:loadmoreoffset="50"
 			:offset-accuracy="15"

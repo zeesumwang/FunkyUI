@@ -2,7 +2,6 @@
 <template>
 	<view class="container" 
 		@touchstart="scrollerTouchStart"
-		@touchmove="scrollerTouchMove"
 		@touchend="scrollerTouchEnd"
 		@touchcancel="scrollerTouchCancel">
 		
@@ -31,11 +30,10 @@
 			ref="scroller" 
 			@scroll="scroll" 
 			@horizontalpan="horizontalpan"
-			
 			:scrollable="false" 
 			:show-scrollbar="false"
 			:scrollToBegin="false" 
-			:offset-accuracy="0.01" 
+			:offset-accuracy="0.99" 
 			:scroll-direction="'horizontal'" 
 			:pagingEnabled="false" 
 			:style="{height: height + 'px',width: width + 'px',backgroundColor: backgroundColor}"
@@ -59,12 +57,24 @@
 			<view :style="{width: bounceBias + 'px'}"></view>
 		</scroller>
 		
-		<!-- <view style="position: absolute;left: 10px;top: 10px;">
-			<text style="color: #DD524D;">{{touches}}</text>
-			<text style="color: #DD524D;">{{start}}</text>
-			<text style="color: #DD524D;">{{end}}</text>
-			<text style="color: #DD524D;">{{moveX}}</text>
-		</view> -->
+		<view style="position: absolute;left: 10px;top: 60px;" v-if="debug">
+			<view style="flex-direction: row;">
+				<text style="color: #DD524D;">isBindPan: </text>
+				<text style="color: #008000;">{{isBindPan}}</text>
+			</view>
+			<view style="flex-direction: row;">
+				<text style="color: #DD524D;">isBindTiming: </text>
+				<text style="color: #008000;">{{isBindTiming}}</text>
+			</view>
+			<view style="flex-direction: row;">
+				<text style="color: #DD524D;">isBindParent: </text>
+				<text style="color: #008000;">{{isBindParent}}</text>
+			</view>
+			<view style="flex-direction: row;">
+				<text style="color: #DD524D;">contentOffsetX: </text>
+				<text style="color: #008000;">{{contentOffsetX}}</text>
+			</view>			
+		</view>
 	</view>
 </template>
 
@@ -112,7 +122,7 @@
 						'justifyContent': 'space-around',
 						'alignItems': 'center',
 						'flexDirection': 'row',
-						'width': '260px',
+						'width': '200px',
 						'position': 'relative'
 					}
 				}
@@ -178,7 +188,7 @@
 			anmDurationGradient: {
 				type: Array,
 				default() {
-					return [700,600,500,400]
+					return [600,550,450,350]
 				}
 			},
 			bounceBias: {
@@ -188,7 +198,15 @@
 			parentContentOffsetX: {
 				type: Number,
 				default: 0
-			}
+			},
+			isBindParent :{
+				type: Boolean,
+				default: false
+			},
+			debug :{
+				type: Boolean,
+				default: false
+			},
 		},
 		data() {
 			return {
@@ -214,7 +232,6 @@
 				endFabX: 0,
 				recordCount: 0,
 				currentPage: 0,
-				isBindParent: false,
 				bindParentMode: '',
 				lastUnbindAnmToken: '',
 				stopPropagation: false,
@@ -274,7 +291,6 @@
 			}
 		},
 		mounted() {
-			
 			if(this.defaultPageId !== ""){
 				var indexElement = this.getEl(this.$refs['page-' + this.defaultPageId])
 				
@@ -284,11 +300,14 @@
 					animated: true
 				})
 				// #endif
-			}			
-						
+			}
 			setTimeout(() => {				
 				this.swiper = this.getEl(this.$refs['scroller'])
-				
+				// 准备绑定pan事件
+				BindingX.prepare({
+					eventType: 'pan',
+					anchor: this.swiper
+				})
 				dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani), (res) => {
 					var fabLeft = res.size.left
 					dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani.children[0]), ((res) => {
@@ -301,9 +320,6 @@
 				})
 			}, 500)
 			
-		},
-		updated() {
-			// console.log('updated')
 		},
 		methods: {
 			getEl: function(e) {
@@ -328,9 +344,9 @@
 			},
 			scroll: function(e) {
 				if (this.platform == 'ios') {
-					this.contentOffsetX = Math.ceil(Math.abs(e.contentOffset.x)) * (750 / this.screenWidthPx)
+					this.contentOffsetX = Math.abs(e.contentOffset.x) * (750 / this.screenWidthPx)
 				} else {
-					this.contentOffsetX = Math.ceil(Math.abs(e.contentOffset.x))
+					this.contentOffsetX = Math.abs(e.contentOffset.x)
 				}
 				this.$emit('scroll', {'ref': this.swiper,'contentOffsetX': this.contentOffsetX - this.scrollerBias})
 			},
@@ -359,6 +375,7 @@
 			},
 			unbindPan: function() {
 				BindingX.unbind({token:this.panToken.token,eventType:'pan'})
+				this.isBindPan = false
 			},
 			unbindTiming: function(token) {
 				// 取消之前动画绑定，实现在timing过程中能够点击停止
@@ -446,6 +463,10 @@
 					// console.log('alreadyBindPan')
 					return
 				}
+				if(this.isBindParent) {
+					// console.log('alreadyBindPan')
+					return
+				}
 				
 				var swiper = this.swiper
 				if(ref !== undefined){
@@ -464,12 +485,9 @@
 				} else {
 					panExpression = `${bounceBiasExp} ? (${this.contentOffsetX} - x) : ${this.contentOffsetX} - x`
 				}
-				// 准备绑定pan事件
-				// BindingX.prepare({
-				// 	eventType: 'pan',
-				// 	anchor: swiper
-				// })
-				this.panToken = BindingX.bind({
+				
+				this.panToken = BindingX.bind(
+					{
 						eventType: 'pan',
 						anchor: swiper,
 						props: [{
@@ -480,6 +498,7 @@
 						]
 					},
 					((e)=>{
+						// console.log(e)
 						if(e.state !== 'start'){
 							BindingX.unbind({token: this.panToken.token, eventType: 'pan'})
 							this.isBindPan = false
@@ -519,8 +538,15 @@
 					else {
 						// console.log('回弹')
 						let changeBy = - this.PageBias
-						this.transition(300, this.swiper, changeBy, ((e) => {
-							this.bindTimingFinshed()
+						// console.log(changeBy,this.realScreenWidth)
+						let duration = 200
+						if(changeBy > this.realScreenWidth * 0.25) {
+							duration = 500
+						}
+						this.transition(duration, this.swiper, changeBy, ((e) => {
+							if (e.state !== 'start') {
+								this.bindTimingFinshed()
+							}
 						}))
 					}
 				}  
@@ -555,13 +581,23 @@
 					else {
 						// console.log('回弹')
 						let changeBy = this.realScreenWidth - this.PageBias
-						this.transition(300, this.swiper, changeBy, ((e) => {
-							this.bindTimingFinshed()
+						// console.log(changeBy,this.realScreenWidth)
+						let duration = 200
+						if(changeBy > this.realScreenWidth * 0.25) {
+							duration = 500
+						}
+						this.transition(duration, this.swiper, changeBy, ((e) => {
+							if (e.state !== 'start') {
+								this.bindTimingFinshed()
+							}
 						}))
 					}
 				}
 			},
 			transition: function(duration, el, changeBy, callback) {
+				if (changeBy == 0) {
+					return
+				}
 				var cubicBezierControl = ''
 				if(this.easingFunction == 'cubicBezier') {
 					cubicBezierControl += ','
@@ -590,11 +626,10 @@
 				else{
 					return
 				}
-				
-				this.$emit('stopPropagation')
-				if(this.stopPropagation) {
-					return
-				}
+				e.subSwiper = this.swiper
+				e.bindType = 'touch'
+				// console.log('bindParentScroll--touch',this.swiper)
+				this.$emit('bindParentScroll', e)
 				this.isTouchStart = true
 				// console.log('viewTouchStart',this.swiper,this.isRebindTouch,this.PageBias,this.parentContentOffsetX,e)
 				this.unbindTiming()
@@ -604,13 +639,14 @@
 					this.isRebindTouch = true
 					e.type = 'scrollerTouchStart'
 					this.touchstart(e)
+					this.bindPan()
 				}
-				if(this.PageBias == 0) {
+				else {
 					this.$emit('unlockTouch')
 				}
 			},
 			scrollerTouchMove: function(e) {
-				e.stopPropagation()
+				e.stopPropagation()   
 				if(this.isRebindTouch) {
 					e.type = 'scrollerTouchMove'
 					if(e.timeStamp) {
@@ -624,13 +660,10 @@
 			},
 			scrollerTouchEnd: function(e) {
 				e.stopPropagation()
-				if(this.stopPropagation) {
-					return
-				}
 				if(this.isTouchStart == false) {
 					return
 				}
-				
+				this.unbindPan()
 				// console.log('viewTouchEnd',this.swiper,this.isTouchStart)
 				if(this.isRebindTouch) {
 					this.isRebindTouch = false
@@ -639,8 +672,8 @@
 						e.timestamp = e.timeStamp
 					}					
 					this.touchend(e)
+					this.$emit('unlockTouch')
 				}
-				this.$emit('resetStopPropagation')
 				this.isTouchStart = false
 			},
 			scrollerTouchCancel: function(e) {
@@ -653,28 +686,25 @@
 				}
 				
 				if(e.state == 'start') {
-					if(this.stopPropagation) {
-						return
-					}
 					e.type = 'horizontalPanStart'
 					this.isHorizontalpan = true
 					this.touchstart(e)
 				}
 				if(e.state == 'move') { 
-					if(!this.isHorizontalpan){
-						return
-					}
 					e.type = 'horizontalPanMove'
 					this.touchmove(e)
 				}
 				if(e.state == 'end') {
-					if(!this.isHorizontalpan){
-						return
-					}
 					e.type = 'horizontalPanEnd'
 					this.touchend(e)
 					this.isHorizontalpan = false
-				}	
+				}
+				if(e.state == 'cancel') {
+					console.log('?')
+					e.type = 'horizontalPanEnd'
+					this.touchend(e)
+					this.isHorizontalpan = false
+				}
 			},
 			touchstart: function(e) {
 				if(this.stopPropagation) {
@@ -738,9 +768,9 @@
 								this.bindPan()
 							}
 							else {
-								// console.log('bindParentScroll--pan')
+								e.bindType = 'pan'
+								// console.log('bindParentScroll--pan',this.swiper)
 								this.$emit('bindParentScroll', e)
-								this.isBindParent = true
 								this.bindParentMode = 'pan'
 							}
 						}
@@ -757,8 +787,6 @@
 				if(this.stopPropagation) {
 					return
 				}
-				
-				this.isBindPan = false
 				
 				// console.log(e.type,this.swiper,this.stopPropagation)
 				
@@ -779,7 +807,7 @@
 							this.$emit('bindParentTiming',speed, deltaX, deltaY)
 						}
 						else {
-							// console.log(speed, deltaX, duration,e)
+							// console.log(speed, deltaX, duration,e.type)
 							this.bindTiming(speed, deltaX, deltaY)
 						}
 						

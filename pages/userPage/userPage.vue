@@ -77,23 +77,14 @@
 			:height="screenHeightPx - statusBarHeight - 280 - 32 - 3" 
 			:width="screenWidthPx" 
 			:pageList="pageList"
-			:bounceMode="true"
 			:defaultPageId="'mine'"
-			:parentContentOffsetX="parentContentOffsetX"
-			@resetStopPropagation="resetStopPropagation"
-			@stopPropagation="stopPropagation"
-			@bindParentScroll="bindParentScroll" 
-			@bindParentTiming="bindParentTiming" 
-			@unbindParentTiming="unbindParentTiming"
-			@recoverParentTiming="recoverParentTiming">
-			
-			<template v-slot:header>
-				
-			</template>
+			:isBindParent="isBindParent"
+			:easingFunction="easingFunction"
+			@bindParentScroll="bindParentScroll">
 			
 			<template v-slot:fab>
 				<view v-for="(item, index) in pageList" :key="item.id" :id="item.id" :ref="item.id" :style="{opacity: index == 0 ? 1 : 0.2}" 
-					style="justify-content: center;align-items: center;height: 32px;width: 100px;">
+					style="justify-content: center;align-items: center;height: 32px;">
 					<text style="color: #EBEBEB;font-size: 16px;font-weight: bold">{{item.text}}</text>
 				</view>
 			</template>
@@ -167,6 +158,10 @@
 			parentContentOffsetX: {
 				type: Number,
 				default: 0
+			},
+			easingFunction: {
+				type: String,
+				default: ''
 			}
 		},
 		data() {
@@ -175,6 +170,7 @@
 				screenWidthPx: 0,
 				statusBarHeight: 0,
 				isRefresh: false,
+				isBindParent: false,
 				pageList: [
 					{
 						id: 'mine',
@@ -184,7 +180,7 @@
 						id: 'liked',
 						text: '收藏'
 					}
-				]				
+				]
 			}
 		},
 		created() {
@@ -201,11 +197,34 @@
 			},
 			stopPropagation: function(e) {
 				// console.log('stopPropagation')
-				this.$parent.stopPropagation = true
+				// this.$parent.stopPropagation = true
 			},
 			resetStopPropagation: function(e) {
 				// console.log('resetStopPropagation')
-				this.$parent.stopPropagation = false
+				// this.$parent.stopPropagation = false
+			},
+			bindParentScroll: function(e) {
+				// console.log(e.bindType)
+				if(e.bindType == 'touch') {
+					if(this.$parent.PageBias !== 0) {
+						this.$parent.unbindTiming()
+						this.$parent.bindPan(e.subSwiper)
+						this.isBindParent = true
+					}
+					else {
+						this.isBindParent = false
+					}
+				}
+				else {
+					if(this.$parent.PageBias == 0) {
+						this.$parent.unbindTiming()
+						this.$parent.bindPan(e.subSwiper)
+						this.isBindParent = true
+					}
+					else {
+						this.isBindParent = false
+					}
+				}
 			}
 		}
 	}
