@@ -45,7 +45,7 @@
 			:src="src"
 			:autoplay="false" 
 			:loop="true"
-			:show-loading="true"
+			:show-loading="false"
 			:show-progress="false"
 			:show-fullscreen-btn="false"
 			:show-play-btn="false"
@@ -175,7 +175,7 @@
 				this.imageHight = this.width / e.detail.width * e.detail.height
 			},
 			play: function(e) {
-				console.log(this.isVideoLoad)
+				// console.log(this.isVideoLoad)
 				// console.log(this.videoId,e)
 			},
 			waiting: function(e) {

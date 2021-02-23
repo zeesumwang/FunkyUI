@@ -1,6 +1,6 @@
 
 <template>
-	<view class="container" 
+	<view class="container"
 		@touchstart="scrollerTouchStart"
 		@touchend="scrollerTouchEnd"
 		@touchcancel="scrollerTouchCancel">
@@ -28,12 +28,13 @@
 		
 		<scroller 
 			ref="scroller" 
-			@scroll="scroll" 
+			:shouldStopPropagationInitResult="true"
+			shouldStopPropagationInterval="1000000"
 			@horizontalpan="horizontalpan"
 			:scrollable="false" 
 			:show-scrollbar="false"
 			:scrollToBegin="false" 
-			:offset-accuracy="0.99" 
+			:offset-accuracy="true ? 100000 : (PageBias < 11 || PageBias > realScreenWidth - 11) && !isBindPan || isAttachBiasLeft || isAttachBiasRight ? 0.9 : 10" 
 			:scroll-direction="'horizontal'" 
 			:pagingEnabled="false" 
 			:style="{height: height + 'px',width: width + 'px',backgroundColor: backgroundColor}"
@@ -73,7 +74,11 @@
 			<view style="flex-direction: row;">
 				<text style="color: #DD524D;">contentOffsetX: </text>
 				<text style="color: #008000;">{{contentOffsetX}}</text>
-			</view>			
+			</view>
+			<view style="flex-direction: row;">
+				<text style="color: #DD524D;">PageBias: </text>
+				<text style="color: #008000;">{{PageBias}}</text>
+			</view>
 		</view>
 	</view>
 </template>
@@ -188,7 +193,7 @@
 			anmDurationGradient: {
 				type: Array,
 				default() {
-					return [600,550,450,350]
+					return [700,600,500,400]
 				}
 			},
 			bounceBias: {
@@ -331,11 +336,11 @@
 			},
 			getDuration: function(speed) {
 				let anmDuration = 0
-				if (speed > 3) {
+				if (speed > 3.5) {
 					anmDuration = this.anmDurationGradient[3]
-				} else if (speed > 2) {
+				} else if (speed > 2.5) {
 					anmDuration = this.anmDurationGradient[2]
-				} else if (speed > 1 && speed <= 2) {
+				} else if (speed > 1.5 && speed <= 2.5) {
 					anmDuration = this.anmDurationGradient[1]
 				} else {
 					anmDuration = this.anmDurationGradient[0]
@@ -343,6 +348,7 @@
 				return anmDuration
 			},
 			scroll: function(e) {
+				// e.stopPropagation(true)
 				if (this.platform == 'ios') {
 					this.contentOffsetX = Math.abs(e.contentOffset.x) * (750 / this.screenWidthPx)
 				} else {
@@ -359,15 +365,15 @@
 				setTimeout(()=>{this.pageChange()},400)				
 			},
 			pageChange: function() {
-				this.bindTimingFinshed()
 				if(this.hasHidePage){
-					this.currentPage = Math.floor((this.contentOffsetX - this.scrollerBias) / this.realScreenWidth) - 1
-					this.$emit('pageChange', this.currentPage)
+					this.currentPage = Math.floor((Math.round(this.contentOffsetX) - this.scrollerBias) / this.realScreenWidth) - 1
+					this.$emit('pageChange', {'currentPage': this.currentPage,'swiperRef': this.swiper})
 				}
 				else{
-					this.currentPage = Math.floor((this.contentOffsetX - this.scrollerBias) / this.realScreenWidth)
-					this.$emit('pageChange', this.currentPage)
+					this.currentPage = Math.floor((Math.round(this.contentOffsetX) - this.scrollerBias) / this.realScreenWidth)
+					this.$emit('pageChange', {'currentPage': this.currentPage,'swiperRef': this.swiper})
 				}
+				this.bindTimingFinshed()
 			},
 			bindTimingFinshed: function() {
 				this.isBindTiming = false
@@ -377,13 +383,9 @@
 				BindingX.unbind({token:this.panToken.token,eventType:'pan'})
 				this.isBindPan = false
 			},
-			unbindTiming: function(token) {
+			unbindTiming: function() {
 				// 取消之前动画绑定，实现在timing过程中能够点击停止
-				
-				if(token !== undefined) {
-					this.anmToken = token
-				}
-				if(this.anmToken.token == undefined) {
+				if(this.anmToken.token == undefined || this.anmToken == {}) {
 					return
 				}
 				// console.log("unbindTiming",this.swiper,this.anmToken)
@@ -393,6 +395,7 @@
 					BindingX.unbind({token:this.anmToken.token,eventType:'timing'})
 				}
 				this.anmToken = {}
+				this.isBindTiming = false
 			},
 			bindTap: function() {
 				this.isBindTab = true
@@ -452,9 +455,21 @@
 					eventType: 'scroll',
 					anchor: this.swiper,
 					props: props
-				}, ((e) => {
-					// console.log(e.x)
-				}))
+				}
+				, 
+				((e) => {
+					if(e.state == 'turn') {
+						// console.log(e)
+						let scrollevent = {
+							contentOffset: {
+								x: e.x
+							}
+						}
+						this.scroll(scrollevent)
+					}
+					
+				})
+				)
 
 			},
 			bindPan: function(ref) {
@@ -500,8 +515,8 @@
 					((e)=>{
 						// console.log(e)
 						if(e.state !== 'start'){
-							BindingX.unbind({token: this.panToken.token, eventType: 'pan'})
-							this.isBindPan = false
+							// console.log(e)
+							this.unbindPan()
 						}
 					})
 				)
@@ -520,7 +535,7 @@
 						let changeBy = this.realScreenWidth - this.PageBias
 						let anmDuration = this.getDuration(speed)
 						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
-							if (e.state !== 'start') {
+							if (e.state !== 'start' && e.t < 10000000) {
 								this.pageChange()
 							}
 						}))
@@ -530,7 +545,7 @@
 						let changeBy = this.realScreenWidth - this.PageBias
 						// console.log('加速下一屏')
 						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
-							if (e.state !== 'start') {
+							if (e.state !== 'start' && e.t < 10000000) {
 								this.pageChange()
 							}
 						}))
@@ -538,13 +553,12 @@
 					else {
 						// console.log('回弹')
 						let changeBy = - this.PageBias
-						// console.log(changeBy,this.realScreenWidth)
-						let duration = 200
+						let duration = this.anmDurationGradient[2]
 						if(changeBy > this.realScreenWidth * 0.25) {
-							duration = 500
+							duration = this.anmDurationGradient[0]
 						}
 						this.transition(duration, this.swiper, changeBy, ((e) => {
-							if (e.state !== 'start') {
+							if (e.state !== 'start' && e.t < 10000000) {
 								this.bindTimingFinshed()
 							}
 						}))
@@ -563,7 +577,7 @@
 						let changeBy = - this.PageBias
 						let anmDuration = this.getDuration(speed)
 						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
-							if (e.state !== 'start') {
+							if (e.state !== 'start' && e.t < 10000000) {
 								this.pageChange()
 							}
 						}))
@@ -573,7 +587,7 @@
 						let changeBy = - this.PageBias
 						// console.log('加速上一屏')						
 						this.transition(anmDuration, this.swiper, changeBy, ((e) => {
-							if (e.state !== 'start') {
+							if (e.state !== 'start' && e.t < 10000000) {
 								this.pageChange()
 							}
 						}))
@@ -582,12 +596,12 @@
 						// console.log('回弹')
 						let changeBy = this.realScreenWidth - this.PageBias
 						// console.log(changeBy,this.realScreenWidth)
-						let duration = 200
+						let duration = this.anmDurationGradient[2]
 						if(changeBy > this.realScreenWidth * 0.25) {
-							duration = 500
+							duration = this.anmDurationGradient[0]
 						}
 						this.transition(duration, this.swiper, changeBy, ((e) => {
-							if (e.state !== 'start') {
+							if (e.state !== 'start' && e.t < 10000000) {
 								this.bindTimingFinshed()
 							}
 						}))
@@ -598,6 +612,7 @@
 				if (changeBy == 0) {
 					return
 				}
+				// console.log(duration, el, changeBy)
 				var cubicBezierControl = ''
 				if(this.easingFunction == 'cubicBezier') {
 					cubicBezierControl += ','
@@ -626,6 +641,7 @@
 				else{
 					return
 				}
+				
 				e.subSwiper = this.swiper
 				e.bindType = 'touch'
 				// console.log('bindParentScroll--touch',this.swiper)
@@ -677,6 +693,7 @@
 				this.isTouchStart = false
 			},
 			scrollerTouchCancel: function(e) {
+				e.stopPropagation()
 				this.scrollerTouchEnd(e)
 			},
 			horizontalpan: function(e) {
@@ -803,14 +820,8 @@
 						var speedY = Math.abs(deltaY) / duration
 						var speed = speedX
 
-						if(this.isBindParent) {
-							this.$emit('bindParentTiming',speed, deltaX, deltaY)
-						}
-						else {
-							// console.log(speed, deltaX, duration,e.type)
-							this.bindTiming(speed, deltaX, deltaY)
-						}
-						
+						// console.log(speed, deltaX, duration,e.type)
+						this.bindTiming(speed, deltaX, deltaY)
 						break
 					}
 				}

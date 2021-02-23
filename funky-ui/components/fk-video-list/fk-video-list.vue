@@ -1,6 +1,11 @@
 <template>
 	<!-- #ifdef APP-NVUE -->
-	<list :pagingEnabled="true" @scrollend="listScrollEnd" :show-scrollbar="false">
+	<list  
+	  :alwaysScrollableVertical="true" 
+	  :pagingEnabled="true"
+	  @scrollend="listScrollEnd" 
+	  @verticalpan="verticalpan" 
+	  :show-scrollbar="false">
 		<cell 
 			v-for="(video,index) in videoData"
 			:key="index"
@@ -203,6 +208,9 @@
 						// console.log(e.detail.dy,this.currentVideo,this.lastPlayVideo)
 					}
 				}
+			},
+			verticalpan: function(e) {
+				return
 			}
 		}
 	}

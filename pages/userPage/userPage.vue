@@ -234,7 +234,10 @@
 	.logo {		
 		width: 90px;
 		height: 90px;
-		border-radius: 90px;
+		border-bottom-left-radius: 45px;
+		border-bottom-right-radius: 45px;
+		border-top-right-radius: 45px;
+		border-top-left-radius: 45px;
 	}
 	.userInfoRow {
 		margin-top: 10px;

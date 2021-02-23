@@ -77,7 +77,7 @@
 			:bounce="bounce"
 			:scrollable="scrollable"
 			:loadmoreoffset="50"
-			:offset-accuracy="15"
+			:offset-accuracy="25"
 			:alwaysScrollableVertical="true"
 			@scroll="scroll"
 			@loadmore="loadmore"
@@ -458,6 +458,7 @@
 				// #endif
 			},
 			scroll: function(e) {
+				e.stopPropagation()
 				this.$emit('scroll',e)
 				this.detectScrollAction(e)
 				

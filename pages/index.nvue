@@ -1,7 +1,7 @@
 <template>
 	<view>
 
-		<fk-tab ref="main-tab" @pageChange="pageChange" @scroll="scroll" @lockTouch="listScrollable = false" @unlockTouch="listScrollable = true"
+		<fk-tab ref="main-tab" :debug="false" @pageChange="pageChange" @scroll="scroll" @lockTouch="listScrollable = false" @unlockTouch="listScrollable = true"
 		 :pageList="fabList" :defaultPageId="'home'" :easingFunction="easingFunction" :hasHidePage="true" :bindFabExpression="bindFabExpression"
 		 :bindFabProperty="bindFabProperty" :fabStyles="fabStyles" :fabBackgroundColor="'#1e1e1e'" :backgroundColor="'#0b0b0b'"
 		 :fabOpacity="0.96" :fabBlurEffect="'dark'" :fabElevation="15" :height="screenHeightPx" :width="screenWidthPx"
@@ -26,19 +26,9 @@
 			</template>
 
 			<template v-slot:hidePage>
-				<!-- <fk-video-list :videoData="videoData" :isPlay="currentPage==-1" @videoChange="videoChange">
+				<fk-video-list :videoData="videoData" :isPlay="currentPage==-1" @videoChange="videoChange">
 
-				</fk-video-list> -->
-				<view :style="{height: statusBarHeight + 'px'}"></view>
-				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :scrollable="listScrollable"
-				 :isRefresh="isRefresh" @refreshing="refreshing">
-					<fk-cell v-for="(item, index) in data" :key="index" style="justify-content: center;align-items: center;">
-						<view style="height: 220px;border-radius: 4px;margin-bottom: 5px;justify-content: center;align-items: center;background-color: #6e7070;"
-						 :style="{width: screenWidthPx + 'px'}">
-							<text style="color: #ebebeb">{{item}}</text>
-						</view>
-					</fk-cell>
-				</fk-list>
+				</fk-video-list>
 			</template>
 
 			<template v-slot:mainPage0>
@@ -78,14 +68,37 @@
 
 			</template>
 		</fk-tab>
-
+		
 		<view
-			ref="devButton" 
-			@touchstart="bindDevButtonPan"
-			elevation="15px"
-			style="position: fixed;bottom: 100px;width: 50px;height: 50px;border-width: 3px;border-color: #FFFFFF;background-color: #ec7d9c; border-radius: 25px;justify-content: center;align-items: center;">
-			<text style="color: #FFFFFF;font-size: 15px;font-weight: bold;">Funky</text>
+			ref="subButton3"
+			elevation="10px"
+			style="position: fixed;bottom: 350px;left:10px;width: 50px;height: 50px;border-width: 3px;border-color: #ec7d9c;background-color: #FFFFFF; border-radius: 25px;justify-content: center;align-items: center;">
+			<text style="color: #ec7d9c;font-size: 12px;font-weight: bold;">Touch</text>
 		</view>
+		
+		<view
+			ref="subButton2"
+			elevation="10px"
+			style="position: fixed;bottom: 350px;left:10px;width: 50px;height: 50px;border-width: 3px;border-color: #ec7d9c;background-color: #FFFFFF; border-radius: 25px;justify-content: center;align-items: center;">
+			<text style="color: #ec7d9c;font-size: 12px;font-weight: bold;">Easing</text>
+		</view>
+		
+		<view
+			ref="subButton1"
+			elevation="10px"
+			style="position: fixed;bottom: 350px;left:10px;width: 50px;height: 50px;border-width: 3px;border-color: #ec7d9c;background-color: #FFFFFF; border-radius: 25px;justify-content: center;align-items: center;">
+			<text style="color: #ec7d9c;font-size: 12px;font-weight: bold;">Debug</text>
+		</view>
+		
+		<view
+			ref="devButton"
+			@longpress="bindDevButtonPan"
+			@tap="isShow ? hideSubButton() : showSubButton()"
+			elevation="15px"
+			style="position: fixed;bottom: 350px;left:10px;width: 50px;height: 50px;border-width: 3px;border-color: #FFFFFF;background-color: #ec7d9c; border-radius: 25px;justify-content: center;align-items: center;">
+			<text style="color: #FFFFFF;font-size: 15px;font-weight: bold;">Dev</text>
+		</view>
+		
 	</view>
 
 </template>
@@ -136,13 +149,17 @@
 				listScrollable: true,
 				contentOffsetX: 0,
 				
-				easingFunction: 'easeOutQuint',
+				easingFunction: 'easeOutExpo',
 				
 				devButtonDeltaY: 0,
 				devButtonDeltaX: 0,
 				devButton: '',
+				subButton: '',
 				isBindingTime: false,
+				isShow: false,
 				bottom: 100,
+				
+				currentPage: 0,
 			}
 		},
 		onPullDownRefresh() {
@@ -162,6 +179,9 @@
 		},
 		onReady() {
 			this.devButton = this.getEl(this.$refs.devButton)
+			this.subButton1 = this.getEl(this.$refs.subButton1)
+			this.subButton2 = this.getEl(this.$refs.subButton2)
+			this.subButton3 = this.getEl(this.$refs.subButton3)
 		},
 		created() {
 			if (screenInfo.system.platform == 'ios') {
@@ -196,7 +216,7 @@
 				}, 2000)
 			},
 			pageChange: function(e) {
-				// console.log(e)
+				this.currentPage = e.currentPage
 			},
 			scroll: function(e) {
 				this.contentOffsetX = e.contentOffsetX
@@ -213,7 +233,12 @@
 				}
 			},
 			bindDevButtonPan: function(e) {
+				console.log(e)
 				if(this.isBindingTime) {
+					return
+				}
+				if(this.isShow) {
+					this.hideSubButton()
 					return
 				}
 				BindingX.bind({
@@ -227,6 +252,36 @@
 							},
 							{
 								element: this.devButton,
+								property: 'transform.translateY',
+								expression: `y + (${this.devButtonDeltaY})`
+							},
+							{
+								element: this.subButton1,
+								property: 'transform.translateX',
+								expression: `x + (${this.devButtonDeltaX})`
+							},
+							{
+								element: this.subButton1,
+								property: 'transform.translateY',
+								expression: `y + (${this.devButtonDeltaY})`
+							},
+							{
+								element: this.subButton2,
+								property: 'transform.translateX',
+								expression: `x + (${this.devButtonDeltaX})`
+							},
+							{
+								element: this.subButton2,
+								property: 'transform.translateY',
+								expression: `y + (${this.devButtonDeltaY})`
+							},
+							{
+								element: this.subButton3,
+								property: 'transform.translateX',
+								expression: `x + (${this.devButtonDeltaX})`
+							},
+							{
+								element: this.subButton3,
 								property: 'transform.translateY',
 								expression: `y + (${this.devButtonDeltaY})`
 							}
@@ -257,6 +312,21 @@
 								element: this.devButton,
 								property: 'transform.translateX',
 								expression: expressionX
+							},
+							{
+								element: this.subButton1,
+								property: 'transform.translateX',
+								expression: expressionX
+							},
+							{
+								element: this.subButton2,
+								property: 'transform.translateX',
+								expression: expressionX
+							},
+							{
+								element: this.subButton3,
+								property: 'transform.translateX',
+								expression: expressionX
 							}
 						]
 					},
@@ -267,7 +337,60 @@
 						}
 					})
 				)
-				// dom.getComponentRect(this.devButton, (res) => {})
+			},
+			showSubButton: function(e) {
+				console.log("show")
+				let start = this.devButtonDeltaX
+				
+				BindingX.bind({
+						eventType: 'timing',
+						exitExpression: 't>500',
+						props: [
+							{
+								element: this.subButton1,
+								property: 'transform.translateX',
+								expression: `easeOutBack(t,${start},${50},500)`
+							},
+							{
+								element: this.subButton2,
+								property: 'transform.translateX',
+								expression: `easeOutBack(t,${start},${100},500)`
+							},
+							{
+								element: this.subButton3,
+								property: 'transform.translateX',
+								expression: `easeOutBack(t,${start},${150},500)`
+							}
+						]
+					})
+				this.isShow = true
+			},
+			hideSubButton: function(e) {
+				console.log("hide")
+				let start = this.devButtonDeltaX
+				
+				BindingX.bind({
+						eventType: 'timing',
+						exitExpression: 't>500',
+						props: [
+							{
+								element: this.subButton1,
+								property: 'transform.translateX',
+								expression: `easeInBack(t,${start + 50},${-50},500)`
+							},
+							{
+								element: this.subButton2,
+								property: 'transform.translateX',
+								expression: `easeInBack(t,${start + 100},${-100},500)`
+							},
+							{
+								element: this.subButton3,
+								property: 'transform.translateX',
+								expression: `easeInBack(t,${start + 150},${-150},500)`
+							}
+						]
+					})
+				this.isShow = false
 			}
 		}
 	};
