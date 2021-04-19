@@ -1,0 +1,22 @@
+<template>
+	<view style="justify-content: center;align-items: center;">
+		<!-- <image src="/static/icon.png" style="width: 96px;height: 96px;margin: 50px;"></image> -->
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				
+			}
+		},
+		methods: {
+			
+		}
+	}
+</script>
+
+<style>
+
+</style>

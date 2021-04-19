@@ -5,8 +5,8 @@ var system = uni.getSystemInfoSync()
 
 // console.log(system)
 // #ifndef H5
-var screenHeightPx = system.windowHeight
-var screenWidthPx = system.windowWidth
+var screenHeightPx = system.screenHeight
+var screenWidthPx = system.screenWidth
 var realScreenWidth = 750
 if (system.platform !== 'ios') {
 	realScreenWidth = screenWidthPx

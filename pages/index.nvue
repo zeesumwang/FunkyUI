@@ -1,7 +1,7 @@
 <template>
-	<view>
+	<view ref="index">
 
-		<fk-tab ref="main-tab" :debug="false" @pageChange="pageChange" @scroll="scroll" @lockTouch="listScrollable = false" @unlockTouch="listScrollable = true"
+		<fk-tab ref="main-tab" :debug="false" @pageChange="pageChange" @lockTouch="listScrollable = false" @unlockTouch="listScrollable = true"
 		 :pageList="fabList" :defaultPageId="'home'" :easingFunction="easingFunction" :hasHidePage="true" :bindFabExpression="bindFabExpression"
 		 :bindFabProperty="bindFabProperty" :fabStyles="fabStyles" :fabBackgroundColor="'#1e1e1e'" :backgroundColor="'#0b0b0b'"
 		 :fabOpacity="0.96" :fabBlurEffect="'dark'" :fabElevation="15" :height="screenHeightPx" :width="screenWidthPx"
@@ -20,7 +20,8 @@
 					width: 24px;
 					border-top-right-radius: 6px;
 					border-top-left-radius: 6px;
-					border-bottom-width: 0px;
+					border-bottom-width: 1px;
+					border-bottom-color: #ec7d9c;
 					background-image: linear-gradient(to bottom, #ffffff, #ec7d9c);">
 				</view>
 			</template>
@@ -32,6 +33,7 @@
 			</template>
 
 			<template v-slot:mainPage0>
+				
 				<view :style="{height: statusBarHeight + 'px'}"></view>
 				<fk-list :width="screenWidthPx" :height="screenHeightPx - statusBarHeight" :hasRefresh="true" :scrollable="listScrollable"
 				 :isRefresh="isRefresh" @refreshing="refreshing">
@@ -69,36 +71,8 @@
 			</template>
 		</fk-tab>
 		
-		<view
-			ref="subButton3"
-			elevation="10px"
-			style="position: fixed;bottom: 350px;left:10px;width: 50px;height: 50px;border-width: 3px;border-color: #ec7d9c;background-color: #FFFFFF; border-radius: 25px;justify-content: center;align-items: center;">
-			<text style="color: #ec7d9c;font-size: 12px;font-weight: bold;">Touch</text>
-		</view>
-		
-		<view
-			ref="subButton2"
-			elevation="10px"
-			style="position: fixed;bottom: 350px;left:10px;width: 50px;height: 50px;border-width: 3px;border-color: #ec7d9c;background-color: #FFFFFF; border-radius: 25px;justify-content: center;align-items: center;">
-			<text style="color: #ec7d9c;font-size: 12px;font-weight: bold;">Easing</text>
-		</view>
-		
-		<view
-			ref="subButton1"
-			elevation="10px"
-			style="position: fixed;bottom: 350px;left:10px;width: 50px;height: 50px;border-width: 3px;border-color: #ec7d9c;background-color: #FFFFFF; border-radius: 25px;justify-content: center;align-items: center;">
-			<text style="color: #ec7d9c;font-size: 12px;font-weight: bold;">Debug</text>
-		</view>
-		
-		<view
-			ref="devButton"
-			@longpress="bindDevButtonPan"
-			@tap="isShow ? hideSubButton() : showSubButton()"
-			elevation="15px"
-			style="position: fixed;bottom: 350px;left:10px;width: 50px;height: 50px;border-width: 3px;border-color: #FFFFFF;background-color: #ec7d9c; border-radius: 25px;justify-content: center;align-items: center;">
-			<text style="color: #FFFFFF;font-size: 15px;font-weight: bold;">Dev</text>
-		</view>
-		
+		<fk-float-button @subButtonTap="subButtonTap"></fk-float-button>
+
 	</view>
 
 </template>
@@ -108,11 +82,6 @@
 	import testData from "@/test_data/data.js"
 
 	import userPage from "@/pages/userPage/userPage"
-
-	// #ifdef APP-NVUE
-	const BindingX = uni.requireNativePlugin('bindingx');
-	const dom = uni.requireNativePlugin('dom') // 在APP端引入weex的dom组件
-	// #endif
 
 	export default {
 		components: {
@@ -149,15 +118,7 @@
 				listScrollable: true,
 				contentOffsetX: 0,
 				
-				easingFunction: 'easeOutExpo',
-				
-				devButtonDeltaY: 0,
-				devButtonDeltaX: 0,
-				devButton: '',
-				subButton: '',
-				isBindingTime: false,
-				isShow: false,
-				bottom: 100,
+				easingFunction: 'easeOutQuart',
 				
 				currentPage: 0,
 			}
@@ -178,14 +139,16 @@
 			this.videoData = testData.videoData
 		},
 		onReady() {
-			this.devButton = this.getEl(this.$refs.devButton)
-			this.subButton1 = this.getEl(this.$refs.subButton1)
-			this.subButton2 = this.getEl(this.$refs.subButton2)
-			this.subButton3 = this.getEl(this.$refs.subButton3)
+			// this.fabTap({target:{id:'home'}},0)
 		},
 		created() {
 			if (screenInfo.system.platform == 'ios') {
-				var fabHeight = screenInfo.system.safeAreaInsets.bottom
+				if(screenInfo.system.safeAreaInsets.bottom !== 0) {
+					var fabHeight = screenInfo.system.safeAreaInsets.bottom
+				}
+				else {
+					var fabHeight = this.statusBarHeight
+				}
 			} else {
 				var fabHeight = this.statusBarHeight
 			}
@@ -207,8 +170,14 @@
 				'width': this.screenWidthPx * 0.618 + 'px'
 			}
 		},
-		mounted() {},
 		methods: {
+			getEl: function(e) {
+				if (typeof(e[0]) == 'object') {
+					return e[0].ref
+				} else {
+					return e.ref
+				}
+			},
 			refreshing: function() {
 				this.isRefresh = true
 				setTimeout(() => {
@@ -218,179 +187,14 @@
 			pageChange: function(e) {
 				this.currentPage = e.currentPage
 			},
-			scroll: function(e) {
-				this.contentOffsetX = e.contentOffsetX
-			},
 			fabTap: function(e, index) {
 				let pageId = 'page-' + e.target.id
 				this.$refs['main-tab'].scrollToPage(pageId)
 			},
-			getEl: function(e) {
-				if (typeof(e[0]) == 'object') {
-					return e[0].ref
-				} else {
-					return e.ref
+			subButtonTap: function(e) {
+				if(e == 'subButton2') {
+					
 				}
-			},
-			bindDevButtonPan: function(e) {
-				console.log(e)
-				if(this.isBindingTime) {
-					return
-				}
-				if(this.isShow) {
-					this.hideSubButton()
-					return
-				}
-				BindingX.bind({
-						eventType: 'pan',
-						anchor: this.devButton,
-						props: [
-							{
-								element: this.devButton,
-								property: 'transform.translateX',
-								expression: `x + (${this.devButtonDeltaX})`
-							},
-							{
-								element: this.devButton,
-								property: 'transform.translateY',
-								expression: `y + (${this.devButtonDeltaY})`
-							},
-							{
-								element: this.subButton1,
-								property: 'transform.translateX',
-								expression: `x + (${this.devButtonDeltaX})`
-							},
-							{
-								element: this.subButton1,
-								property: 'transform.translateY',
-								expression: `y + (${this.devButtonDeltaY})`
-							},
-							{
-								element: this.subButton2,
-								property: 'transform.translateX',
-								expression: `x + (${this.devButtonDeltaX})`
-							},
-							{
-								element: this.subButton2,
-								property: 'transform.translateY',
-								expression: `y + (${this.devButtonDeltaY})`
-							},
-							{
-								element: this.subButton3,
-								property: 'transform.translateX',
-								expression: `x + (${this.devButtonDeltaX})`
-							},
-							{
-								element: this.subButton3,
-								property: 'transform.translateY',
-								expression: `y + (${this.devButtonDeltaY})`
-							}
-						]
-					},
-					((e) => {
-						// pan有start/end/cancel 3个状态
-						if (e.state !== 'start') {
-							// console.log('解除绑定')
-							BindingX.unbind({token: e.token,eventType: 'pan'})
-							this.devButtonDeltaY += e.deltaY
-							this.devButtonDeltaX += e.deltaX
-							this.bindDevButtonTiming()
-						}
-					})
-				)
-			},
-			bindDevButtonTiming: function() {
-				let changeByX = this.devButtonDeltaX
-				var expressionX = `easeOutBack(t,${changeByX},${-changeByX},500)`
-				
-				this.isBindingTime = true
-				BindingX.bind({
-						eventType: 'timing',
-						exitExpression: 't>500',
-						props: [
-							{
-								element: this.devButton,
-								property: 'transform.translateX',
-								expression: expressionX
-							},
-							{
-								element: this.subButton1,
-								property: 'transform.translateX',
-								expression: expressionX
-							},
-							{
-								element: this.subButton2,
-								property: 'transform.translateX',
-								expression: expressionX
-							},
-							{
-								element: this.subButton3,
-								property: 'transform.translateX',
-								expression: expressionX
-							}
-						]
-					},
-					((e) => {
-						if(e.state !== 'start') {
-							this.devButtonDeltaX = 0
-							this.isBindingTime = false
-						}
-					})
-				)
-			},
-			showSubButton: function(e) {
-				console.log("show")
-				let start = this.devButtonDeltaX
-				
-				BindingX.bind({
-						eventType: 'timing',
-						exitExpression: 't>500',
-						props: [
-							{
-								element: this.subButton1,
-								property: 'transform.translateX',
-								expression: `easeOutBack(t,${start},${50},500)`
-							},
-							{
-								element: this.subButton2,
-								property: 'transform.translateX',
-								expression: `easeOutBack(t,${start},${100},500)`
-							},
-							{
-								element: this.subButton3,
-								property: 'transform.translateX',
-								expression: `easeOutBack(t,${start},${150},500)`
-							}
-						]
-					})
-				this.isShow = true
-			},
-			hideSubButton: function(e) {
-				console.log("hide")
-				let start = this.devButtonDeltaX
-				
-				BindingX.bind({
-						eventType: 'timing',
-						exitExpression: 't>500',
-						props: [
-							{
-								element: this.subButton1,
-								property: 'transform.translateX',
-								expression: `easeInBack(t,${start + 50},${-50},500)`
-							},
-							{
-								element: this.subButton2,
-								property: 'transform.translateX',
-								expression: `easeInBack(t,${start + 100},${-100},500)`
-							},
-							{
-								element: this.subButton3,
-								property: 'transform.translateX',
-								expression: `easeInBack(t,${start + 150},${-150},500)`
-							}
-						]
-					})
-				this.isShow = false
 			}
 		}
 	};

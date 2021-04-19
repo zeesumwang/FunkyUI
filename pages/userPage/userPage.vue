@@ -1,6 +1,6 @@
 <template>
 		
-	<view style="align-items: center;flex: 1" :style="{width: screenWidthPx + 'px', height: screenHeightPx + 'px'}">
+	<view :render-whole="true" style="align-items: center;flex: 1" :style="{width: screenWidthPx + 'px', height: screenHeightPx + 'px'}">
 		
 		<view :style="{height: statusBarHeight + 'px'}"></view>
 		<view style="height: 280px;" :style="{width: screenWidthPx -40 + 'px'}">

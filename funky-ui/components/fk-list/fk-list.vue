@@ -113,6 +113,7 @@
 			:loadmoreoffset="50"
 			:offset-accuracy="15"
 			:alwaysScrollableVertical="true"
+			:eventPenetrationEnabled="false"
 			@scroll="scroll"
 			@loadmore="loadmore"
 		>

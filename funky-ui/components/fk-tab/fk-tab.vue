@@ -1,6 +1,8 @@
 
 <template>
 	<view class="container"
+		:render-whole="true"
+		:fireEventSync="true"
 		@touchstart="scrollerTouchStart"
 		@touchend="scrollerTouchEnd"
 		@touchcancel="scrollerTouchCancel">
@@ -27,14 +29,13 @@
 		</fk-transition>
 		
 		<scroller 
-			ref="scroller" 
-			:shouldStopPropagationInitResult="true"
-			shouldStopPropagationInterval="1000000"
+			ref="scroller"
 			@horizontalpan="horizontalpan"
+			:fireEventSync="true"
 			:scrollable="false" 
 			:show-scrollbar="false"
 			:scrollToBegin="false" 
-			:offset-accuracy="true ? 100000 : (PageBias < 11 || PageBias > realScreenWidth - 11) && !isBindPan || isAttachBiasLeft || isAttachBiasRight ? 0.9 : 10" 
+			:offset-accuracy="(PageBias < 11 || PageBias > realScreenWidth - 11) && !isBindPan || isAttachBiasLeft || isAttachBiasRight ? 0.9 : 10" 
 			:scroll-direction="'horizontal'" 
 			:pagingEnabled="false" 
 			:style="{height: height + 'px',width: width + 'px',backgroundColor: backgroundColor}"
@@ -172,7 +173,7 @@
 			},
 			easingFunction: {
 				type: String,
-				default: 'easeOutExpo'
+				default: 'easeOutQuart'
 			},
 			cubicBezierControl: {
 				type: String,
@@ -193,7 +194,7 @@
 			anmDurationGradient: {
 				type: Array,
 				default() {
-					return [700,600,500,400]
+					return [500,400,300,250]
 				}
 			},
 			bounceBias: {
@@ -302,28 +303,30 @@
 				// #ifdef APP-NVUE
 				dom.scrollToElement(indexElement, {
 					offset: 0,
-					animated: true
+					animated: false
 				})
 				// #endif
 			}
-			setTimeout(() => {				
-				this.swiper = this.getEl(this.$refs['scroller'])
-				// 准备绑定pan事件
-				BindingX.prepare({
-					eventType: 'pan',
-					anchor: this.swiper
-				})
-				dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani), (res) => {
-					var fabLeft = res.size.left
-					dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani.children[0]), ((res) => {
-						this.headFabX = res.size.left + res.size.width * 0.5 - fabLeft
-						dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani.children[this.pageList.length-1]), ((res) => {
-							this.endFabX = res.size.left + res.size.width * 0.5 - fabLeft
-							this.bindTap()
+			this.$nextTick(()=> {
+				setTimeout(() => {				
+					this.swiper = this.getEl(this.$refs['scroller'])
+					// 准备绑定pan事件
+					BindingX.prepare({
+						eventType: 'pan',
+						anchor: this.swiper
+					})
+					dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani), (res) => {
+						var fabLeft = res.size.left
+						dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani.children[0]), ((res) => {
+							this.headFabX = res.size.left + res.size.width * 0.5 - fabLeft
+							dom.getComponentRect(this.getEl(this.$refs.fab.$refs.ani.children[this.pageList.length-1]), ((res) => {
+								this.endFabX = res.size.left + res.size.width * 0.5 - fabLeft
+								this.bindTap()
+							}))
 						}))
-					}))
-				})
-			}, 500)
+					})
+				}, 500)
+			})
 			
 		},
 		methods: {
@@ -340,7 +343,7 @@
 					anmDuration = this.anmDurationGradient[3]
 				} else if (speed > 2.5) {
 					anmDuration = this.anmDurationGradient[2]
-				} else if (speed > 1.5 && speed <= 2.5) {
+				} else if (speed > 1 && speed <= 2.5) {
 					anmDuration = this.anmDurationGradient[1]
 				} else {
 					anmDuration = this.anmDurationGradient[0]
@@ -357,6 +360,8 @@
 				this.$emit('scroll', {'ref': this.swiper,'contentOffsetX': this.contentOffsetX - this.scrollerBias})
 			},
 			scrollToPage: function(pageId) {
+				this.unbindTiming()
+				this.unbindPan()
 				var Element = this.getEl(this.$refs[pageId])
 				dom.scrollToElement(Element, {
 					offset: 0,
@@ -467,6 +472,9 @@
 						}
 						this.scroll(scrollevent)
 					}
+					else {
+						// console.log(e)
+					}
 					
 				})
 				)
@@ -496,7 +504,7 @@
 				var bounceBiasExp = `${this.contentOffsetX} >= ${this.scrollerBias} && ${this.contentOffsetX} <= ${this.contentWidth}`
 				if (this.platform == 'ios') {
 					var maxDeltaX = this.screenWidthPx * 0.5
-					panExpression = `${bounceBiasExp} ? (${this.contentOffsetX} - x * (750 / ${this.screenWidthPx})) : (${this.contentOffsetX} - x * (750 / ${this.screenWidthPx})) `
+					panExpression = `${bounceBiasExp} ? (${this.contentOffsetX} - floor(x) * (750 / ${this.screenWidthPx})) : (${this.contentOffsetX} - floor(x) * (750 / ${this.screenWidthPx})) `
 				} else {
 					panExpression = `${bounceBiasExp} ? (${this.contentOffsetX} - x) : ${this.contentOffsetX} - x`
 				}
@@ -641,7 +649,6 @@
 				else{
 					return
 				}
-				
 				e.subSwiper = this.swiper
 				e.bindType = 'touch'
 				// console.log('bindParentScroll--touch',this.swiper)
@@ -811,7 +818,7 @@
 				var screenX = e.changedTouches[0].screenX
 				var screenY = e.changedTouches[0].screenY
 				for (var i = 0; i < this.changedTouches.length; i++) {
-					if (this.changedTouches[i].identifier == identifier) {
+					if (this.changedTouches[i].identifier == identifier || this.changedTouches.length == 1) {
 						var duration = e.timestamp - this.changedTouches[i].timestamp
 						var deltaX = -(screenX - this.changedTouches[i].screenX)
 						var deltaY = -(screenY - this.changedTouches[i].screenY)
@@ -825,6 +832,7 @@
 						break
 					}
 				}
+				console.log(e)
 				this.changedTouches = []				
 			}
 		}

@@ -3,13 +3,39 @@
 	export default {
 		onLaunch: function() {
 			console.log('App Launch')
+			//检查是否登录
+			uni.getStorage({
+			    key: 'token',
+				fail: (res) => {
+					uni.preloadPage({
+						url: '/pages/login/login',
+						complete: ()=> {
+							uni.navigateTo({
+									url: '/pages/login/login',
+									animationType: 'zoom-fade-out'
+							})
+						}
+					})
+				},
+				success: (res) => {
+					uni.reLaunch({
+						url: '/pages/index'
+					})
+				}
+			});
 		},
 		onShow: function() {
 			console.log('App Show')
 		},
 		onHide: function() {
 			console.log('App Hide')
-		}
+		},
+		onError: function() {
+			console.log('App Error')
+		},
+		onThemeChange: function() {
+			console.log('App onThemeChange')
+		},
 	}
 </script>
 
