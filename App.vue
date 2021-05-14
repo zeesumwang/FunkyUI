@@ -6,18 +6,23 @@
 			//检查是否登录
 			uni.getStorage({
 			    key: 'token',
-				fail: (res) => {
-					uni.preloadPage({
-						url: '/pages/login/login',
-						complete: ()=> {
-							uni.navigateTo({
-									url: '/pages/login/login',
-									animationType: 'zoom-fade-out'
-							})
-						}
-					})
-				},
-				success: (res) => {
+				// fail: (res) => {
+				// 	uni.preloadPage({
+				// 		url: '/pages/login/login',
+				// 		complete: ()=> {
+				// 			uni.navigateTo({
+				// 					url: '/pages/login/login',
+				// 					animationType: 'zoom-fade-out'
+				// 			})
+				// 		}
+				// 	})
+				// },
+				// success: (res) => {
+				// 	uni.reLaunch({
+				// 		url: '/pages/index'
+				// 	})
+				// }
+				complete() {
 					uni.reLaunch({
 						url: '/pages/index'
 					})

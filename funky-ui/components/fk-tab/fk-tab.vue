@@ -31,6 +31,7 @@
 		<scroller 
 			ref="scroller"
 			@horizontalpan="horizontalpan"
+			@scroll="scroll"
 			:fireEventSync="true"
 			:scrollable="false" 
 			:show-scrollbar="false"
@@ -470,7 +471,7 @@
 								x: e.x
 							}
 						}
-						this.scroll(scrollevent)
+						// this.scroll(scrollevent)
 					}
 					else {
 						// console.log(e)
@@ -530,12 +531,12 @@
 				)
 			},			
 			bindTiming: function(speed, deltaX, deltaY) {
-				// console.log('bindTiming',this.swiper,this.anmToken)
+				console.log('bindTiming',this.swiper,this.anmToken)
 				this.isBindTiming = true
 				this.anmToken = {} //  重置anmToken
 				var isBounce = (this.contentOffsetX <= this.scrollerBias || this.contentOffsetX >= this.contentWidth)
 				var changeBy = 0
-				
+				// console.log(this.PageBias,this.contentOffsetX)
 				if (deltaX > 0){
 					// console.log('左滑')
 					if(this.PageBias > this.realScreenWidth / 2 && !isBounce) {
@@ -617,6 +618,7 @@
 				}
 			},
 			transition: function(duration, el, changeBy, callback) {
+				// console.log(changeBy)
 				if (changeBy == 0) {
 					return
 				}
@@ -737,7 +739,7 @@
 				
 				this.recordCount = 0
 				this.changedTouches = []
-				// console.log(e.type,this.swiper,this.stopPropagation)
+				console.log(e.type,this.swiper,this.stopPropagation)
 				// 记录触摸开始位置和触摸指（支持多点触摸）
 				var identifier = e.changedTouches[0].identifier
 				var screenX = e.changedTouches[0].screenX
@@ -793,7 +795,7 @@
 							}
 							else {
 								e.bindType = 'pan'
-								// console.log('bindParentScroll--pan',this.swiper)
+								console.log('bindParentScroll--pan',this.swiper)
 								this.$emit('bindParentScroll', e)
 								this.bindParentMode = 'pan'
 							}
@@ -812,7 +814,7 @@
 					return
 				}
 				
-				// console.log(e.type,this.swiper,this.stopPropagation)
+				console.log(e.type,this.swiper,this.stopPropagation)
 				
 				var identifier = e.changedTouches[0].identifier
 				var screenX = e.changedTouches[0].screenX
@@ -832,7 +834,6 @@
 						break
 					}
 				}
-				console.log(e)
 				this.changedTouches = []				
 			}
 		}
