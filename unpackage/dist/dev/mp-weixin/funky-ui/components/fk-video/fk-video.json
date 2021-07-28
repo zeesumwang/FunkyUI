@@ -1,7 +1,0 @@
-{
-  "usingComponents": {
-    "fk-transition": "/funky-ui/components/fk-transition/fk-transition",
-    "fk-loading": "/funky-ui/components/fk-loading/fk-loading"
-  },
-  "component": true
-}

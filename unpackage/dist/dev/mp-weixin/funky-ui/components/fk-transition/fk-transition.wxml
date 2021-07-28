@@ -1,1 +1,0 @@
-<block wx:if="{{isShow}}"><view class="{{['uni-transition vue-ref',ani.in]}}" style="{{('transform:'+transform+';'+stylesObject+'background-color:'+rgbaObject.rgba+';')}}" blurEffect="{{blurEffect}}" elevation="{{elevation+'px'}}" data-ref="ani" data-event-opts="{{[['tap',[['change',['$event']]]]]}}" bindtap="__e"><slot></slot></view></block>
