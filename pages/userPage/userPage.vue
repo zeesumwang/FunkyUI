@@ -68,7 +68,7 @@
 			</view>			
 		</view>
 		
-		<fk-tab 
+		<!-- <fk-tab 
 			ref="subTab" 
 			:indicatorBias="16" 
 			:backgroundColor="'#0b0b0b'" 
@@ -141,7 +141,7 @@
 					</fk-cell>
 				</fk-list>
 			</template>
-		</fk-tab>
+		</fk-tab> -->
 		
 	</view>
 </template>
