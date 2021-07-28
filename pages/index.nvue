@@ -16,7 +16,7 @@
 
 			<template v-slot:indicator>
 				<view style="
-					height: 6px;
+					height: 8px;
 					width: 24px;
 					border-top-right-radius: 6px;
 					border-top-left-radius: 6px;

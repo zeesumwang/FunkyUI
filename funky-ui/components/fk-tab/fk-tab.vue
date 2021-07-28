@@ -31,11 +31,12 @@
 		<scroller 
 			ref="scroller"
 			@horizontalpan="horizontalpan"
+      @scroll="scroll"
 			:fireEventSync="true"
 			:scrollable="false" 
 			:show-scrollbar="false"
 			:scrollToBegin="false" 
-			:offset-accuracy="(PageBias < 11 || PageBias > realScreenWidth - 11) && !isBindPan || isAttachBiasLeft || isAttachBiasRight ? 0.9 : 10" 
+			:offset-accuracy="0" 
 			:scroll-direction="'horizontal'" 
 			:pagingEnabled="false" 
 			:style="{height: height + 'px',width: width + 'px',backgroundColor: backgroundColor}"
@@ -470,7 +471,7 @@
 								x: e.x
 							}
 						}
-						this.scroll(scrollevent)
+						// this.scroll(scrollevent)
 					}
 					else {
 						// console.log(e)
@@ -724,7 +725,6 @@
 					this.isHorizontalpan = false
 				}
 				if(e.state == 'cancel') {
-					console.log('?')
 					e.type = 'horizontalPanEnd'
 					this.touchend(e)
 					this.isHorizontalpan = false
@@ -832,7 +832,7 @@
 						break
 					}
 				}
-				console.log(e)
+				// console.log(e)
 				this.changedTouches = []				
 			}
 		}

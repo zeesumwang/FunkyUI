@@ -30,7 +30,7 @@
 		<view
 			ref="mainButton"
 			:style="{top: top + 'px',left: left + 'px',width: width + 'px',height: height + 'px'}"
-			@longpress="bindmainButtonPan"
+      @panstart="bindmainButtonPan()"
 			@tap="isShow ? hideSubButton() : showSubButton()"
 			elevation="15px"
 			style="position: fixed;border-width: 3px;border-color: #FFFFFF;background-color: #ec7d9c; border-radius: 25px;justify-content: center;align-items: center;">
@@ -80,9 +80,7 @@
 			}
 		},
 		created() {
-			if(screenInfo.system.platform !== 'ios') {
-				this.realScreenWidth = screenInfo.screenWidthPx
-			}
+			this.realScreenWidth = screenInfo.screenWidthPx
 			if(this.realScreenWidth * 0.5 > this.left + 0.5 * this.width) {
 				this.orientation = 'left'
 			}
@@ -104,6 +102,32 @@
 					return e.ref
 				}
 			},
+      bindmainButtonScale: function(e) {
+        BindingX.bind({
+        	eventType: 'timing',
+        	exitExpression: 't>200',
+        	props: [
+        		{
+        			element: this.mainButton,
+        			property: 'transform.scale',
+        			expression: `easeOutBack(t,1,0.2,500)`
+        		}
+        	]
+        })
+      },
+      bindmainButtonScaleSub: function(e) {
+        BindingX.bind({
+        	eventType: 'timing',
+        	exitExpression: 't>200',
+        	props: [
+        		{
+        			element: this.mainButton,
+        			property: 'transform.scale',
+        			expression: `easeOutBack(t,1.2,-0.2,500)`
+        		}
+        	]
+        })
+      },
 			bindmainButtonPan: function(e) {
 				if(this.isBindingTime) {
 					return
@@ -112,17 +136,7 @@
 					this.hideSubButton()
 					return
 				}
-				BindingX.bind({
-					eventType: 'timing',
-					exitExpression: 't>200',
-					props: [
-						{
-							element: this.mainButton,
-							property: 'transform.scale',
-							expression: `easeOutBack(t,1,0.2,200)`
-						}
-					]
-				})
+        // this.bindmainButtonScale();
 				BindingX.bind({
 						eventType: 'pan',
 						anchor: this.mainButton,
@@ -170,13 +184,15 @@
 						]
 					},
 					((e) => {
+            console.log(e.state)
 						// pan有start/end/cancel 3个状态
 						if (e.state !== 'start') {
-							// console.log('解除绑定')
 							BindingX.unbind({token: e.token,eventType: 'pan'})
-							this.mainButtonDeltaY += e.deltaY
-							this.mainButtonDeltaX += e.deltaX
-							this.bindmainButtonTiming()
+							this.mainButtonDeltaY += parseFloat(e.deltaY);
+							this.mainButtonDeltaX += parseFloat(e.deltaX);
+              console.log(this.mainButtonDeltaX,this.mainButtonDeltaY)
+              // this.bindmainButtonScaleSub();
+							this.bindmainButtonTiming();
 						}
 					})
 				)
@@ -188,7 +204,7 @@
 				else {
 					var margin = this.realScreenWidth - this.left
 				}
-				
+				let expressionY = `easeOutBack(t,${this.mainButtonDeltaY},0,500)`;
 				if(this.mainButtonDeltaX + this.width * 0.5 > 0.5 * this.realScreenWidth - margin){
 					var orientation = 'right'
 					var changeByX = (this.realScreenWidth - margin * 2) - this.mainButtonDeltaX - this.width
@@ -208,29 +224,44 @@
 						props: [
 							{
 								element: this.mainButton,
-								property: 'transform.scale',
-								expression: `easeOutBack(t,1.2,-0.2,200)`
-							},
-							{
-								element: this.mainButton,
 								property: 'transform.translateX',
 								expression: expressionX
 							},
+              {
+              	element: this.mainButton,
+              	property: 'transform.translateY',
+              	expression: expressionY
+              },
 							{
 								element: this.subButton1,
 								property: 'transform.translateX',
 								expression: expressionX
 							},
+              {
+              	element: this.subButton1,
+              	property: 'transform.translateY',
+              	expression: expressionY
+              },
 							{
 								element: this.subButton2,
 								property: 'transform.translateX',
 								expression: expressionX
 							},
+              {
+              	element: this.subButton2,
+              	property: 'transform.translateY',
+              	expression: expressionY
+              },
 							{
 								element: this.subButton3,
 								property: 'transform.translateX',
 								expression: expressionX
-							}
+							},
+              {
+              	element: this.subButton3,
+              	property: 'transform.translateY',
+              	expression: expressionY
+              },
 						]
 					},
 					((e) => {
@@ -280,6 +311,11 @@
 								property: 'transform.translateX',
 								expression: `easeOutBack(t,${startX},${Math.SQRT2 * this.width * symbol},500)`
 							},
+              {
+              	element: this.subButton2,
+              	property: 'transform.translateY',
+              	expression: `easeOutBack(t,${startY},0,500)`
+              },
 							{
 								element: this.subButton1,
 								property: 'transform.translateX',
@@ -330,6 +366,11 @@
 								property: 'transform.translateX',
 								expression: `easeInBack(t,${startX + (Math.SQRT2 * this.width) * symbol},${Math.SQRT2 * -1 * this.width * symbol},500)`
 							},
+              {
+              	element: this.subButton2,
+              	property: 'transform.translateY',
+              	expression: `easeInBack(t,${startY},0,500)`
+              },
 							{
 								element: this.subButton1,
 								property: 'transform.translateX',
