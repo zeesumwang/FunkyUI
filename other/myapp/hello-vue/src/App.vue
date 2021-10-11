@@ -39,6 +39,7 @@
       }"
       :transitionTimingFunction="'cubic-bezier(0.16, 1, 0.3, 1)'"
       :initPosition="{ left: 10, top: 160 }"
+      :moveAction="action"
     >
       <div>2</div>
     </float-view>
@@ -120,6 +121,20 @@ export default {
     touchend() {
       this.style.home.transition = "all 500ms";
       this.style.home.left = 0 + "px";
+    },
+    action(e) {
+      e = JSON.stringify(e);
+      console.log(e);
+      let action = new Function(e, "let e = JSON.parse(" + e +");console.log(e); ");
+      action();
+    },
+    actionW(e) {
+      console.log(e);
+      if (e.left + e.width * 0.5 > screen.availWidth * 0.5) {
+        e.left = screen.availWidth - (e.initPosition.left + e.width);
+      } else {
+        e.left = e.initPosition.left;
+      }
     }
   }
 };

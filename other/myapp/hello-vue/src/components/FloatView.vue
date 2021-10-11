@@ -3,8 +3,6 @@
     @touchstart.stop="touchstart"
     @touchmove.stop="touchmove"
     @touchend.stop="touchend"
-    @longpress="longpress"
-    @click="longpress"
     :style="{
       left: left + 'px',
       top: top + 'px',
@@ -17,7 +15,6 @@
     }"
   >
     <slot></slot>
-    <input v-show="isEdit" :value="transitionTimingFunction">
   </div>
 </template>
 
@@ -26,6 +23,9 @@
 export default {
   name: "FloatView",
   props: {
+    moveable: {
+      default: true
+    },
     width: {
       default: 40,
     },
@@ -41,10 +41,15 @@ export default {
     transitionTimingFunction: {
       default: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
     },
+    actionDuration: {
+      default: 250,
+    },
+    moveAction: {
+      type: Function,
+    }
   },
   data() {
     return {
-      isEdit: false,
       left: 0,
       top: 0,
       biasX: 0,
@@ -52,6 +57,7 @@ export default {
       transitionPropery: 'left',
       transitionDuration: null,
       transitionDelay: '0ms',
+      isDrag: false,
     };
   },
   created() {
@@ -60,29 +66,32 @@ export default {
   },
   methods: {
     touchstart(e) {
+      if (!this.moveable) {
+        return
+      }
+      this.isDrag = true;
       this.transitionDuration = '0ms';
       this.biasX = e.touches[0].clientX - this.left;
       this.biasY = e.touches[0].clientY - this.top;
     },
     touchmove(e) {
+      if (!this.moveable) {
+        return
+      }
+      if (!this.isDrag) {
+        return
+      }
       this.left = e.touches[0].clientX - this.biasX;
       this.top = e.touches[0].clientY - this.biasY;
     },
     touchend() {
-      this.transitionDuration = '250ms';
-      if (this.left + this.width * 0.5 > screen.availWidth * 0.5) {
-        this.left = screen.availWidth - (this.initPosition.left + this.width);
-      } else {
-        this.left = this.initPosition.left;
+      if (!this.moveable) {
+        return
       }
+      this.isDrag = false;
+      this.transitionDuration = this.actionDuration + 'ms';
+      this.moveAction(this);
     },
-    longpress() {
-      if (this.isEdit) {
-        this.isEdit = false;
-      } else {
-        this.isEdit = true;
-      }
-    }
   }
 };
 </script>
