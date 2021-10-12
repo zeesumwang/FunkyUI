@@ -1,27 +1,38 @@
 <template>
   <div
-    @touchstart.stop="touchstart"
-    @touchmove.stop="touchmove"
-    @touchend.stop="touchend"
+    @touchstart="touchstart"
+    @touchmove="touchmove"
+    @touchend="touchend"
     :style="{
-      left: left + 'px',
-      top: top + 'px',
+      left: x + 'px',
+      top: y + 'px',
       width: width + 'px',
       height: height + 'px',
       transitionPropery: transitionPropery,
       transitionDuration: transitionDuration,
       transitionDelay: transitionDelay,
-      transitionTimingFunction: transitionTimingFunction
+      transitionTimingFunction: transitionTimingFunction,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
     }"
   >
-    <slot></slot>
+    <div :style="styles">
+      <span>{{ text }}</span>
+      <slot></slot>
+      <float-view v-for="(item, index) in children" :key="index" v-bind="item"></float-view>
+    </div>
   </div>
 </template>
 
 <script>
+// import FloatView from "./FloatView.vue";
 
 export default {
   name: "FloatView",
+  components: {
+    // FloatView
+  },
   props: {
     moveable: {
       default: true
@@ -34,9 +45,12 @@ export default {
     },
     initPosition: {
       default: {
-        left: 10,
-        top: 100,
+        x: 0,
+        y: 0,
       },
+    },
+    transitionPropery: {
+      default: 'left'
     },
     transitionTimingFunction: {
       default: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
@@ -45,24 +59,43 @@ export default {
       default: 250,
     },
     moveAction: {
-      type: Function,
+      // type: Function,
+      type: String,
+      default: '',
+    },
+    children: {
+      type: Array,
+      default() {
+        return [];
+      }
+    },
+    styles: {
+      default() {
+        return {
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }
+      }
+    },
+    text: {
+      default: '',
     }
   },
   data() {
     return {
-      left: 0,
-      top: 0,
+      x: 0,
+      y: 0,
       biasX: 0,
       biasY: 0,
-      transitionPropery: 'left',
       transitionDuration: null,
       transitionDelay: '0ms',
       isDrag: false,
     };
   },
   created() {
-    this.left = this.initPosition.left;
-    this.top = this.initPosition.top;
+    this.x = this.initPosition.x;
+    this.y = this.initPosition.y;
   },
   methods: {
     touchstart(e) {
@@ -71,8 +104,8 @@ export default {
       }
       this.isDrag = true;
       this.transitionDuration = '0ms';
-      this.biasX = e.touches[0].clientX - this.left;
-      this.biasY = e.touches[0].clientY - this.top;
+      this.biasX = e.touches[0].clientX - this.x;
+      this.biasY = e.touches[0].clientY - this.y;
     },
     touchmove(e) {
       if (!this.moveable) {
@@ -81,8 +114,8 @@ export default {
       if (!this.isDrag) {
         return
       }
-      this.left = e.touches[0].clientX - this.biasX;
-      this.top = e.touches[0].clientY - this.biasY;
+      this.x = e.touches[0].clientX - this.biasX;
+      this.y = e.touches[0].clientY - this.biasY;
     },
     touchend() {
       if (!this.moveable) {
@@ -90,7 +123,11 @@ export default {
       }
       this.isDrag = false;
       this.transitionDuration = this.actionDuration + 'ms';
-      this.moveAction(this);
+      // this.moveAction(this);
+      console.log(this.moveAction);
+      let action = new Function("e", this.moveAction);
+      let e = this;
+      action(e);
     },
   }
 };

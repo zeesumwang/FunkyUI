@@ -9,38 +9,10 @@
         <img src="https://www.python.org/static/img/python-logo.png" />
       </div>
     </div>
-    <float-view
-      :style="{
-        position: 'fixed',
-        borderRadius: '45px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderStyle: 'solid',
-        borderWidth: '2px',
-        borderColor: '#fff',
-        backgroundColor: 'pink'
-      }"
-      :transitionTimingFunction="transitionTimingFunction"
-    >
-      <div>1</div>
+    <float-view v-bind="config">
+      <!-- <div>1</div> -->
     </float-view>
-    <float-view
-      :style="{
-        position: 'fixed',
-        borderRadius: '45px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderStyle: 'solid',
-        borderWidth: '2px',
-        borderColor: '#fff',
-        backgroundColor: 'pink'
-      }"
-      :transitionTimingFunction="'cubic-bezier(0.16, 1, 0.3, 1)'"
-      :initPosition="{ left: 10, top: 160 }"
-      :moveAction="action"
-    >
+    <float-view v-bind="JSON.parse(configStr)">
       <div>2</div>
     </float-view>
     <float-view
@@ -56,7 +28,10 @@
         backgroundColor: 'pink'
       }"
       :transitionTimingFunction="'cubic-bezier(0.34, 1.56, 0.64, 1)'"
-      :initPosition="{ left: 10, top: 220 }"
+      :initPosition="{ x: 10, y: 220 }"
+      :moveAction="
+        '{console.log(e); if (e.x + e.width * 0.5 > screen.availWidth * 0.5) { e.x = screen.availWidth - (e.initPosition.x + e.width); } else { e.x = e.initPosition.x; }}'
+      "
     >
       <div>3</div>
     </float-view>
@@ -73,6 +48,36 @@ export default {
   },
   data() {
     return {
+      configStr: '{"style":{"position":"fixed","borderRadius":"45px","display":"flex","justifyContent":"center","alignItems":"center","borderStyle":"solid","borderWidth":"2px","borderColor":"#fff","backgroundColor":"pink"},"transitionTimingFunction":"cubic-bezier(0.16, 1, 0.3, 1)","initPosition":{"x":10,"y":160},"moveAction":"{console.log(e); if (e.x + e.width * 0.5 > screen.availWidth * 0.5) { e.x = screen.availWidth - (e.initPosition.x + e.width); } else { e.x = e.initPosition.x; }}"}',
+      config: {
+        style: {
+          position: "fixed",
+          borderRadius: "45px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          borderStyle: "solid",
+          borderWidth: "2px",
+          borderColor: "#fff",
+          backgroundColor: "pink"
+        },
+        initPosition: {
+          x: 10,
+          y: 100,
+        },
+        transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+        moveable: true,
+        moveAction:
+          "{console.log(e); if (e.x + e.width * 0.5 > screen.availWidth * 0.5) { e.x = screen.availWidth - (e.initPosition.x + e.width); } else { e.x = e.initPosition.x; }}",
+        children: [
+          {
+            text: '1',
+            moveable: false,
+          }
+        ],
+      },
+      styleConfig:
+        '{ "position": "fixed", "borderRadius": "45px", "display": "flex", "justifyContent": "center", "alignItems": "center", "borderStyle": "solid", "borderWidth": "2px", "borderColor": "#fff", "backgroundColor": "pink" }',
       style: {
         home: {
           display: "flex",
@@ -122,20 +127,22 @@ export default {
       this.style.home.transition = "all 500ms";
       this.style.home.left = 0 + "px";
     },
+    // eslint-disable-next-line no-unused-vars
     action(e) {
-      e = JSON.stringify(e);
-      console.log(e);
-      let action = new Function(e, "let e = JSON.parse(" + e +");console.log(e); ");
-      action();
-    },
-    actionW(e) {
-      console.log(e);
-      if (e.left + e.width * 0.5 > screen.availWidth * 0.5) {
-        e.left = screen.availWidth - (e.initPosition.left + e.width);
-      } else {
-        e.left = e.initPosition.left;
-      }
+      let action = new Function(
+        "e",
+        "{console.log(e); if (e.x + e.width * 0.5 > screen.availWidth * 0.5) { e.x = screen.availWidth - (e.initPosition.x + e.width); } else { e.x = e.initPosition.x; }}"
+      );
+      action(e);
     }
+    // actionW(e) {
+    //   console.log(e);
+    //   if (e.x + e.width * 0.5 > screen.availWidth * 0.5) {
+    //     e.x = screen.availWidth - (e.initPosition.x + e.width);
+    //   } else {
+    //     e.x = e.initPosition.x;
+    //   }
+    // }
   }
 };
 </script>
