@@ -1,40 +1,8 @@
 <template>
-  <div
-    :style="{ display: 'flex', flexDirection: 'column' }"
-    @pan="pan"
-    @swipe="swipe"
-  >
-    <div :style="style.home">
-      <div v-for="item in list" :key="item" :style="style.info">
-        <img src="https://www.python.org/static/img/python-logo.png" />
-      </div>
-    </div>
-    <float-view v-bind="config">
-      <!-- <div>1</div> -->
-    </float-view>
-    <float-view v-bind="JSON.parse(configStr)">
-      <div>2</div>
-    </float-view>
-    <float-view
-      :style="{
-        position: 'fixed',
-        borderRadius: '45px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderStyle: 'solid',
-        borderWidth: '2px',
-        borderColor: '#fff',
-        backgroundColor: 'pink'
-      }"
-      :transitionTimingFunction="'cubic-bezier(0.34, 1.56, 0.64, 1)'"
-      :initPosition="{ x: 10, y: 220 }"
-      :moveAction="
-        '{console.log(e); if (e.x + e.width * 0.5 > screen.availWidth * 0.5) { e.x = screen.availWidth - (e.initPosition.x + e.width); } else { e.x = e.initPosition.x; }}'
-      "
-    >
-      <div>3</div>
-    </float-view>
+  <div :style="editPageStyle" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend">
+    <float-view v-bind="mainConfig"> </float-view>
+    <float-view v-bind="mainConfig"> </float-view>
+    <float-view v-bind="floatButton"> </float-view>
   </div>
 </template>
 
@@ -48,101 +16,144 @@ export default {
   },
   data() {
     return {
-      configStr: '{"style":{"position":"fixed","borderRadius":"45px","display":"flex","justifyContent":"center","alignItems":"center","borderStyle":"solid","borderWidth":"2px","borderColor":"#fff","backgroundColor":"pink"},"transitionTimingFunction":"cubic-bezier(0.16, 1, 0.3, 1)","initPosition":{"x":10,"y":160},"moveAction":"{console.log(e); if (e.x + e.width * 0.5 > screen.availWidth * 0.5) { e.x = screen.availWidth - (e.initPosition.x + e.width); } else { e.x = e.initPosition.x; }}"}',
-      config: {
-        style: {
-          position: "fixed",
-          borderRadius: "45px",
+      mainConfig: {
+        styles: {
+          backgroundColor: "grey",
+          overflow: "scroll",
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          borderStyle: "solid",
-          borderWidth: "2px",
-          borderColor: "#fff",
-          backgroundColor: "pink"
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          alignItems: "flex-start"
+        },
+        height: screen.availHeight,
+        width: screen.availWidth,
+        moveable: false,
+        children: []
+      },
+      //
+      floatButton: {
+        name: "floatButton",
+        styles: {
+          position: "absolute",
+          borderRadius: "45px",
         },
         initPosition: {
           x: 10,
-          y: 100,
+          y: 100
         },
+        width: 40,
+        height: 40,
         transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
         moveable: true,
-        moveAction:
-          "{console.log(e); if (e.x + e.width * 0.5 > screen.availWidth * 0.5) { e.x = screen.availWidth - (e.initPosition.x + e.width); } else { e.x = e.initPosition.x; }}",
+        action: {
+          clickAction: "console.log(e.$refs[e.name])",
+          moveAction:
+            "console.log(e);{if (e.x + e.width * 0.5 > screen.availWidth * 0.5) { e.x = screen.availWidth - (e.initPosition.x + e.width); } else { e.x = e.initPosition.x; }}"
+        },
         children: [
           {
-            text: '1',
-            moveable: false,
-          }
-        ],
+            styles: {
+              position: "absolute",
+              borderRadius: "45px",
+              borderStyle: "solid",
+              borderWidth: "2px",
+              borderColor: "#fff",
+              backgroundColor: "pink"
+            },
+            width: 40,
+            height: 40,
+            children: [
+              {
+                type: "text",
+                value: "dev",
+                style: {
+                  color: "#fff"
+                },
+                initPosition: {
+                  x: 5,
+                  y: 5
+                },
+                width: 30,
+                height: 30,
+                moveable: false
+              }
+            ]
+          },
+          {
+            styles: {
+              position: "absolute",
+              borderRadius: "45px",
+              borderStyle: "solid",
+              borderWidth: "2px",
+              borderColor: "#fff",
+              backgroundColor: "pink"
+            },
+            width: 40,
+            height: 40,
+            children: [
+              {
+                type: "text",
+                value: "dev",
+                style: {
+                  color: "#fff"
+                },
+                initPosition: {
+                  x: 5,
+                  y: 5
+                },
+                width: 30,
+                height: 30,
+                moveable: false
+              }
+            ]
+          },
+        ]
       },
-      styleConfig:
-        '{ "position": "fixed", "borderRadius": "45px", "display": "flex", "justifyContent": "center", "alignItems": "center", "borderStyle": "solid", "borderWidth": "2px", "borderColor": "#fff", "backgroundColor": "pink" }',
-      style: {
-        home: {
-          display: "flex",
-          flexDirection: "column",
-          position: "fixed",
-          left: "0px",
-          top: "0px",
-          overflow: "scroll",
-          backgroundColor: "#932323",
-          transition: "none"
-        },
-        info: {
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }
+      editPageStyle: {
+        overflowX: "scroll",
+        display: "flex",
+        flexDirection: "row",
+        height: screen.availHeight + "px",
+        width: screen.availWidth * 2 + "px",
+        position: "fixed",
+        left: "0px"
       },
-      list: [],
       startX: 0,
-      transitionTimingFunction: "ease-in-out"
+      startTime: 0,
+      duration: 0
     };
   },
   created() {
     for (let i = 0; i < 100; i++) {
-      this.list.push(i);
+      this.mainConfig.children.push({
+        type: "img",
+        value: "https://www.python.org/static/img/python-logo.png",
+        width: screen.availWidth
+      });
     }
-    this.style.home.height = screen.availHeight + "px";
-    this.style.home.width = screen.availWidth + "px";
-    console.log(screen.availWidth, screen.availHeight);
   },
   mounted() {},
   methods: {
-    pan(e) {
-      console.log(e);
-    },
-    swipe(e) {
-      console.log(e);
-    },
     touchstart(e) {
+      console.log(e);
       this.startX = e.touches[0].clientX;
-      this.style.home.transition = "none";
+      this.duration = 0;
     },
     touchmove(e) {
-      this.style.home.left = e.touches[0].clientX - this.startX + "px";
+      this.editPageStyle.left = e.touches[0].clientX - this.startX + "px";
     },
     touchend() {
-      this.style.home.transition = "all 500ms";
-      this.style.home.left = 0 + "px";
+      this.startTime = new Date().getTime();
+      this.duration = 500;
+      window.requestAnimationFrame(this.swiperAnimation())
     },
-    // eslint-disable-next-line no-unused-vars
-    action(e) {
-      let action = new Function(
-        "e",
-        "{console.log(e); if (e.x + e.width * 0.5 > screen.availWidth * 0.5) { e.x = screen.availWidth - (e.initPosition.x + e.width); } else { e.x = e.initPosition.x; }}"
-      );
-      action(e);
+    swiperAnimation() {
+      const progress = new Date().getTime() - this.startTime;
+      this.editPageStyle.left = this.editPageStyle.left * (1 - progress / this.duration) + "px";
+      if (progress < this.duration) {
+        window.requestAnimationFrame(this.swiperAnimation());
+      }
     }
-    // actionW(e) {
-    //   console.log(e);
-    //   if (e.x + e.width * 0.5 > screen.availWidth * 0.5) {
-    //     e.x = screen.availWidth - (e.initPosition.x + e.width);
-    //   } else {
-    //     e.x = e.initPosition.x;
-    //   }
-    // }
   }
 };
 </script>

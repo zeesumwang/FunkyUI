@@ -1,13 +1,15 @@
 <template>
   <div
+    :ref="name"
     @touchstart="touchstart"
     @touchmove="touchmove"
     @touchend="touchend"
-    :style="{
+    @click="click"
+    :style="[{
       left: x + 'px',
       top: y + 'px',
-      width: width + 'px',
-      height: height + 'px',
+      width: width ? width + 'px' : null,
+      height: height ? height + 'px' :null,
       transitionPropery: transitionPropery,
       transitionDuration: transitionDuration,
       transitionDelay: transitionDelay,
@@ -15,33 +17,33 @@
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center'
-    }"
+    },styles]"
   >
-    <div :style="styles">
-      <span>{{ text }}</span>
-      <slot></slot>
-      <float-view v-for="(item, index) in children" :key="index" v-bind="item"></float-view>
-    </div>
+    <span v-if="value !== '' && type === 'text'">{{ value }}</span>
+    <img v-else-if="value !== '' && type ==='img'" :src="value">
+    <float-view v-for="(item, index) in children" :key="index" v-bind="item"></float-view>
   </div>
 </template>
 
 <script>
-// import FloatView from "./FloatView.vue";
 
 export default {
   name: "FloatView",
-  components: {
-    // FloatView
-  },
   props: {
+    name: {
+      default: 'Floatview'
+    },
     moveable: {
-      default: true
+      default: false
+    },
+    type: {
+      default: '',
     },
     width: {
-      default: 40,
+      default: 0,
     },
     height: {
-      default: 40,
+      default: 0,
     },
     initPosition: {
       default: {
@@ -56,12 +58,19 @@ export default {
       default: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
     },
     actionDuration: {
-      default: 250,
+      default: 500,
     },
-    moveAction: {
-      // type: Function,
-      type: String,
-      default: '',
+    styles: {
+      default: {}
+    },
+    action: {
+      type: Object,
+      default() {
+        return {
+          moveAction: "",
+          clickAction: "",
+        }
+      },
     },
     children: {
       type: Array,
@@ -69,18 +78,9 @@ export default {
         return [];
       }
     },
-    styles: {
-      default() {
-        return {
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }
-      }
-    },
-    text: {
+    value: {
       default: '',
-    }
+    },
   },
   data() {
     return {
@@ -96,6 +96,7 @@ export default {
   created() {
     this.x = this.initPosition.x;
     this.y = this.initPosition.y;
+    this.transitionDuration = this.actionDuration + 'ms';
   },
   methods: {
     touchstart(e) {
@@ -123,12 +124,15 @@ export default {
       }
       this.isDrag = false;
       this.transitionDuration = this.actionDuration + 'ms';
-      // this.moveAction(this);
-      console.log(this.moveAction);
-      let action = new Function("e", this.moveAction);
-      let e = this;
-      action(e);
+      const fn = new Function("e", this.action.moveAction);
+      const e = this;
+      fn(e);
     },
+    click() {
+      const fn = new Function("e", this.action.clickAction);
+      const e = this;
+      fn(e);
+    }
   }
 };
 </script>
